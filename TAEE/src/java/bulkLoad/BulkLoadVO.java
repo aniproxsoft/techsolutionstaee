@@ -3,20 +3,38 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package Seguridad;
+package bulkLoad;
 
 /**
  *
  * @author ANIPROXTOART
  */
-public class UsuarioVO {
+public class BulkLoadVO {
 
+    private Integer lote;
+    private Integer bulk_id;
     private String nombre;
     private String correo;
     private String nombre_rol;
-    private Integer rol;
     private String apellidos;
     private String contraseña;
+    private String observaciones;
+
+    public Integer getLote() {
+        return lote;
+    }
+
+    public void setLote(Integer lote) {
+        this.lote = lote;
+    }
+
+    public Integer getBulk_id() {
+        return bulk_id;
+    }
+
+    public void setBulk_id(Integer bulk_id) {
+        this.bulk_id = bulk_id;
+    }
 
     public String getNombre() {
         return nombre;
@@ -58,12 +76,12 @@ public class UsuarioVO {
         this.contraseña = contraseña;
     }
 
-    public int getRol() {
-        return rol;
+    public String getObservaciones() {
+        return observaciones;
     }
 
-    public void setRol(Integer rol) {
-        this.rol = rol;
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
     }
 
 }

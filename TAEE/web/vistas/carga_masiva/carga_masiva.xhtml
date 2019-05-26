@@ -1,0 +1,41 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+
+    <body>
+
+        <ui:composition template="./../Template.xhtml">
+
+            <ui:define name="content">
+                <p:messages id="mensajes"   showDetail="true" closable="true"/>
+                <h:form enctype="multipart/form-data" >
+                    <h:panelGrid style="margin-left: 10px">
+                        <p:commandButton value="Descargar plantilla" ajax="false"  >
+                            <p:fileDownload value="#{beanDowload.file}" />
+                        </p:commandButton> <br/>
+                        <p:fileUpload value="#{beanUpload.file }" mode="simple"  /><br/>
+                        <p:commandButton actionListener="#{beanUpload.upload}"  value="Guardar" ajax="false" />
+                    </h:panelGrid>
+
+
+
+                </h:form>
+                <script type="text/javascript">
+                    function ocultaMsj(time) {
+                        setTimeout(function () {
+                            $("#mensajes").children("div").slideUp();
+                            return false;
+                        }, time);
+                    }
+                </script>
+
+            </ui:define>
+
+        </ui:composition>
+
+    </body>
+
+</html>
