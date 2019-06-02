@@ -5,7 +5,9 @@
  */
 package bulkLoad;
 
+import Seguridad.RolVO;
 import Seguridad.UsuarioVO;
+import com.google.gson.Gson;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,6 +20,7 @@ import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
 import org.apache.poi.ss.usermodel.Cell;
+import static org.apache.poi.ss.usermodel.CellType.BLANK;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -35,18 +38,28 @@ public class ReadExcel {
     private List<BulkLoadVO> usuarios;
     private String observ = "";
     private BulkLoadVO carga;
+    Gson gson = new Gson();
+    List<String> columnasRead;
+    BulkLoadDao dao = new BulkLoadDaoImplements();
+    List<RolVO> roles = new ArrayList<>();
+    List<BulkLoadVO> cargaMasiva = new ArrayList<>();
 
     public void init() {
+        columnas= new ArrayList<>();
         System.out.println("inicia");
         columnas.add("Nombre");
         columnas.add("Apellidos");
         columnas.add("Correo Electronico");
         columnas.add("Contraseña");
         columnas.add("Rol");
+        roles = dao.getRoles();
+
     }
 
-    public boolean leerExcel(String ruta) throws FileNotFoundException, IOException {
+    //Realiza el proceso completo
+    public List<BulkLoadVO> leerExcel(String ruta) throws FileNotFoundException, IOException {
         init();
+        columnasRead = new ArrayList<>();
         boolean mensaje = false;
         FileInputStream file = new FileInputStream(new File(ruta));
         // we create an XSSF Workbook object for our XLSX Excel File
@@ -61,54 +74,70 @@ public class ReadExcel {
             Row row = rowIterator.next();
             if (row.getRowNum() == 0) {
 
-                while (flag == 1) {
-                    // iterate on cells for the current row
-                    Iterator<Cell> cellIterator = row.cellIterator();
-                    int contador = 0;
-                    while (cellIterator.hasNext()) {
-                        Cell cell = cellIterator.next();
-                        if (columnas.size() > 0) {
-                            if (columnas.get(contador).equalsIgnoreCase(cell.toString())) {
-                                flag = 1;
-                                mensaje = true;
+                // iterate on cells for the current row
+                Iterator<Cell> cellIterator = row.cellIterator();
 
-                            } else {
-                                flag = 0;
-                                mensaje = false;
+                while (cellIterator.hasNext()) {
+                    Cell cell = cellIterator.next();
+                    if (columnas.size() > 0) {
 
-                                workbook.close();
-                                file.close();
-                                return mensaje;
-                            }
-
-                            contador++;
-                        }
+                        columnasRead.add(cell.toString());
 
                     }
-                    if (flag == 1) {
-                        flag = 2;
-                        leerDatos(ruta);
-                    }
+
                 }
 
-                System.out.println();
             }
 
         }
-
         workbook.close();
         file.close();
-        return mensaje;
+        if (comparaColumnas(columnas, columnasRead)) {
+            if (leerDatos(ruta)) {
+
+                return cargaMasiva;
+            } else {
+              
+                return null;
+            }
+
+        } else {
+            workbook.close();
+            file.close();
+                           
+
+            return null;
+
+        }
+
+    }
+//Compara si las columnas son iguales a las de la plantilla
+
+    public boolean comparaColumnas(List<String> columnas, List<String> columnasRead) {
+        boolean bandera = false;
+        if (columnas.size() == columnasRead.size()) {
+            for (int i = 0; i < columnas.size(); i++) {
+                if (columnas.get(i).trim().equals(columnasRead.get(i).trim())) {
+                    bandera = true;
+                } else {
+                   
+                    return false;
+                }
+            }
+        }
+
+        return bandera;
     }
 
-    public String leerDatos(String ruta) throws FileNotFoundException, IOException {
+    //Metodo que lee los datos y almacena en objetos 
+    public boolean leerDatos(String ruta) throws FileNotFoundException, IOException {
         bulkLoad = new ArrayList<>();
         usuarios = new ArrayList<>();
-        carga = new BulkLoadVO();
-        String mensaje = "";
-        FileInputStream file = new FileInputStream(new File(ruta));
-        System.out.println("Entra a otro proceso");
-        XSSFWorkbook workbook = new XSSFWorkbook(file);
+
+        boolean flag = false;
+        FileInputStream files = new FileInputStream(new File(ruta));
+//        System.out.println("Entra a otro proceso");
+        XSSFWorkbook workbook = new XSSFWorkbook(files);
         // we get first sheet
         XSSFSheet sheet = workbook.getSheetAt(0);
 
@@ -116,6 +145,7 @@ public class ReadExcel {
         Iterator<Row> rowIterator = sheet.iterator();
 
         while (rowIterator.hasNext()) {
+            carga = new BulkLoadVO();
             Row row = rowIterator.next();
             if (row.getRowNum() > 0) {
                 // iterate on cells for the current row
@@ -126,67 +156,118 @@ public class ReadExcel {
 
                     switch (cell.getColumnIndex()) {
                         case 0:
+
                             carga.setNombre(cell.toString());
-                            if(carga.getNombre().equals("")){
-                               observ+="El campo esta en blanco"+"\n";
-                            }else if(carga.getNombre().length()>50){
-                                observ+="El tamaño de caracteres es incorrecto"+"\n";
-                            }
-                                
+
                             break;
                         case 1:
                             carga.setApellidos(cell.toString());
-                            if(carga.getApellidos().equals("")){
-                               observ+="El campo esta en blanco"+"\n";
-                            }else if(carga.getNombre().length()>50){
-                                observ+="El tamaño de caracteres es incorrecto"+"\n";
-                            }
+
                             break;
 
                         case 2:
                             carga.setCorreo(cell.toString());
-                            if(carga.getCorreo().equals("")){
-                               observ+="El campo esta en blanco"+"\n";
-                            }else if(carga.getNombre().length()>50){
-                                observ+="El tamaño de caracteres es incorrecto"+"\n";
-                            }
+
                             break;
 
                         case 3:
                             carga.setContraseña(cell.toString());
-                            if(carga.getContraseña().equals("")){
-                               observ+="El campo esta en blanco"+"\n";
-                            }else if(carga.getNombre().length()>50){
-                                observ+="El tamaño de caracteres es incorrecto"+"\n";
-                            }
+
                             break;
 
                         case 4:
                             carga.setNombre_rol(cell.toString());
-                            if(carga.getNombre_rol().equals("")){
-                               observ+="El campo esta en blanco"+"\n";
-                            }else if(carga.getNombre().length()>50){
-                                observ+="El tamaño de caracteres es incorrecto"+"\n";
-                            }
+
                             break;
-                            
 
                     }
-                    carga.setObservaciones(observ);
-                     if((carga.getObservaciones().trim()).equals("")){
-                            usuarios.add(carga);
-                     }
-                     bulkLoad.add(carga);
 
                 }
+                bulkLoad.add(carga);
 
-                System.out.println();
             }
 
         }
+        for (int i = 0; i < bulkLoad.size(); i++) {
+            observ="";
+            Integer rol=existeRol(bulkLoad.get(i).getNombre_rol());
+            if (bulkLoad.size() > 0) {
+                if (bulkLoad.get(i).getNombre().equals("") || bulkLoad.get(i).getNombre() == null) {
+                    observ += "El campo Nombre esta en blanco"+". ";
+                } else if (bulkLoad.get(i).getNombre().length() > 50) {
+                    observ += "El campo Nombre excede numero de caracteres (50)"+". ";
+                }
+                if (bulkLoad.get(i).getApellidos().equals("") || bulkLoad.get(i).getApellidos()== null) {
+                    observ += "El campo Apellidos esta en blanco"+". ";
+                } else if (bulkLoad.get(i).getApellidos().length() > 50) {
+                    observ += "El campo Apellidos excede numero de caracteres (50)"+". ";
+                }
+                if (bulkLoad.get(i).getCorreo().equals("") || bulkLoad.get(i).getCorreo() == null) {
+                    observ += "El campo Correo esta en blanco"+". ";
+                } else if (bulkLoad.get(i).getCorreo().length() > 50) {
+                    observ += "El campo Correo excede numero de caracteres (50)"+". ";
+                }
+                if (bulkLoad.get(i).getContraseña().equals("") || bulkLoad.get(i).getContraseña() == null) {
+                    observ += "El campo Contraseña esta en blanco"+". ";
+                } else if (bulkLoad.get(i).getContraseña().length() > 50) {
+                    observ += "El campo Contraseña excede numero de caracteres (50)"+". ";
+                }
+                if (bulkLoad.get(i).getNombre_rol().equals("") || bulkLoad.get(i).getNombre_rol() == null) {
+                    observ += "El campo Rol esta en blanco"+". ";
+                } else if (bulkLoad.get(i).getNombre_rol().length() > 50) {
+                    observ += "El campo Rol excede numero de caracteres (50)"+". ";
+                }else if(rol==null){
+                    observ+="El Rol no existe en la base de datos"+". ";
+                }else if(rol>0){
+                    bulkLoad.get(i).setId_rol(rol);
+                }
+                 
+                
+                if(observ.equals("")){
+                    usuarios.add(bulkLoad.get(i));
+                }else{
+                    bulkLoad.get(i).setObservaciones(observ);
+                }
+            }
 
+        }
+        System.out.println("tamaño usuarios: " + usuarios.size());
+        System.out.println("tamaño bulkload: " + bulkLoad.size());
+
+//        System.out.println("usuarios:   " + gson.toJson(usuarios));
+//        System.out.println("********************************");
+//        System.out.println("bulkload:   " + gson.toJson(bulkLoad));
+        cargaMasiva = dao.bulkLoad(gson.toJson(usuarios), gson.toJson(bulkLoad));
+        if (cargaMasiva.size() > 0) {
+            flag = true;
+            workbook.close();
+            files.close();
+        } else {
+            flag = false;
+        }
         workbook.close();
-        file.close();
-        return mensaje;
+        files.close();
+        File borrarFile = new File(ruta);
+        if (borrarFile.delete()) {
+            System.out.println("se borro");
+        } else {
+            System.out.println("no se borro");
+        }
+        return flag;
+    }
+
+    public Integer existeRol(String rol) {
+        Integer existe = null;
+        if (roles.size() > 0) {
+            for (int i = 0; i < roles.size(); i++) {
+                if (roles.get(i).getNombre_rol().trim().equalsIgnoreCase(rol.trim())) {
+                    //System.out.println("entra if rol");
+                    //System.out.println(roles.get(i).getId_rol());
+                    return roles.get(i).getId_rol();
+                }
+            }
+        }
+
+        return existe;
     }
 }

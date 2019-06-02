@@ -7,9 +7,11 @@ package bulkLoad;
 
 import java.io.InputStream;
 import java.io.Serializable;
+import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
+import org.primefaces.context.RequestContext;
 import org.primefaces.model.DefaultStreamedContent;
 import org.primefaces.model.StreamedContent;
 
@@ -19,18 +21,19 @@ import org.primefaces.model.StreamedContent;
  */
 @ManagedBean(name = "beanDowload")
 @ViewScoped
-public class FileDownloadView implements Serializable{
+public class FileDownloadView implements Serializable {
 
-     private StreamedContent file;
-     
-    public FileDownloadView() {        
-        InputStream stream = FacesContext.getCurrentInstance().getExternalContext().getResourceAsStream("/resources/plantillas/Usuario.xlsx");
-        file = new DefaultStreamedContent(stream,"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Plantilla-Usuario.xlsx");
+    InputStream stream;
+    private StreamedContent file;
+
+    public void prepareDownload() {
+        stream = FacesContext.getCurrentInstance().getExternalContext().getResourceAsStream("/resources/plantillas/Usuario.xlsx");
+        file = new DefaultStreamedContent(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Plantilla-Usuario.xlsx");
     }
- 
+
+  
     public StreamedContent getFile() {
         return file;
     }
-  
-    
+
 }

@@ -10,27 +10,112 @@
         <ui:composition template="./../Template.xhtml">
 
             <ui:define name="content">
+
+
                 <p:messages id="mensajes"   showDetail="true" closable="true"/>
+
                 <h:form enctype="multipart/form-data" >
-                    <h:panelGrid style="margin-left: 10px">
-                        <p:commandButton value="Descargar plantilla" ajax="false"  >
-                            <p:fileDownload value="#{beanDowload.file}" />
-                        </p:commandButton> <br/>
-                        <p:fileUpload value="#{beanUpload.file }" mode="simple"  /><br/>
-                        <p:commandButton actionListener="#{beanUpload.upload}"  value="Guardar" ajax="false" />
+                    <h:panelGrid id="panelGran" columns="2">
+
+                        <h:panelGrid id="seconPanel" style="margin-left: 10px" columns="2">
+                            <p:commandButton value="Descargar plantilla" ajax="false" actionListener="${beanDowload.prepareDownload()}">
+                                <p:fileDownload value="#{beanDowload.file}" />
+                            </p:commandButton> 
+                            <br/>
+                            <p:fileUpload id="upload" style="margin-top: 20px" rendered="${beanUpload.renderd}" value="#{beanUpload.file }" 
+                                          mode="simple" widgetVar="button_upload" /><br/>
+
+                            <p:commandButton id="botonGuardar" rendered="${beanUpload.renderd}" style="margin-top: 20px; "
+                                             actionListener="#{beanUpload.upload}" 
+                                             onclick="PF('pbAjax').start(); PF('button_upload').disable();" 
+                                             update="tabla1" value="Guardar" ajax="false" />
+                            <br/>
+
+                            <p:commandButton id="botonNew" value="Nueva Carga" rendered="${beanUpload.rendered2}" 
+                                             ajax="false" actionListener="${beanUpload.nuevo()}"/>
+
+
+
+
+
+                        </h:panelGrid>
+                        <h:panelGrid style="margin-left:150px;width: 30%">
+
+                            <p:dataTable id="tabla1" var="status" value="#{beanUpload.status}">
+                                <p:column headerText="Registros">
+                                    <h:outputText value="#{status.type}" />
+                                </p:column>
+
+                                <p:column headerText="Cantidad">
+                                    <h:outputText value="#{status.value}" />
+                                </p:column>
+
+
+                            </p:dataTable>
+                        </h:panelGrid><br/><br/>
+
+
                     </h:panelGrid>
+                    <p:progressBar id="progress" style="margin-left:10px ;margin-top: 20px; width: 30%" widgetVar="pbAjax" ajax="true" 
+                                   value="#{beanUpload.progress}" labelTemplate="{value}%" styleClass="animated" global="false">
+                        <p:ajax event="complete"  oncomplete=""/>
+
+                    </p:progressBar>
+                    <center>
+                        <h:panelGrid style="width: 95%">
+
+                            <p:dataTable style="margin-top: 20px" id="tabla2" var="carga" value="#{beanUpload.cargas}" scrollable="true"
+                                         scrollWidth="250" scrollHeight="250">
+                                <p:column headerText="Lote de carga">
+                                    <h:outputText value="${carga.lote}" />
+                                </p:column>
+                                <p:column headerText="Nombre">
+                                    <h:outputText value="${carga.nombre}" />
+                                </p:column>
+                                <p:column headerText="Apellidos">
+                                    <h:outputText value="${carga.apellidos}" />
+                                </p:column>
+                                <p:column headerText="Correo">
+                                    <h:outputText value="${carga.correo}" />
+                                </p:column>
+                                <p:column headerText="Contraseña">
+                                    <h:outputText value="${carga.contraseña}" />
+                                </p:column>
+                                <p:column headerText="Nombre de rol">
+                                    <h:outputText value="${carga.nombre_rol}" />
+                                </p:column>
+                                <p:column headerText="Observaciones">
+                                    <h:outputText value="${carga.observaciones}" />
+                                </p:column>
+                            </p:dataTable>
+
+                        </h:panelGrid>
+
+                    </center>
+
+
+                    <script type="text/javascript">
+                        function ocultaMsj(time) {
+                            setTimeout(function () {
+                                $("#mensajes").children("div").slideUp();
+                                return false;
+                            }, time);
+                        }
+                        function recargando() {
+
+                            alert("alert")
+                        }
+                    </script>
+
+
+
+
+
 
 
 
                 </h:form>
-                <script type="text/javascript">
-                    function ocultaMsj(time) {
-                        setTimeout(function () {
-                            $("#mensajes").children("div").slideUp();
-                            return false;
-                        }, time);
-                    }
-                </script>
+
 
             </ui:define>
 
