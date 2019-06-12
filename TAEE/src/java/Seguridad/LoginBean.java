@@ -6,6 +6,8 @@
 package Seguridad;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
@@ -24,24 +26,33 @@ public class LoginBean implements Serializable {
     //Variables
     private UsuarioVO user;
     private LoginDao dao;
+    List<UsuarioVO> users;
 
     @PostConstruct
     public void init() {
         user = new UsuarioVO();
+
     }
 
     public LoginBean() {
     }
 
     public String iniciarSesion() {
-
+        users = new ArrayList<>();
         String redireccion = null;
         try {
-            System.out.println("******" + user.getCorreo() + "/" + user.getContraseña());
-            UsuarioVO u;
+//            System.out.println("******" + user.getCorreo() + "/" + user.getContraseña());
+
             dao = new LoginDaoImplements();
-            u = dao.getUsuario(user.getCorreo(), user.getContraseña()).get(0);
-            System.out.println(u);
+            users = dao.getUsuario(user.getCorreo(), user.getContraseña());
+            UsuarioVO u = null;
+
+            if (users != null) {
+                u = users.get(0);
+            } else {
+                u = null;
+            }
+            //System.out.println(u);
             if (u != null) {
 
                 if (u.getRol() == 2) {
@@ -53,14 +64,15 @@ public class LoginBean implements Serializable {
                 }
 
             } else {
-                System.out.println(u);
+                //System.out.println("entra else");
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "error usuario y/o contraseña incorrecta"));
                 RequestContext.getCurrentInstance().update("alertaLogin");
+                RequestContext.getCurrentInstance().execute("ocultaMsj(3000)");
             }
         } catch (Exception e) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "error" + e));
         }
-        System.out.println("--------------" + redireccion);
+        //System.out.println("--------------r: " + redireccion);
         return redireccion;
     }
 
