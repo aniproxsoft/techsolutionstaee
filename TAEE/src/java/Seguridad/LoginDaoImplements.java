@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  */
 public class LoginDaoImplements implements LoginDao {
 
-    ConnectionDB conexion ;
+    ConnectionDB conexion;
 
     @Override
     public List<UsuarioVO> getUsuario(String usuario, String pass) {
@@ -30,20 +30,35 @@ public class LoginDaoImplements implements LoginDao {
 
         Connection conn = null;
         try {
-            conexion= new ConnectionDB();
+            conexion = new ConnectionDB();
             conn = conexion.conectarBD();
             CallableStatement query = conn.prepareCall("{call sp_autentification(?,?)}");
             query.setString(1, usuario);
             query.setString(2, pass);
             query.execute();
             ResultSet respuesta = query.getResultSet();
-            UsuarioVO us=null;
+            UsuarioVO us = null;
             while (respuesta.next()) {
-                us = new UsuarioVO();
-                us.setCorreo(respuesta.getString(5));
-                us.setNombre(respuesta.getString(3));
-                us.setNombre_rol(respuesta.getString(6));
-                ListaUser.add(us);
+                if (respuesta.getInt(1) != 0) {
+                    us = new UsuarioVO();
+                    us.setRol(respuesta.getInt(2));
+                    us.setNombre(respuesta.getString(3));
+                    us.setApellidos(respuesta.getString(4));
+                    us.setCorreo(respuesta.getString(5));
+                    us.setNombre_rol(respuesta.getString(6));
+                    us.setNombre_empresa(respuesta.getString(7));
+                    us.setDireccion(respuesta.getString(8));
+                    us.setNombre_estado(respuesta.getString(9));
+                    us.setNombre_ciudad(respuesta.getString(10));
+                    us.setCodigo_postal(respuesta.getString(11));
+                    us.setTelefono(respuesta.getString(12));
+                    us.setConvenio(respuesta.getString(13));
+                    us.setRfc(respuesta.getString(14));
+                    us.setStatus(respuesta.getString(15));
+                    ListaUser.add(us);
+                }else{
+                    return null;
+                }
             }
             return ListaUser;
 

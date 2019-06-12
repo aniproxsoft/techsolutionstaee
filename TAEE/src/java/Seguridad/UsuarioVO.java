@@ -5,18 +5,22 @@
  */
 package Seguridad;
 
+import empresa.EmpresaVO;
+
 /**
  *
  * @author ANIPROXTOART
  */
-public class UsuarioVO {
+public class UsuarioVO extends EmpresaVO{
 
+    private Integer id_usuario;
     private String nombre;
-    private String correo;
-    private String nombre_rol;
-    private Integer rol;
     private String apellidos;
+    private String correo;
     private String contraseña;
+    private Integer rol;
+    private String nombre_rol;
+    private String status;
 
     public String getNombre() {
         return nombre;
@@ -64,6 +68,22 @@ public class UsuarioVO {
 
     public void setRol(Integer rol) {
         this.rol = rol;
+    }
+
+    public Integer getId_usuario() {
+        return id_usuario;
+    }
+
+    public void setId_usuario(Integer id_usuario) {
+        this.id_usuario = id_usuario;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
 }

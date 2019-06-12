@@ -1,5 +1,5 @@
 DELIMITER //
-CREATE PROCEDURE sp_bulkload(usuarios varchar(65000),bulkloads varchar(65000))
+CREATE PROCEDURE sp_bulkload(empresas varchar(65000),bulkloads varchar(65000))
 BEGIN
 	DECLARE flag boolean;
 	DECLARE count int  UNSIGNED DEFAULT 0;
@@ -10,7 +10,7 @@ BEGIN
 	DECLARE exist int UNSIGNED DEFAULT 0;
 	DECLARE id_user int  UNSIGNED DEFAULT 0;
 	DECLARE lote_id int UNSIGNED DEFAULT 0;
-	DECLARE json_items int UNSIGNED   DEFAULT  JSON_LENGTH(usuarios); 
+	DECLARE json_items int UNSIGNED   DEFAULT  JSON_LENGTH(empresas); 
 	DECLARE json_items2 int UNSIGNED   DEFAULT  JSON_LENGTH(bulkloads);
 	DECLARE _index int UNSIGNED DEFAULT 0;
 	DECLARE _index2 int UNSIGNED DEFAULT 0;
@@ -20,24 +20,24 @@ BEGIN
 			WHILE _index < json_items DO 
   				Select count(*) 
   				from users 
-  				where email=trim((Select replace(JSON_EXTRACT(usuarios, CONCAT('$[',_index,'].correo')), '"', ''))) into exist;
+  				where email=trim((Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].correo')), '"', ''))) into exist;
 				If(exist>0)Then
 					Update  users set 
-					nombre=(Select replace(JSON_EXTRACT(usuarios, CONCAT('$[',_index,'].nombre')), '"', '')),
-					apellidos=(Select replace(JSON_EXTRACT(usuarios, CONCAT('$[',_index,']. apellidos')), '"', '')),
-					password=(Select replace(MD5(JSON_EXTRACT(usuarios, CONCAT('$[',_index,']. contraseña'))), '"', '')),
-					id_rol=JSON_EXTRACT(usuarios, CONCAT('$[',_index,'].id_rol'))
-					Where email=(Select replace(JSON_EXTRACT(usuarios, CONCAT('$[',_index,'].correo')), '"', ''));
+					nombre=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].nombre')), '"', '')),
+					apellidos=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,']. apellidos')), '"', '')),
+					password=(Select replace(MD5(JSON_EXTRACT(empresas, CONCAT('$[',_index,']. contraseña'))), '"', '')),
+					id_rol=JSON_EXTRACT(empresas, CONCAT('$[',_index,'].id_rol'))
+					Where email=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].correo')), '"', ''));
 
 					Set countUpdate= countUpdate+1;
 				else
 					Insert into users (nombre,apellidos,email,password,id_rol,status)
 					VALUES(
-						(Select replace(JSON_EXTRACT(usuarios, CONCAT('$[',_index,'].nombre')), '"', '')),
-						(Select replace(JSON_EXTRACT(usuarios, CONCAT('$[',_index,'].apellidos')), '"', '')),
-						(Select replace(JSON_EXTRACT(usuarios, CONCAT('$[',_index,'].correo')), '"', '')),
-						MD5((Select replace(JSON_EXTRACT(usuarios, CONCAT('$[',_index,'].contraseña')), '"', ''))),
-						JSON_EXTRACT(usuarios, CONCAT('$[',_index,'].id_rol')),
+						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].nombre')), '"', '')),
+						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].apellidos')), '"', '')),
+						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].correo')), '"', '')),
+						MD5((Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].contraseña')), '"', ''))),
+						JSON_EXTRACT(empresas, CONCAT('$[',_index,'].id_rol')),
 						1
 
 					);

@@ -23,7 +23,7 @@
                         </ul>
                         <ul class="nav navbar-nav  navbar-right">
                             <!--<li><a href="#"><span class="glyphicon glyphicon-user"></span> Registrate</a></li>-->
-                            <li class="active"><h:link value="Iniciar sesión " ><span class="glyphicon glyphicon-log-in"></span></h:link></li>
+                            <li class="active"><h:link value="Iniciar sesión "  ><span class="glyphicon glyphicon-log-in"></span></h:link></li>
                         </ul>
                     </div>
                 </nav> 
@@ -31,20 +31,21 @@
 
 
             <ui:define name="content">
+                <p:messages id="alertaLogin" />
                 <h:form>
                     <center>
-                        <p:messages id="alertaLogin" />
-                        <h2 style="margin-top: 6%">Iniciar sesión</h2>
+
+                        <h2 style="margin-top: 6%; color: #038C65">Iniciar sesión</h2>
                         <div id="iniciar_sesion">
                             <h:panelGrid id="panel" columns="1" styleClass="ui-panelgrid" ><br/>
                                 <p:outputLabel for="email" value="Correo electrónico: " style="margin-top: 15px"/>
-                                <p:inputText id="email" type="email" value="" style="width: 320px" required="true"/><br/>
+                                <p:inputText id="email" type="email" value="${beanLogin.user.correo}" style="width: 320px" required="true"/><br/>
                                 <p:message for="email" />
                                 <p:outputLabel for="pass" value="Contraseña "/>
-                                <p:inputText id="pass" type="password" value="" style="width: 320px" required="true"/><br/>
+                                <p:inputText id="pass" type="password" value="${beanLogin.user.contraseña}" style="width: 320px" required="true"/><br/>
                                 <p:message for="pass" />
                                 <p:column>
-                                    <p:commandButton id="enviar" action="#" value="Enviar"  update="panel" style="margin-top: 15px;margin-left: 75%"></p:commandButton>
+                                    <p:commandButton id="enviar" action="#{beanLogin.iniciarSesion()}" value="Enviar"  update="panel" style="margin-top: 15px;margin-left: 75%"></p:commandButton>
                                 </p:column>
 
                                 <br/>
