@@ -3,7 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:p="http://primefaces.org/ui">
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <body>
 
@@ -29,9 +30,9 @@
                 </nav> 
             </ui:define>
 
-
             <ui:define name="content">
-                <p:messages id="alertaLogin" />
+                <p:messages id="alertaLogin"   showDetail="true" closable="true"/>
+
                 <h:form>
                     <center>
 
@@ -39,10 +40,10 @@
                         <div id="iniciar_sesion">
                             <h:panelGrid id="panel" columns="1" styleClass="ui-panelgrid" ><br/>
                                 <p:outputLabel for="email" value="Correo electrónico: " style="margin-top: 15px"/>
-                                <p:inputText id="email" type="email" value="${beanLogin.user.correo}" style="width: 320px" required="true"/><br/>
+                                <p:inputText id="email" type="email" value="${beanLogin.user.correo}" style="width: 320px" required="true"  /><br/>
                                 <p:message for="email" />
                                 <p:outputLabel for="pass" value="Contraseña "/>
-                                <p:inputText id="pass" type="password" value="${beanLogin.user.contraseña}" style="width: 320px" required="true"/><br/>
+                                <p:inputText id="pass" type="password" value="${beanLogin.user.contraseña}" style="width: 320px"  required="true" > </p:inputText><br/>
                                 <p:message for="pass" />
                                 <p:column>
                                     <p:commandButton id="enviar" action="#{beanLogin.iniciarSesion()}" value="Enviar"  update="panel" style="margin-top: 15px;margin-left: 75%"></p:commandButton>
@@ -51,16 +52,18 @@
                                 <br/>
                             </h:panelGrid>
                         </div> 
+                        <script type="text/javascript">
+                            function ocultaMsj(time) {
+                                setTimeout(function () {
+                                    $("#alertaLogin").children("div").slideUp();
+                                    return false;
+                                }, time);
+                            }
+                          
+                        </script>
                     </center>   
                 </h:form>
-                <script type="text/jsvascript">
-                    function ocultaMsj(time){
-                    setTimeout (function(){
-                    $('alertaLogin').children("div").slideUp();
-                    return false:
-                    },time);
-                    }
-                </script>
+
 
 
             </ui:define>

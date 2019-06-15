@@ -57,10 +57,12 @@ public class LoginBean implements Serializable {
 
                 if (u.getRol() == 2) {
                     FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("user", u);
-                    redireccion = "empresas_egresados?faces-redirect=true";
+                    redireccion = "/vistas/iniciar_sesion/empresas_egresados.xhtml?faces-redirect=true";
                 } else if (u.getRol() == 1) {
                     FacesContext.getCurrentInstance().getExternalContext().getSessionMap().put("user", u);
-                    redireccion = "empresas_estadias?faces-redirect=true";
+                    redireccion = "/vistas/iniciar_sesion/empresas_estadias.xhtml?faces-redirect=true";
+                }else if(u.getRol() == 3){
+                    redireccion = "/vistas/iniciar_sesion/empresario_index.xhtml?faces-redirect=true";
                 }
 
             } else {
@@ -75,6 +77,8 @@ public class LoginBean implements Serializable {
         //System.out.println("--------------r: " + redireccion);
         return redireccion;
     }
+     
+
 
     public UsuarioVO getUser() {
         return user;

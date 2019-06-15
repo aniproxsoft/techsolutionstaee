@@ -5,6 +5,9 @@
  */
 package Seguridad;
 
+import java.io.IOException;
+import java.io.Serializable;
+import javax.faces.application.NavigationHandler;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
@@ -15,7 +18,7 @@ import javax.faces.context.FacesContext;
  */
 @ManagedBean(name = "beanSession")
 @ViewScoped
-public class SessionBean {
+public class SessionBean implements Serializable {
 
     public void verificarSession(Integer rol) {
         //System.out.println("**************Entra");
@@ -26,14 +29,25 @@ public class SessionBean {
             UsuarioVO user = (UsuarioVO) context.getExternalContext().getSessionMap().get("user");
             if (user == null) {
 //                System.out.println("entra if+++++++++++++++++++++++++++++");
-                context.getExternalContext().redirect("iniciar_sesion.xhtml");
-            } else if (rol !=user.getRol()) {
-                context.getExternalContext().redirect("protejido.xhtml");
-
-            } 
+                //context.getExternalContext().redirect("iniciar_sesion.xhtml?=faces-redirect=true");
+                FacesContext fc = FacesContext.getCurrentInstance();
+                NavigationHandler navigationHandler = fc.getApplication().getNavigationHandler();
+                navigationHandler.handleNavigation(fc, null, "/vistas/iniciar_sesion/iniciar_sesion.xhtml");
+                fc.renderResponse();
+            } else if (rol != user.getRol()) {
+                //context.getExternalContext().redirect("protejido.xhtml?faces-redirect=true");
+                FacesContext fc = FacesContext.getCurrentInstance();
+                NavigationHandler navigationHandler = fc.getApplication().getNavigationHandler();
+                navigationHandler.handleNavigation(fc, null, "/vistas/iniciar_sesion/protejido.xhtml");
+                fc.renderResponse();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    public void cerrarSesion() {
+        System.out.println("entra logout");
+        FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
+    }
 }

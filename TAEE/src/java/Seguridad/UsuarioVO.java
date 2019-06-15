@@ -12,7 +12,7 @@ import empresa.EmpresaVO;
  * @author ANIPROXTOART
  */
 public class UsuarioVO extends EmpresaVO{
-
+    
     private Integer id_usuario;
     private String nombre;
     private String apellidos;

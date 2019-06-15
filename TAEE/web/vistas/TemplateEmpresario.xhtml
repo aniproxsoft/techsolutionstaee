@@ -1,0 +1,62 @@
+<?xml version='1.0' encoding='UTF-8' ?> 
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="./css/bootstrap.css"/>
+        <h:outputStylesheet name="./css/formularios.css"/>
+        <h:outputScript name="./js/jquery-3.4.1.min.js"/>
+        <h:outputScript name="./js/bootstrap.min.js"/>
+        <title>TAEG</title>
+        <title>Facelets Template</title>
+    </h:head>
+
+    <h:body>
+
+        <div id="top">
+            <div id="top">
+                <ui:insert name="top">
+                    <h:form>
+                        <nav class="navbar navbar-utn">
+                            <div class="container-fluid">
+                                <div class="navbar-header">
+                                    <a class="navbar-brand" href="#">TAEG</a>
+                                </div>
+                                <ul class="nav navbar-nav">
+                                    <li class="active"><h:link outcome="/vistas/iniciar_sesion/empresas_estadias.xhtml"  value="Inicio"></h:link></li>
+                                  
+
+                                </ul>
+                                <ul class="nav navbar-nav  navbar-right">
+                                    <!--<li><a href="#"><span class="glyphicon glyphicon-user"></span> Registrate</a></li>-->
+                                    <li><p:commandLink value="Cerrar sesión" actionListener="${beanSession.cerrarSesion()}" action="/vistas/iniciar_sesion/iniciar_sesion.xhtml?faces-redirect=true" ><span class="glyphicon glyphicon-log-out"></span></p:commandLink></li>
+
+                                </ul>
+                            </div>
+                        </nav> 
+                    </h:form>
+                </ui:insert>
+            </div>
+        </div>
+
+        <div id="content" class="center_content">
+            <ui:insert name="content">Content</ui:insert>
+        </div>
+
+        <div id="bottom">
+            <ui:insert name="bottom">
+                <footer>
+                    <p>&copy; 2019 Tech Solutions - Tecnología Aplicada a Estadías y Egresados</p>
+
+
+                </footer>
+            </ui:insert>
+        </div>
+
+    </h:body>
+
+</html>
