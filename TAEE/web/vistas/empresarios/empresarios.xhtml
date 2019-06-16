@@ -2,8 +2,9 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
       xmlns:p="http://primefaces.org/ui"
-      xmlns:h="http://xmlns.jcp.org/jsf/html">
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <body>
 
@@ -18,53 +19,55 @@
                             <li><h:link outcome="/index.xhtml"  value="Inicio"></h:link></li>
                             <li><h:link  value="Estadías"></h:link></li>
                             <li><h:link   value="Empleos"></h:link></li>
-                            <li class="active"><h:link  outcome="/vistas/empresarios/empresarios.xhtml" value="Empresarios"></h:link></li>
+                            <li><h:link  outcome="/vistas/empresarios/empresarios.xhtml" value="Empresarios"></h:link></li>
 
                         </ul>
                         <ul class="nav navbar-nav  navbar-right">
                             <!--<li><a href="#"><span class="glyphicon glyphicon-user"></span> Registrate</a></li>-->
-                            <li><h:link value="Iniciar sesión " ><span class="glyphicon glyphicon-log-in"></span></h:link></li>
+                            <li class="active"><h:link value="Iniciar sesión "  ><span class="glyphicon glyphicon-log-in"></span></h:link></li>
                         </ul>
                     </div>
                 </nav> 
             </ui:define>
 
-
             <ui:define name="content">
+                <p:messages id="alertaLogin"   showDetail="true" closable="true"/>
+
                 <h:form>
                     <center>
-                        <p:messages id="alertaLogin" />
-                        <h2 style="margin-top: 6%">Iniciar sesión</h2>
+
+                        <h2 style="margin-top: 6%; color: #038C65">Iniciar sesión</h2>
                         <div id="iniciar_sesion">
                             <h:panelGrid id="panel" columns="1" styleClass="ui-panelgrid" ><br/>
                                 <p:outputLabel for="email" value="Correo electrónico: " style="margin-top: 15px"/>
-                                <p:inputText id="email" type="email" value="" style="width: 320px" required="true"/><br/>
+                                <p:inputText id="email" type="email" value="${beanLogin.user.correo}" style="width: 320px" required="true"  /><br/>
                                 <p:message for="email" />
                                 <p:outputLabel for="pass" value="Contraseña "/>
-                                <p:inputText id="pass" type="password" value="" style="width: 320px" required="true"/><br/>
+                                <p:inputText id="pass" type="password" value="${beanLogin.user.contraseña}" style="width: 320px"  required="true" > </p:inputText><br/>
                                 <p:message for="pass" />
                                 <p:column>
                                     <h:link class="red-link" value="Crear cuenta"></h:link>
-                                    <p:commandButton id="enviar" action="#" value="Enviar"  update="panel" style="margin-top: 15px;margin-left: 10%"></p:commandButton>
+                                    <p:commandButton id="enviar" action="#{beanLogin.iniciarSesion()}" value="Enviar"  update="panel" style="margin-top: 15px;margin-left: 75%"></p:commandButton>
                                 </p:column>
 
                                 <br/>
                             </h:panelGrid>
                         </div> 
+                        <script type="text/javascript">
+                            function ocultaMsj(time) {
+                                setTimeout(function () {
+                                    $("#alertaLogin").children("div").slideUp();
+                                    return false;
+                                }, time);
+                            }
+
+                        </script>
                     </center>   
                 </h:form>
-                <script type="text/jsvascript">
-                    function ocultaMsj(time){
-                        setTimeout (function(){
-                          $('alertaLogin').children("div").slideUp();
-                          return false:
-                         },time);
-                    }
-                </script>
+
 
 
             </ui:define>
-
         </ui:composition>
 
     </body>
