@@ -67,24 +67,33 @@
                         <h:panelGrid style="width: 95%">
 
                             <p:dataTable style="margin-top: 20px" id="tabla2" var="carga" value="#{beanUpload.cargas}" scrollable="true"
-                                         scrollWidth="250" scrollHeight="250">
+                                         scrollWidth="300" scrollHeight="300" emptyMessage="Sin Registros">
                                 <p:column headerText="Lote de carga">
                                     <h:outputText value="${carga.lote}" />
                                 </p:column>
                                 <p:column headerText="Nombre">
-                                    <h:outputText value="${carga.nombre}" />
+                                    <h:outputText value="${carga.nombre_empresa}" />
                                 </p:column>
-                                <p:column headerText="Apellidos">
-                                    <h:outputText value="${carga.apellidos}" />
+                                <p:column headerText="Dirección">
+                                    <h:outputText value="${carga.direccion}" />
                                 </p:column>
-                                <p:column headerText="Correo">
-                                    <h:outputText value="${carga.correo}" />
+                                <p:column headerText="Estado">
+                                    <h:outputText value="${carga.nombre_estado}" />
                                 </p:column>
-                                <p:column headerText="Contraseña">
-                                    <h:outputText value="${carga.contraseña}" />
+                                <p:column headerText="Ciudad">
+                                    <h:outputText value="${carga.nombre_ciudad}" />
                                 </p:column>
-                                <p:column headerText="Nombre de rol">
-                                    <h:outputText value="${carga.nombre_rol}" />
+                                <p:column headerText="Codigo Postal">
+                                    <h:outputText value="${carga.codigo_postal}" />
+                                </p:column>
+                                <p:column headerText="Telefono">
+                                    <h:outputText value="${carga.telefono}" />
+                                </p:column>
+                                <p:column headerText="Folio Convenio">
+                                    <h:outputText value="${carga.convenio}" />
+                                </p:column>
+                                <p:column headerText="RFC de la Empresa">
+                                    <h:outputText value="${carga.rfc}" />
                                 </p:column>
                                 <p:column headerText="Observaciones">
                                     <h:outputText value="${carga.observaciones}" />
@@ -119,6 +128,9 @@
                 </h:form>
 
 
+            </ui:define>
+            <ui:define name="bottom">
+                
             </ui:define>
 
         </ui:composition>

@@ -19,26 +19,32 @@ BEGIN
   		
 			WHILE _index < json_items DO 
   				Select count(*) 
-  				from users 
-  				where email=trim((Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].correo')), '"', ''))) into exist;
+  				from empresa 
+  				where rfc=trim((Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].rfc')), '"', ''))) into exist;
 				If(exist>0)Then
-					Update  users set 
-					nombre=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].nombre')), '"', '')),
-					apellidos=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,']. apellidos')), '"', '')),
-					password=(Select replace(MD5(JSON_EXTRACT(empresas, CONCAT('$[',_index,']. contraseña'))), '"', '')),
-					id_rol=JSON_EXTRACT(empresas, CONCAT('$[',_index,'].id_rol'))
-					Where email=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].correo')), '"', ''));
+					Update  empresa set 
+					nombre=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].nombre_empresa')), '"', '')),
+					direccion=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,']. direccion')), '"', '')),
+					id_estado=JSON_EXTRACT(empresas, CONCAT('$[',_index,'].id_estado')),
+					id_ciudad=JSON_EXTRACT(empresas, CONCAT('$[',_index,'].id_ciudad')),
+					codigo_postal=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,']. codigo_postal')), '"', '')),
+					num_telefono=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].telefono')), '"', '')),
+					folio_convenio=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].convenio')), '"', ''))
+					Where rfc=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].rfc')), '"', ''));
 
 					Set countUpdate= countUpdate+1;
 				else
-					Insert into users (nombre,apellidos,email,password,id_rol,status)
+					Insert into empresa (nombre,direccion,id_estado,id_ciudad,codigo_postal,num_telefono,folio_convenio,rfc,status)
 					VALUES(
-						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].nombre')), '"', '')),
-						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].apellidos')), '"', '')),
-						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].correo')), '"', '')),
-						MD5((Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].contraseña')), '"', ''))),
-						JSON_EXTRACT(empresas, CONCAT('$[',_index,'].id_rol')),
-						1
+						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].nombre_empresa')), '"', '')),
+						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,']. direccion')), '"', '')),
+						JSON_EXTRACT(empresas, CONCAT('$[',_index,'].id_estado')),
+						JSON_EXTRACT(empresas, CONCAT('$[',_index,'].id_ciudad')),
+						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,']. codigo_postal')), '"', '')),
+						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].telefono')), '"', '')),
+						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].convenio')), '"', '')),
+						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].rfc')), '"', '')),
+						'3'
 
 					);
 					SET COUNT = (select ROW_count());
@@ -55,19 +61,22 @@ BEGIN
  			END WHILE; 
 			
 
-			Select max(lote)+1 from bulkload into lote_id; 
+			Select max(lote)+1 from bulkload_empresa into lote_id; 
 			if(lote_id is null)then
 				Set lote_id=1;
 			end if;
 			While _index2 < json_items2 Do
-				INSERT INTO bulkload (lote,nombre,apellidos,email,password, nombre_rol,observaciones) 
+				INSERT INTO bulkload_empresa (lote,nombre,direccion,estado,ciudad,codigo_postal,num_telefono,folio_convenio,rfc,observaciones) 
 				VALUES (
 				lote_id,
-				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].nombre')), '"', '')),
-				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].apellidos')), '"', '')),
-				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].correo')), '"', '')),
-				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].contraseña')), '"', '')),
-				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].nombre_rol')), '"', '')),
+				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].nombre_empresa')), '"', '')),
+				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].direccion')), '"', '')),
+				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].nombre_estado')), '"', '')),
+				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].nombre_ciudad')), '"', '')),
+				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].codigo_postal')), '"', '')),
+				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].telefono')), '"', '')),
+				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].convenio')), '"', '')),
+				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].rfc')), '"', '')),
 				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].observaciones')), '"', ''))
 				); 
 				SET _index2 := _index2 + 1; 
@@ -89,14 +98,14 @@ BEGIN
 
 
 		
-			Select count(*) from bulkload where lote = lote_id into countbulk;
+			Select count(*) from bulkload_empresa where lote = lote_id into countbulk;
 			set suma=(countInsert+countUpdate);
 
 			Set countFail=countbulk-suma;
 			
 			
-			Select lote,bulk_id,nombre, apellidos,email, password,nombre_rol,observaciones,countbulk, countFail,countUpdate,countInsert,msj
-			from bulkload where lote =lote_id;
+			Select lote,id_bulkload,nombre,direccion,estado,ciudad,codigo_postal,num_telefono,folio_convenio,rfc,observaciones,countbulk, countFail,countUpdate,countInsert,msj
+			from bulkload_empresa where lote =lote_id;
 End
 
 

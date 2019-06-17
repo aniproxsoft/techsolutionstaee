@@ -27,8 +27,8 @@ public class FileDownloadView implements Serializable {
     private StreamedContent file;
 
     public void prepareDownload() {
-        stream = FacesContext.getCurrentInstance().getExternalContext().getResourceAsStream("/resources/plantillas/Usuario.xlsx");
-        file = new DefaultStreamedContent(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Plantilla-Usuario.xlsx");
+        stream = FacesContext.getCurrentInstance().getExternalContext().getResourceAsStream("/resources/plantillas/Empresa.xlsx");
+        file = new DefaultStreamedContent(stream, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "Plantilla-Empresa.xlsx");
     }
 
   

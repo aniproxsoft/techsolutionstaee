@@ -8,6 +8,8 @@ package bulkLoad;
 import Seguridad.RolVO;
 import Seguridad.UsuarioVO;
 import com.google.gson.Gson;
+import empresa.CiudadVO;
+import empresa.EstadoVO;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -35,24 +37,29 @@ public class ReadExcel {
     List<String> columnas = new ArrayList<>();
     int flag = 1;
     private List<BulkLoadVO> bulkLoad;
-    private List<BulkLoadVO> usuarios;
+    private List<BulkLoadVO> empresas;
     private String observ = "";
     private BulkLoadVO carga;
     Gson gson = new Gson();
     List<String> columnasRead;
     BulkLoadDao dao = new BulkLoadDaoImplements();
-    List<RolVO> roles = new ArrayList<>();
+    List<EstadoVO> estados = new ArrayList<EstadoVO>();
+    List<CiudadVO> ciudades = new ArrayList<>();
     List<BulkLoadVO> cargaMasiva = new ArrayList<>();
 
     public void init() {
-        columnas= new ArrayList<>();
-        System.out.println("inicia");
+        columnas = new ArrayList<>();
+//        System.out.println("inicia");
         columnas.add("Nombre");
-        columnas.add("Apellidos");
-        columnas.add("Correo Electronico");
-        columnas.add("Contraseña");
-        columnas.add("Rol");
-        roles = dao.getRoles();
+        columnas.add("Direccion");
+        columnas.add("Estado");
+        columnas.add("Ciudad");
+        columnas.add("Codigo Postal");
+        columnas.add("Telefono");
+        columnas.add("Folio de convenio");
+        columnas.add("RFC de la Empresa");
+        ciudades = dao.getCiudades();
+        estados = dao.getEstados();
 
     }
 
@@ -97,14 +104,13 @@ public class ReadExcel {
 
                 return cargaMasiva;
             } else {
-              
+
                 return null;
             }
 
         } else {
             workbook.close();
             file.close();
-                           
 
             return null;
 
@@ -120,7 +126,7 @@ public class ReadExcel {
                 if (columnas.get(i).trim().equals(columnasRead.get(i).trim())) {
                     bandera = true;
                 } else {
-                   
+
                     return false;
                 }
             }
@@ -132,7 +138,7 @@ public class ReadExcel {
     //Metodo que lee los datos y almacena en objetos 
     public boolean leerDatos(String ruta) throws FileNotFoundException, IOException {
         bulkLoad = new ArrayList<>();
-        usuarios = new ArrayList<>();
+        empresas = new ArrayList<>();
 
         boolean flag = false;
         FileInputStream files = new FileInputStream(new File(ruta));
@@ -157,26 +163,53 @@ public class ReadExcel {
                     switch (cell.getColumnIndex()) {
                         case 0:
 
-                            carga.setNombre(cell.toString());
+                            carga.setNombre_empresa(cell.toString());
 
                             break;
                         case 1:
-                            carga.setApellidos(cell.toString());
+
+                            carga.setDireccion(cell.toString());
 
                             break;
 
                         case 2:
-                            carga.setCorreo(cell.toString());
+
+                            carga.setNombre_estado(cell.toString());
 
                             break;
 
                         case 3:
-                            carga.setContraseña(cell.toString());
+
+                            carga.setNombre_ciudad(cell.toString());
 
                             break;
 
                         case 4:
-                            carga.setNombre_rol(cell.toString());
+                            cell.setCellType(Cell.CELL_TYPE_STRING);
+                            String cp;
+
+                            cp = cell.toString();
+
+                            carga.setCodigo_postal(cp);
+
+                            break;
+                        case 5:
+                            String tel = "";
+                            cell.setCellType(Cell.CELL_TYPE_STRING);
+
+                            tel = cell.toString();
+
+                            System.out.println("***************c" + tel);
+                            carga.setTelefono(tel);
+                            break;
+                        case 6:
+
+                            carga.setConvenio(cell.toString());
+
+                            break;
+                        case 7:
+
+                            carga.setRfc(cell.toString());
 
                             break;
 
@@ -188,56 +221,81 @@ public class ReadExcel {
             }
 
         }
+
         for (int i = 0; i < bulkLoad.size(); i++) {
-            observ="";
-            Integer rol=existeRol(bulkLoad.get(i).getNombre_rol());
+            observ = "";
+            Integer estado_id = existeEstado(bulkLoad.get(i).getNombre_estado());
+            Integer ciudad_id = null;
             if (bulkLoad.size() > 0) {
-                if (bulkLoad.get(i).getNombre().equals("") || bulkLoad.get(i).getNombre() == null) {
-                    observ += "El campo Nombre esta en blanco"+". ";
-                } else if (bulkLoad.get(i).getNombre().length() > 50) {
-                    observ += "El campo Nombre excede numero de caracteres (50)"+". ";
+                if (bulkLoad.get(i).getNombre_empresa().equals("") || bulkLoad.get(i).getNombre_empresa() == null) {
+                    observ += "El campo Nombre esta en blanco" + ". ";
+                } else if (bulkLoad.get(i).getNombre_empresa().length() > 50) {
+                    observ += "El campo Nombre excede numero de caracteres (50)" + ". ";
                 }
-                if (bulkLoad.get(i).getApellidos().equals("") || bulkLoad.get(i).getApellidos()== null) {
-                    observ += "El campo Apellidos esta en blanco"+". ";
-                } else if (bulkLoad.get(i).getApellidos().length() > 50) {
-                    observ += "El campo Apellidos excede numero de caracteres (50)"+". ";
+                if (bulkLoad.get(i).getDireccion().equals("") || bulkLoad.get(i).getDireccion() == null) {
+                    observ += "El campo Direccion esta en blanco" + ". ";
+                } else if (bulkLoad.get(i).getDireccion().length() > 200) {
+                    observ += "El campo Direccion excede numero de caracteres (200)" + ". ";
                 }
-                if (bulkLoad.get(i).getCorreo().equals("") || bulkLoad.get(i).getCorreo() == null) {
-                    observ += "El campo Correo esta en blanco"+". ";
-                } else if (bulkLoad.get(i).getCorreo().length() > 50) {
-                    observ += "El campo Correo excede numero de caracteres (50)"+". ";
+                if (bulkLoad.get(i).getNombre_estado().equals("") || bulkLoad.get(i).getNombre_estado() == null) {
+                    observ += "El campo Estado esta en blanco" + ". ";
+                } else if (bulkLoad.get(i).getNombre_estado().length() > 50) {
+                    observ += "El campo Estado excede numero de caracteres (50)" + ". ";
+                } else if (estado_id == null) {
+                    observ += "El estado no existe en la base de datos" + ".";
+                } else if (estado_id > 0) {
+                    bulkLoad.get(i).setId_estado(estado_id);
+                    ciudad_id = existeCiudad(bulkLoad.get(i).getNombre_ciudad(), estado_id);
                 }
-                if (bulkLoad.get(i).getContraseña().equals("") || bulkLoad.get(i).getContraseña() == null) {
-                    observ += "El campo Contraseña esta en blanco"+". ";
-                } else if (bulkLoad.get(i).getContraseña().length() > 50) {
-                    observ += "El campo Contraseña excede numero de caracteres (50)"+". ";
+
+                if (bulkLoad.get(i).getNombre_ciudad().equals("") || bulkLoad.get(i).getNombre_ciudad() == null) {
+                    observ += "El campo Ciudad esta en blanco" + ". ";
+                } else if (bulkLoad.get(i).getNombre_ciudad().length() > 50) {
+                    observ += "El campo Ciudad excede numero de caracteres (50)" + ". ";
+                } else if (ciudad_id == null) {
+                    observ += "La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido" + ".";
+                } else if (ciudad_id > 0) {
+                    bulkLoad.get(i).setId_ciudad(estado_id);
                 }
-                if (bulkLoad.get(i).getNombre_rol().equals("") || bulkLoad.get(i).getNombre_rol() == null) {
-                    observ += "El campo Rol esta en blanco"+". ";
-                } else if (bulkLoad.get(i).getNombre_rol().length() > 50) {
-                    observ += "El campo Rol excede numero de caracteres (50)"+". ";
-                }else if(rol==null){
-                    observ+="El Rol no existe en la base de datos"+". ";
-                }else if(rol>0){
-                    bulkLoad.get(i).setId_rol(rol);
+
+                if (bulkLoad.get(i).getCodigo_postal().equals("") || bulkLoad.get(i).getCodigo_postal() == null) {
+                    observ += "El campo Codigo Postal esta en blanco" + ". ";
+                } else if (bulkLoad.get(i).getCodigo_postal().length() > 15) {
+                    observ += "El campo Codigo Postal excede numero de caracteres (15)" + ". ";
                 }
-                 
-                
-                if(observ.equals("")){
-                    usuarios.add(bulkLoad.get(i));
-                }else{
+                if (bulkLoad.get(i).getTelefono().equals("") || bulkLoad.get(i).getTelefono() == null) {
+                    observ += "El campo Telefono esta en blanco" + ". ";
+                } else if (bulkLoad.get(i).getTelefono().length() > 13) {
+                    observ += "El campo Telefono excede numero de caracteres (13)" + ". ";
+                }
+
+                if (bulkLoad.get(i).getConvenio().equals("") || bulkLoad.get(i).getConvenio() == null) {
+                    observ += "El campo Folio de convenio esta en blanco" + ". ";
+                } else if (bulkLoad.get(i).getTelefono().length() > 20) {
+                    observ += "El campo Folio de convenio excede numero de caracteres (20)" + ". ";
+                }
+
+                if (bulkLoad.get(i).getRfc().equals("") || bulkLoad.get(i).getRfc() == null) {
+                    observ += "El campo RFC de la Empresa esta en blanco" + ". ";
+                } else if (bulkLoad.get(i).getTelefono().length() > 20) {
+                    observ += "El campo RFC de la Empresa excede numero de caracteres (20)" + ". ";
+                }
+
+                if (observ.equals("")) {
+                    empresas.add(bulkLoad.get(i));
+                } else {
                     bulkLoad.get(i).setObservaciones(observ);
                 }
             }
 
         }
-        System.out.println("tamaño usuarios: " + usuarios.size());
+        System.out.println("tamaño empresas: " + empresas.size());
         System.out.println("tamaño bulkload: " + bulkLoad.size());
 
-//        System.out.println("usuarios:   " + gson.toJson(usuarios));
-//        System.out.println("********************************");
-//        System.out.println("bulkload:   " + gson.toJson(bulkLoad));
-        cargaMasiva = dao.bulkLoad(gson.toJson(usuarios), gson.toJson(bulkLoad));
+        System.out.println("empresas:   " + gson.toJson(empresas));
+        System.out.println("********************************");
+        System.out.println("bulkload:   " + gson.toJson(bulkLoad));
+        cargaMasiva = dao.bulkLoad(gson.toJson(empresas), gson.toJson(bulkLoad));
         if (cargaMasiva.size() > 0) {
             flag = true;
             workbook.close();
@@ -256,14 +314,34 @@ public class ReadExcel {
         return flag;
     }
 
-    public Integer existeRol(String rol) {
+    public Integer existeEstado(String estado) {
         Integer existe = null;
-        if (roles.size() > 0) {
-            for (int i = 0; i < roles.size(); i++) {
-                if (roles.get(i).getNombre_rol().trim().equalsIgnoreCase(rol.trim())) {
+        if (estados.size() > 0) {
+            for (int i = 0; i < estados.size(); i++) {
+                if (estados.get(i).getNombre_estado().trim().equalsIgnoreCase(estado.trim())) {
                     //System.out.println("entra if rol");
                     //System.out.println(roles.get(i).getId_rol());
-                    return roles.get(i).getId_rol();
+                    System.out.println("id: " + estados.get(i).getId_estado());
+                    return estados.get(i).getId_estado();
+                }
+            }
+        }
+
+        return existe;
+    }
+
+    public Integer existeCiudad(String ciudad, Integer estado) {
+        Integer existe = null;
+        if (ciudades.size() > 0) {
+            for (int i = 0; i < ciudades.size(); i++) {
+                if (ciudades.get(i).getNombre_ciudad().trim().equalsIgnoreCase(ciudad.trim())) {
+                    //System.out.println("entra if rol");
+                    //System.out.println(roles.get(i).getId_rol());
+
+                    if (ciudades.get(i).getId_estado() == estado) {
+                        return ciudades.get(i).getId_ciudad();
+                    }
+
                 }
             }
         }

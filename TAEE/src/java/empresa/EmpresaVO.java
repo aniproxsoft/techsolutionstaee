@@ -11,18 +11,18 @@ package empresa;
  */
 public class EmpresaVO {
     private Integer id_empresa;
-    private String direccion;
-    private String nombre_empresa;
+    private String direccion="";
+    private String nombre_empresa="";
     private Integer id_estado;
     private Integer id_ciudad;
-    private String codigo_postal;
+    private String codigo_postal="";
     private Integer id_usuario;
-    private String telefono;
-    private String rfc;
-    private String status;
-    private String nombre_estado;
-    private String nombre_ciudad;
-    private String convenio;
+    private String telefono="";
+    private String rfc="";
+    private String status="";
+    private String nombre_estado="";
+    private String nombre_ciudad="";
+    private String convenio="";
 
     public Integer getId_empresa() {
         return id_empresa;

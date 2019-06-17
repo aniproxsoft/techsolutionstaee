@@ -5,29 +5,23 @@
  */
 package bulkLoad;
 
+import empresa.EmpresaVO;
+
 /**
  *
  * @author ANIPROXTOART
  */
-public class BulkLoadVO {
+public class BulkLoadVO extends EmpresaVO {
 
     private Integer lote;
     private Integer bulk_id;
-    private String nombre="";
-    private String correo="";
-    private String nombre_rol="";
-    private String apellidos ="";
-    private String contraseña="" ;
-    private String observaciones="";
-    private Integer id_rol;
-    private String type="";
+    private String type = "";
     private Integer value;
     private Integer fails;
     private Integer bulks;
     private Integer updates;
     private Integer inserts;
-    
-    
+    private String observaciones;
 
     public Integer getLote() {
         return lote;
@@ -43,62 +37,6 @@ public class BulkLoadVO {
 
     public void setBulk_id(Integer bulk_id) {
         this.bulk_id = bulk_id;
-    }
-
-    public String getNombre() {
-        return nombre;
-    }
-
-    public void setNombre(String nombre) {
-        this.nombre = nombre;
-    }
-
-    public String getCorreo() {
-        return correo;
-    }
-
-    public void setCorreo(String correo) {
-        this.correo = correo;
-    }
-
-    public String getNombre_rol() {
-        return nombre_rol;
-    }
-
-    public void setNombre_rol(String nombre_rol) {
-        this.nombre_rol = nombre_rol;
-    }
-
-    public String getApellidos() {
-        return apellidos;
-    }
-
-    public void setApellidos(String apellidos) {
-        this.apellidos = apellidos;
-    }
-
-    public String getContraseña() {
-        return contraseña;
-    }
-
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
-    }
-
-    public String getObservaciones() {
-        return observaciones;
-    }
-
-    public void setObservaciones(String observaciones) {
-        this.observaciones = observaciones;
-    }
-
-    public Integer getId_rol() {
-        return id_rol;
-    }
-
-    public void setId_rol(Integer id_rol) {
-        this.id_rol = id_rol;
     }
 
     public String getType() {
@@ -149,7 +87,12 @@ public class BulkLoadVO {
         this.inserts = inserts;
     }
 
-   
+    public String getObservaciones() {
+        return observaciones;
+    }
 
-    
+    public void setObservaciones(String observaciones) {
+        this.observaciones = observaciones;
+    }
+
 }
