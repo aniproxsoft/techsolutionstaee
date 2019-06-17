@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 16-06-2019 a las 22:51:38
+-- Tiempo de generación: 17-06-2019 a las 18:49:04
 -- Versión del servidor: 5.7.19
 -- Versión de PHP: 5.6.31
 
@@ -28,7 +28,7 @@ DELIMITER $$
 --
 DROP PROCEDURE IF EXISTS `sp_autentification`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_autentification` (IN `user` VARCHAR(100), IN `pass` VARCHAR(100))  BEGIN
-    DECLARE flag boolean;
+	 DECLARE flag boolean;
     DECLARE count int;
     DROP TABLE IF EXISTS temp_usuario;
     
@@ -70,6 +70,125 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_autentification` (IN `user` VARC
     SELECT * FROM temp_usuario ;
 END$$
 
+DROP PROCEDURE IF EXISTS `sp_bulkload`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_bulkload` (IN `empresas` VARCHAR(65000), IN `bulkloads` VARCHAR(65000))  BEGIN
+	DECLARE flag boolean;
+	DECLARE count int  UNSIGNED DEFAULT 0;
+  	DECLARE countFail int UNSIGNED DEFAULT 0;
+  	DECLARE countInsert int UNSIGNED DEFAULT 0;
+  	DECLARE countUpdate int UNSIGNED DEFAULT 0;
+	DECLARE msj varchar(50);
+	DECLARE exist int UNSIGNED DEFAULT 0;
+	DECLARE id_user int  UNSIGNED DEFAULT 0;
+	DECLARE lote_id int UNSIGNED DEFAULT 0;
+	DECLARE json_items int UNSIGNED   DEFAULT  JSON_LENGTH(empresas); 
+	DECLARE json_items2 int UNSIGNED   DEFAULT  JSON_LENGTH(bulkloads);
+	DECLARE _index int UNSIGNED DEFAULT 0;
+	DECLARE _index2 int UNSIGNED DEFAULT 0;
+	DECLARE suma int UNSIGNED DEFAULT 0;
+	DECLARE countbulk int;
+  		
+			WHILE _index < json_items DO 
+  				Select count(*) 
+  				from empresa 
+  				where rfc=trim((Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].rfc')), '"', ''))) into exist;
+				If(exist>0)Then
+					Update  empresa set 
+					nombre=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].nombre_empresa')), '"', '')),
+					direccion=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,']. direccion')), '"', '')),
+					id_estado=JSON_EXTRACT(empresas, CONCAT('$[',_index,'].id_estado')),
+					id_ciudad=JSON_EXTRACT(empresas, CONCAT('$[',_index,'].id_ciudad')),
+					codigo_postal=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,']. codigo_postal')), '"', '')),
+					num_telefono=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].telefono')), '"', '')),
+					folio_convenio=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].convenio')), '"', ''))
+					Where rfc=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].rfc')), '"', ''));
+
+					Set countUpdate= countUpdate+1;
+				else
+					Insert into empresa (nombre,direccion,id_estado,id_ciudad,codigo_postal,num_telefono,folio_convenio,rfc,status)
+					VALUES(
+						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].nombre_empresa')), '"', '')),
+						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,']. direccion')), '"', '')),
+						JSON_EXTRACT(empresas, CONCAT('$[',_index,'].id_estado')),
+						JSON_EXTRACT(empresas, CONCAT('$[',_index,'].id_ciudad')),
+						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,']. codigo_postal')), '"', '')),
+						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].telefono')), '"', '')),
+						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].convenio')), '"', '')),
+						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].rfc')), '"', '')),
+						'3'
+
+					);
+					SET COUNT = (select ROW_count());
+					if(COUNT>0)then
+						Set countInsert:=countInsert+1;
+						set msj='se registro correctamente';
+					else set msj='no se inserto prro';
+					end if;
+					
+				end if;
+				SET _index := _index + 1; 
+				
+ 
+ 			END WHILE; 
+			
+
+			Select max(lote)+1 from bulkload_empresa into lote_id; 
+			if(lote_id is null)then
+				Set lote_id=1;
+			end if;
+			While _index2 < json_items2 Do
+				INSERT INTO bulkload_empresa (lote,nombre,direccion,estado,ciudad,codigo_postal,num_telefono,folio_convenio,rfc,observaciones) 
+				VALUES (
+				lote_id,
+				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].nombre_empresa')), '"', '')),
+				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].direccion')), '"', '')),
+				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].nombre_estado')), '"', '')),
+				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].nombre_ciudad')), '"', '')),
+				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].codigo_postal')), '"', '')),
+				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].telefono')), '"', '')),
+				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].convenio')), '"', '')),
+				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].rfc')), '"', '')),
+				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].observaciones')), '"', ''))
+				); 
+				SET _index2 := _index2 + 1; 
+
+			End while;
+			SET COUNT = ROW_count();
+			if(count>0)then
+				
+				set flag=true;
+
+			else
+				Set msj='ocurrio un error ';
+				Set flag =false;
+
+			end if;
+
+			
+
+
+
+		
+			Select count(*) from bulkload_empresa where lote = lote_id into countbulk;
+			set suma=(countInsert+countUpdate);
+
+			Set countFail=countbulk-suma;
+			
+			
+			Select lote,id_bulkload,nombre,direccion,estado,ciudad,codigo_postal,num_telefono,folio_convenio,rfc,observaciones,countbulk, countFail,countUpdate,countInsert,msj
+			from bulkload_empresa where lote =lote_id;
+End$$
+
+DROP PROCEDURE IF EXISTS `sp_get_ciudades`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_ciudades` ()  BEGIN
+	SELECT id_ciudad,id_estado,nombre_ciudad from ciudad;
+END$$
+
+DROP PROCEDURE IF EXISTS `sp_get_estados`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_estados` ()  BEGIN
+	SELECT id_estado,nombre_estado from estado;
+END$$
+
 DELIMITER ;
 
 -- --------------------------------------------------------
@@ -91,8 +210,51 @@ CREATE TABLE IF NOT EXISTS `bulkload_empresa` (
   `num_telefono` varchar(200) DEFAULT NULL,
   `folio_convenio` varchar(200) DEFAULT NULL,
   `rfc` varchar(200) DEFAULT NULL,
+  `observaciones` varchar(5000) DEFAULT NULL,
   PRIMARY KEY (`lote`,`id_bulkload`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `bulkload_empresa`
+--
+
+INSERT INTO `bulkload_empresa` (`lote`, `id_bulkload`, `direccion`, `nombre`, `estado`, `ciudad`, `codigo_postal`, `usuario`, `num_telefono`, `folio_convenio`, `rfc`, `observaciones`) VALUES
+(1, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL),
+(1, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL),
+(1, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL),
+(1, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL),
+(1, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', NULL),
+(1, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', NULL),
+(2, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL),
+(2, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL),
+(2, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL),
+(2, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL),
+(2, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.'),
+(2, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. '),
+(3, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL),
+(3, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL),
+(3, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL),
+(3, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL),
+(3, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.'),
+(3, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. '),
+(4, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL),
+(4, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL),
+(4, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL),
+(4, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL),
+(4, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.'),
+(4, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. '),
+(5, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL),
+(5, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL),
+(5, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL),
+(5, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL),
+(5, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.'),
+(5, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. '),
+(6, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL),
+(6, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL),
+(6, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL),
+(6, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL),
+(6, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.'),
+(6, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. ');
 
 -- --------------------------------------------------------
 
@@ -107,7 +269,18 @@ CREATE TABLE IF NOT EXISTS `carreras` (
   `carrera_desc` varchar(100) NOT NULL,
   PRIMARY KEY (`id_carrera`),
   KEY `fk_id_nivel_carrera` (`id_nivel`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `carreras`
+--
+
+INSERT INTO `carreras` (`id_carrera`, `id_nivel`, `carrera_desc`) VALUES
+(1, 1, 'TIC Área Sistemas Informáticos'),
+(2, 1, 'TIC Área Multimedia y Comercio Electrónico'),
+(3, 1, 'Administración Área Recursos Humanos'),
+(4, 2, 'Tecnologías de la Información y Comunicación'),
+(5, 2, 'Negocios y Gestión Empresarial');
 
 -- --------------------------------------------------------
 
@@ -190,9 +363,24 @@ DROP TABLE IF EXISTS `conocimiento`;
 CREATE TABLE IF NOT EXISTS `conocimiento` (
   `id_conocimiento` int(11) NOT NULL,
   `conoc_desc` varchar(100) DEFAULT NULL,
+  `id_perfil` int(11) NOT NULL,
   PRIMARY KEY (`id_conocimiento`),
-  KEY `not null` (`conoc_desc`)
+  KEY `not null` (`conoc_desc`),
+  KEY `fk_conoc_perfil` (`id_perfil`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `conocimiento`
+--
+
+INSERT INTO `conocimiento` (`id_conocimiento`, `conoc_desc`, `id_perfil`) VALUES
+(1, 'JAVA', 1),
+(2, '.NET', 1),
+(3, 'Metodología SCRUM', 3),
+(4, 'Oracle', 5),
+(5, 'PostgresSQL', 5),
+(6, 'PMBok', 2),
+(7, 'Scripts de Prueba JAVA', 4);
 
 -- --------------------------------------------------------
 
@@ -217,7 +405,7 @@ CREATE TABLE IF NOT EXISTS `conocimiento_vac` (
 DROP TABLE IF EXISTS `empresa`;
 CREATE TABLE IF NOT EXISTS `empresa` (
   `id_empresa` int(11) NOT NULL AUTO_INCREMENT,
-  `direccion` varchar(50) NOT NULL,
+  `direccion` varchar(200) NOT NULL,
   `nombre` varchar(50) NOT NULL,
   `id_estado` int(11) NOT NULL,
   `id_ciudad` int(11) NOT NULL,
@@ -231,14 +419,18 @@ CREATE TABLE IF NOT EXISTS `empresa` (
   KEY `fk_usuario` (`id_usuario`),
   KEY `fk_emp_ciudad` (`id_ciudad`),
   KEY `fk_emp_estado` (`id_estado`)
-) ENGINE=MyISAM AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `empresa`
 --
 
 INSERT INTO `empresa` (`id_empresa`, `direccion`, `nombre`, `id_estado`, `id_ciudad`, `codigo_postal`, `id_usuario`, `num_telefono`, `folio_convenio`, `rfc`, `status`) VALUES
-(1, 'Calle Dolores #420', 'Tech Solutions ', 1, 2, '571223', 1, '55334622', 'CONV123450', 'ref0192930291', '1');
+(1, 'Calle Dolores #420', 'Tech Solutions ', 1, 2, '571223', 1, '55334622', 'CONV123450', 'ref0192930291', '1'),
+(2, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 2, 2, '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', '3'),
+(3, 'Calle 2 el faisan', 'Grupo salinas', 2, 2, '57888', NULL, '555565435', 'CONV826364', 'GP88273746', '3'),
+(4, 'Calle 5 el pericles', 'JOBFIT', 2, 2, '67888', NULL, '45366789', 'CONV5152367', 'JO626536', '3'),
+(5, 'Almoyta num 91', 'MAR SYSTEMS', 1, 1, '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', '3');
 
 -- --------------------------------------------------------
 
@@ -275,6 +467,14 @@ CREATE TABLE IF NOT EXISTS `habilidad` (
   KEY `not null` (`habilidad_desc`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
+--
+-- Volcado de datos para la tabla `habilidad`
+--
+
+INSERT INTO `habilidad` (`id_habilidad`, `habilidad_desc`) VALUES
+(1, 'Proactivo'),
+(2, 'Trabajo en equipo');
+
 -- --------------------------------------------------------
 
 --
@@ -299,7 +499,15 @@ CREATE TABLE IF NOT EXISTS `nivel_academico` (
   `id_nivel` int(11) NOT NULL AUTO_INCREMENT,
   `nombre_nivel` varchar(50) NOT NULL,
   PRIMARY KEY (`id_nivel`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `nivel_academico`
+--
+
+INSERT INTO `nivel_academico` (`id_nivel`, `nombre_nivel`) VALUES
+(1, 'Técnico Superior Universitario'),
+(2, 'Ingeniería');
 
 -- --------------------------------------------------------
 
@@ -314,7 +522,18 @@ CREATE TABLE IF NOT EXISTS `perfil` (
   `id_carrera` int(11) NOT NULL,
   PRIMARY KEY (`id_perfil`),
   KEY `fk_carrera_vacante_perfil` (`id_carrera`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=6 DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `perfil`
+--
+
+INSERT INTO `perfil` (`id_perfil`, `nombre_perfil`, `id_carrera`) VALUES
+(1, 'Programador', 1),
+(2, 'Líder de proyecto', 4),
+(3, 'Analista de software', 1),
+(4, 'Tester', 4),
+(5, 'Administrador de Base de datos', 1);
 
 -- --------------------------------------------------------
 
