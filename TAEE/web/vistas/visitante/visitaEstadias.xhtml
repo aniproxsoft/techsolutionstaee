@@ -1,0 +1,168 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html">
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="./css/bootstrap.css"/>
+        <h:outputStylesheet name="./css/formularios.css"/>
+        <!--<h:outputScript name="./js/jquery-3.4.1.min.js"/>-->
+        <h:outputScript name="./js/bootstrap.min.js"/>
+        <title>TAEG</title>
+
+    </h:head>
+    <h:body>
+        <nav class="navbar navbar-utn">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">TAEG</a>
+                </div>
+                <ul class="nav navbar-nav">
+                    <li class="active"><h:link outcome="/index.xhtml"  value="Inicio"></h:link></li>
+                    <li><h:link  outcome="/vistas/visitante/visitaEstadias.xhtml" value="Estadías"></h:link></li>
+                    <li><h:link   value="Empleos"></h:link></li>
+                    <li><h:link  outcome="/vistas/empresarios/empresarios.xhtml" value="Empresarios"></h:link></li>
+
+                </ul>
+                <ul class="nav navbar-nav  navbar-right">
+                    <!--<li><a href="#"><span class="glyphicon glyphicon-user"></span> Registrate</a></li>-->
+                    <li><h:link value="Iniciar sesión " outcome="/vistas/iniciar_sesion/iniciar_sesion.xhtml"><span class="glyphicon glyphicon-log-in"></span></h:link></li>
+                </ul>
+            </div>
+        </nav> 
+
+        <h:form>
+            <div id="content_form" style="margin-left: 2%">
+
+                <h:panelGrid id="panel" columns="5" width="100%" >
+
+                    <h:panelGroup layout="span">
+                        <p:outputLabel  for="nivel" value="Nivel academico:" /><br/>
+                        <p:selectOneMenu id="nivel" style="width:230px"
+                                         value="${beanSearchEstadias.cve_nivel}"
+                                         required="true" 
+                                         requiredMessage="Debe seleccionar un nivel academico">
+                            <f:selectItem itemLabel="Selecciona uno" itemValue="${null}"   />
+                            <f:selectItems  value="${beanSearchEstadias.niveles}" var="nivel" 
+                                            itemLabel="${nivel.nombre_nivel}" 
+                                            itemValue="${nivel.id_nivel}" />
+                            <p:ajax event="change" update="carrera" 
+                                    listener="${beanSearchEstadias.buscaCarreras()}" />
+                        </p:selectOneMenu>
+                        <p:message for="nivel"  />
+                    </h:panelGroup>
+                    <h:panelGroup layout="span" >
+                        <p:outputLabel  for="carrera" value="Carrera:" /><br/>
+                        <p:selectOneMenu id="carrera" style="width:250px" 
+                                         value="${beanSearchEstadias.cve_carrera}"
+                                         required="true" 
+                                         requiredMessage="Debe seleccionar una carrera.">
+                            <f:selectItem itemLabel="Selecciona uno"  />
+                            <f:selectItems value="${beanSearchEstadias.carreras}" var="carrera" 
+                                           itemLabel="${carrera.carrera_desc}" 
+                                           itemValue="${carrera.id_carrera}" />
+                            <p:ajax event="change" update="perfil" 
+                                    listener="${beanSearchEstadias.buscaPerfiles()}" />
+
+                        </p:selectOneMenu>
+                        <p:message for="carrera" />
+                    </h:panelGroup>
+                    <h:panelGroup layout="span" >
+                        <p:outputLabel  for="perfil" value="Perfil:" /><br/>
+                        <p:selectOneMenu id="perfil" style="width:250px" required="true" 
+                                         requiredMessage="Debe seleccionar un perfil" value="${beanSearchEstadias.cve_perfil}">
+                            <f:selectItem itemLabel="Selecciona uno"   
+                                          />
+                            <f:selectItems value="${beanSearchEstadias.perfiles}" var="perfil" 
+                                           itemLabel="${perfil.nombre_perfil}" 
+                                           itemValue="${perfil.id_perfil}" />
+                            <p:ajax event="change" update="conocimiento" 
+                                    listener="${beanSearchEstadias.buscaConocimientos()}" />
+                        </p:selectOneMenu>
+                        <p:message for="perfil" />
+                    </h:panelGroup>
+                    <h:panelGrid columns="2" cellpadding="5">
+                        <p:selectCheckboxMenu id="conocimiento"  label="Conocimientos" 
+                                              filter="true" filterMatchMode="startsWith"
+                                              panelStyle="width:250px" required="true" 
+                                              requiredMessage="Debe seleccionar un conocimiento"
+                                              value="${beanSearchEstadias.cves_conocimientos}">
+                            <f:selectItems value="${beanSearchEstadias.conocimientos}" var="conocimiento" 
+                                           itemLabel="${conocimiento.conoc_desc}" 
+                                           itemValue="${conocimiento.id_conocimiento}" />
+
+                        </p:selectCheckboxMenu><br/>
+                        <p:message for="conocimiento"  />
+                    </h:panelGrid>
+                    <h:panelGroup>
+                        <p:selectCheckboxMenu id="habilidad" label="Habilidades"
+                                              filter="true" filterMatchMode="startsWith" 
+                                              panelStyle="width:250px"  value="${beanSearchEstadias.cves_habilidades}"
+                                              >
+                            <f:selectItems value="${beanSearchEstadias.habilidades}" var="habilidad" 
+                                           itemLabel="${habilidad.habilidad_desc}" 
+                                           itemValue="${habilidad.id_habilidad}" />
+                        </p:selectCheckboxMenu>
+                    </h:panelGroup>
+                    <p:column/><p:column/> 
+
+
+
+                    <h:panelGroup >
+                        <p:commandButton value="" style="width: 60px; height: 40px;" process="panel" 
+                                         update="panel,vacantes" actionListener="${beanSearchEstadias.buscaEstadias()}"
+                                         class="glyphicon glyphicon-search" title="Buscar"></p:commandButton>
+                    </h:panelGroup>
+
+
+
+
+                </h:panelGrid>
+                <!--<center style="margin-top: 20px">-->
+
+                <!--</center>-->
+
+
+            </div>
+
+
+
+            <center>
+                <div id="content_vacantes" style="width: 60%; margin-top: 2%">
+                    <p:dataGrid var="vacante" value="${beanSearchEstadias.vacantes}" columns="1"
+                                paginator="true" id="vacantes" rows="10"
+                                paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                rowsPerPageTemplate="6,12,16">
+
+                        <f:facet name="header">
+                            Vacantes de estadía
+                        </f:facet>
+
+                        <p:panel  style="text-align:center;">
+                            <h:panelGrid columns="1" style="width:100%">
+                                <h:outputText style="font-size: 20px;color: #038C65; font-weight: bold" value="${vacante.titulo}"/>
+                                <h:outputText style="font-size: 15px; font-weight: bold" value="${vacante.nombre}" />
+                                <h:outputText  value="${vacante.direccion}" />
+                                <h:outputText style=" font-weight: bold;" value="$ #{vacante.salario_min} - $ #{vacante.salario_max} Mensuales" 
+                                              rendered="${vacante.renderSalario}" />
+                                <h:outputText style=" color: grey" value="${vacante.vacante_descCorta}..."/>
+                                 <p:commandButton style="width: 50px; height: 30px;" 
+                                                  actionListener="${beanSearchEstadias.showDetail(vacante)}"
+                                                  value="Ver" title="Buscar"></p:commandButton>
+                            </h:panelGrid>
+                        </p:panel>
+
+                    </p:dataGrid>
+                </div>
+
+            </center>
+
+        </h:form>
+
+
+
+    </h:body>
+</html>
