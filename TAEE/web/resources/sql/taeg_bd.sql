@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 17-06-2019 a las 18:49:04
+-- Tiempo de generación: 24-06-2019 a las 21:13:39
 -- Versión del servidor: 5.7.19
 -- Versión de PHP: 5.6.31
 
@@ -184,9 +184,126 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_ciudades` ()  BEGIN
 	SELECT id_ciudad,id_estado,nombre_ciudad from ciudad;
 END$$
 
+DROP PROCEDURE IF EXISTS `sp_get_conco_habil`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_conco_habil` (`clave` INT, `tipo` INT)  BEGIN
+	IF(tipo=1)then
+		select c.id_vacante,c.id_conocimiento, co.conoc_desc
+		from conocimiento_vac c
+		INNER JOIN conocimiento co on c.id_conocimiento= co.id_conocimiento
+		where c.id_vacante=clave;
+	ELSE
+		select hv.id_vacante,hv.id_habilidades,h.habilidad_desc
+		from habilidad_vac hv
+		INNER JOIN habilidad h on hv.id_habilidades= h.id_habilidad
+		where hv.id_vacante=clave;
+	END IF;
+END$$
+
 DROP PROCEDURE IF EXISTS `sp_get_estados`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_estados` ()  BEGIN
 	SELECT id_estado,nombre_estado from estado;
+END$$
+
+DROP PROCEDURE IF EXISTS `sp_get_listas_estadias`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_listas_estadias` (`tabla` VARCHAR(2), `clave` INT)  BEGIN
+	CASE tabla
+ 	WHEN 'n' THEN
+    	SELECT id_nivel,nombre_nivel FROM nivel_academico;
+	WHEN 'ca' THEN 
+    	SELECT id_carrera,carrera_desc FROM carreras
+    	where id_nivel=clave;
+
+	WHEN 'p' THEN
+		SELECT id_perfil,nombre_perfil FROM perfil
+		where id_carrera=clave;
+
+	WHEN 'h' THEN
+		SELECT id_habilidad,habilidad_desc FROM habilidad;
+    
+	WHEN 'co' THEN
+		SELECT id_conocimiento,conoc_desc FROM conocimiento
+		where id_perfil=clave;
+
+	END CASE;
+END$$
+
+DROP PROCEDURE IF EXISTS `sp_get_vacantes_estadia`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_estadia` (IN `perfil` INT, IN `json_conocimiento` VARCHAR(65000), IN `json_habilidades` VARCHAR(65000))  BEGIN
+	DECLARE json_items int ;   
+	DECLARE json_items2 int ;  
+	DECLARE _index int UNSIGNED DEFAULT 0;
+	DECLARE _index2 int UNSIGNED DEFAULT 0;
+	DECLARE count int UNSIGNED DEFAULT 0;
+	DROP TABLE IF EXISTS temp_conocimiento;
+	DROP TABLE IF EXISTS temp_habilidad;
+	CREATE TEMPORARY TABLE temp_conocimiento(
+       id INT NOT NULL
+    );
+    CREATE TEMPORARY TABLE temp_habilidad(
+       id INT NOT NULL
+    );
+    if (json_conocimiento!='[]')then
+    	SET json_items:=JSON_LENGTH(json_conocimiento);
+    	WHILE _index < json_items DO 
+    		insert into temp_conocimiento(id)
+    		values(JSON_EXTRACT(json_conocimiento, CONCAT('$[',_index,'].id_conocimiento')));
+    		SET _index := _index + 1; 
+    	END WHILE; 
+    end if;
+    if (json_habilidades!='[]')then
+    	SET json_items2:=JSON_LENGTH(json_habilidades);
+    	WHILE _index2 < json_items2 DO 
+    		insert into temp_habilidad(id)
+    		values(JSON_EXTRACT(json_habilidades, CONCAT('$[',_index2,'].id_habilidad')));
+    		SET _index2 := _index2 + 1; 
+    	END WHILE; 
+    end if;
+    SELECT COUNT(*) FROM temp_habilidad into count;
+
+    IF(count>0)then
+    	SELECT DISTINCT v.id_vacante,titulo,vacante_desc,
+		na.nombre_nivel,ca.carrera_desc, 
+		v.id_perfil,p.nombre_perfil, edad_min,edad_max,
+		salario_min,salario_max, hora_inicial,hora_final, 
+		experiencia,v.id_empresa,e.nombre,v.status,concat(e.direccion,',', es.nombre_estado,',',ci.nombre_ciudad)
+		,e.num_telefono,e.correo_empresa
+		from vacante v 
+		RIGHT join conocimiento_vac cv on v.id_vacante=cv.id_vacante
+		RIGHT join habilidad_vac hv on v.id_vacante=hv.id_vacante 
+		INNER JOIN perfil p on v.id_perfil=p.id_perfil
+		INNER JOIN empresa e on v.id_empresa=e.id_empresa
+		INNER JOIN carreras ca on p.id_carrera=ca.id_carrera
+		INNER JOIN nivel_academico na on ca.id_nivel= na.id_nivel
+        INNER JOIN estado es on e.id_estado = es.id_estado
+        INNER JOIN ciudad ci on e.id_ciudad= ci.id_ciudad and e.id_estado=ci.id_estado
+		WHERE v.id_perfil=perfil 
+		and cv.id_conocimiento in(SELECT id from temp_conocimiento)
+		and hv.id_habilidades in(SELECT id from temp_habilidad)
+		and v.status='1';
+    else
+    	SELECT DISTINCT v.id_vacante,titulo,vacante_desc,
+		na.nombre_nivel,ca.carrera_desc, 
+		v.id_perfil,p.nombre_perfil, edad_min,edad_max,
+		salario_min,salario_max, hora_inicial,hora_final, 
+		experiencia,v.id_empresa,e.nombre,v.status,concat(e.direccion,',', es.nombre_estado,',',ci.nombre_ciudad)
+		,e.num_telefono,e.correo_empresa
+		from vacante v 
+		RIGHT join conocimiento_vac cv on v.id_vacante=cv.id_vacante
+		INNER JOIN perfil p on v.id_perfil=p.id_perfil
+		INNER JOIN empresa e on v.id_empresa=e.id_empresa
+		INNER JOIN carreras ca on p.id_carrera=ca.id_carrera
+		INNER JOIN nivel_academico na on ca.id_nivel= na.id_nivel
+        INNER JOIN estado es on e.id_estado = es.id_estado
+        INNER JOIN ciudad ci on e.id_ciudad= ci.id_ciudad and e.id_estado=ci.id_estado
+		WHERE v.id_perfil=perfil 
+		and cv.id_conocimiento in(SELECT id from temp_conocimiento)
+		and v.status='1';
+    end if;
+
+   	
+
+
+
 END$$
 
 DELIMITER ;
@@ -396,6 +513,23 @@ CREATE TABLE IF NOT EXISTS `conocimiento_vac` (
   KEY `fk_conoc_vac` (`id_conocimiento`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
+--
+-- Volcado de datos para la tabla `conocimiento_vac`
+--
+
+INSERT INTO `conocimiento_vac` (`id_vacante`, `id_conocimiento`) VALUES
+(1, 7),
+(2, 7),
+(3, 1),
+(4, 1),
+(4, 2),
+(5, 1),
+(6, 3),
+(7, 3),
+(8, 4),
+(9, 5),
+(10, 6);
+
 -- --------------------------------------------------------
 
 --
@@ -415,6 +549,7 @@ CREATE TABLE IF NOT EXISTS `empresa` (
   `folio_convenio` varchar(20) DEFAULT NULL,
   `rfc` varchar(20) NOT NULL,
   `status` varchar(1) NOT NULL,
+  `correo_empresa` varchar(50) NOT NULL,
   PRIMARY KEY (`id_empresa`),
   KEY `fk_usuario` (`id_usuario`),
   KEY `fk_emp_ciudad` (`id_ciudad`),
@@ -425,12 +560,12 @@ CREATE TABLE IF NOT EXISTS `empresa` (
 -- Volcado de datos para la tabla `empresa`
 --
 
-INSERT INTO `empresa` (`id_empresa`, `direccion`, `nombre`, `id_estado`, `id_ciudad`, `codigo_postal`, `id_usuario`, `num_telefono`, `folio_convenio`, `rfc`, `status`) VALUES
-(1, 'Calle Dolores #420', 'Tech Solutions ', 1, 2, '571223', 1, '55334622', 'CONV123450', 'ref0192930291', '1'),
-(2, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 2, 2, '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', '3'),
-(3, 'Calle 2 el faisan', 'Grupo salinas', 2, 2, '57888', NULL, '555565435', 'CONV826364', 'GP88273746', '3'),
-(4, 'Calle 5 el pericles', 'JOBFIT', 2, 2, '67888', NULL, '45366789', 'CONV5152367', 'JO626536', '3'),
-(5, 'Almoyta num 91', 'MAR SYSTEMS', 1, 1, '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', '3');
+INSERT INTO `empresa` (`id_empresa`, `direccion`, `nombre`, `id_estado`, `id_ciudad`, `codigo_postal`, `id_usuario`, `num_telefono`, `folio_convenio`, `rfc`, `status`, `correo_empresa`) VALUES
+(1, 'Calle Dolores #420', 'Tech Solutions ', 1, 2, '571223', 1, '55334622', 'CONV123450', 'ref0192930291', '1', 'tech@gmail.com'),
+(2, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 2, 4, '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', '3', 'upds@hotmail.com'),
+(3, 'Calle 2 el faisan', 'Grupo salinas', 2, 3, '57888', NULL, '555565435', 'CONV826364', 'GP88273746', '3', 'gpsalinas@yahoo.com'),
+(4, 'Calle 5 el pericles', 'JOBFIT', 2, 2, '67888', NULL, '45366789', 'CONV5152367', 'JO626536', '3', 'jobfit@gmail.com'),
+(5, 'Almoyta num 91', 'MAR SYSTEMS', 1, 1, '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', '3', 'ms@hotmail.com');
 
 -- --------------------------------------------------------
 
@@ -487,6 +622,24 @@ CREATE TABLE IF NOT EXISTS `habilidad_vac` (
   `id_habilidades` int(11) NOT NULL,
   PRIMARY KEY (`id_vacante`,`id_habilidades`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `habilidad_vac`
+--
+
+INSERT INTO `habilidad_vac` (`id_vacante`, `id_habilidades`) VALUES
+(1, 1),
+(2, 2),
+(3, 1),
+(3, 2),
+(4, 2),
+(6, 1),
+(7, 1),
+(7, 2),
+(8, 1),
+(9, 2),
+(10, 1),
+(10, 2);
 
 -- --------------------------------------------------------
 
@@ -594,8 +747,8 @@ INSERT INTO `usuario_rol` (`id_rol`, `rol_nombre`) VALUES
 DROP TABLE IF EXISTS `vacante`;
 CREATE TABLE IF NOT EXISTS `vacante` (
   `id_vacante` int(11) NOT NULL AUTO_INCREMENT,
-  `titulo` varchar(50) NOT NULL,
-  `vacante_desc` varchar(50) NOT NULL,
+  `titulo` varchar(500) NOT NULL,
+  `vacante_desc` varchar(500) NOT NULL,
   `id_perfil` int(11) DEFAULT NULL,
   `edad_min` int(2) DEFAULT NULL,
   `edad_max` int(2) DEFAULT NULL,
@@ -606,11 +759,25 @@ CREATE TABLE IF NOT EXISTS `vacante` (
   `experiencia` int(11) DEFAULT NULL,
   `id_empresa` int(11) DEFAULT NULL,
   `status` varchar(1) NOT NULL,
-  `id_carrera` int(11) NOT NULL,
   PRIMARY KEY (`id_vacante`),
-  KEY `fk_perfil` (`id_perfil`),
-  KEY `fk_carrera_vacante` (`id_carrera`)
-) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+  KEY `fk_perfil` (`id_perfil`)
+) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+
+--
+-- Volcado de datos para la tabla `vacante`
+--
+
+INSERT INTO `vacante` (`id_vacante`, `titulo`, `vacante_desc`, `id_perfil`, `edad_min`, `edad_max`, `salario_min`, `salario_max`, `hora_inicial`, `hora_final`, `experiencia`, `id_empresa`, `status`) VALUES
+(1, 'Tester Jr contratacion inmediata', 'MAR SYSTEMS, es una empresa Mexicana Lider en Tecnologias de la Informacion, con presencia Internacional, y con mas de 15 años proporcionando servicios de TI.', 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 5, '1'),
+(2, 'TESTER', 'Funciones: \r\nPruebas funcionales, de regresion, integracion y uat en apps y software a la medida.\r\nEjecucion de plan de pruebas, pruebas de escritorio, preparacion de datos de prueba, preparacion de ambientes para verificar que los requisitos se hayan cumplido.\r\nRegistro de evidencia de las pruebas realizadas.\r\nConocimiento de herramientas para registro y seguimiento de incidencias.\r\nConfiguracion de ambientes para pruebas\r\nSoporte a usuarios.', 4, NULL, NULL, 6000.00, 8000.00, NULL, NULL, NULL, 2, '1'),
+(3, 'DESARROLLADOR WEB', 'Contratacion Tiempo completo Permanente', 1, NULL, NULL, 4000.00, 6000.00, NULL, NULL, NULL, 3, '1'),
+(4, 'DESARROLLADOR WEB', 'Ofrecemos: Sueldo competitivo, prestaciones superiores a la ley seguro de vida, seguro de gastos medicos mayores, comedor, fondo de ahorro, etc   bonos por desempeño', 1, NULL, NULL, 6000.00, 10000.00, NULL, NULL, NULL, 4, '1'),
+(5, 'Desarrollo Web', 'Somos una empresa mexicana proveedora de servicios de tecnologia de informacion de mision critica, busca nuevos integrantes para fortalecer su equipo de trabajo', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, '1'),
+(6, 'ANALISTA DE SISTEMAS', 'Principales funciones:  Medir utilizacion de herramientas Soporte a Usuarios Plan de Actualizacion Medir efectividad de la informacion', 3, NULL, NULL, 6000.00, 10000.00, NULL, NULL, NULL, 2, '1'),
+(7, 'Analista UI Jr.', 'Beneficios: Tarjeta de Descuentos Medicos 8 dias de vacaciones Seguro de Vida Gastos funerarios', 3, NULL, NULL, 3000.00, 6000.00, NULL, NULL, NULL, 3, '1'),
+(8, 'DBA  Oracle', 'OFRECEMOS: Sueldo competitivo. Prestaciones de ley y superiores. Horario laboral de lunes a viernes. Lugar de trabajo Periferico Sur.', 5, NULL, NULL, 5000.00, 7000.00, NULL, NULL, NULL, 4, '1'),
+(9, 'Administrador base de datos DBA Postgres', 'Actividades: Administracion de la infraestructura de TI', 5, NULL, NULL, 4500.00, 5500.00, NULL, NULL, NULL, 3, '1'),
+(10, 'CONSULTOR IT , MANAGER, LIDER DE PROYECTO IT', 'OFRECEMOS: SEGURO MEDICO DE GASTOS MAYORES. CRECIMIENTO. ESTABILIDAD. DESARROLLO.', 2, NULL, NULL, 8000.00, 10000.00, NULL, NULL, NULL, 2, '1');
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

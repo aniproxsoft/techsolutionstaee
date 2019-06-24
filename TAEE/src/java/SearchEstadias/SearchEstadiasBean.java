@@ -37,12 +37,12 @@ public class SearchEstadiasBean implements Serializable {
     private List<ConocimientoVO> conocimientos;
     private List<HabilidadVO> habilidades;
     private List<VacanteVO> vacantes;
-    BuscaEstadiasDAO dao;
+    private BuscaEstadiasDAO dao;
     private Integer cve_nivel;
     private Integer cve_carrera;
     private Integer cve_perfil;
     private int cves_conocimientos[];
-    VacanteVO vacanteDetail;
+    private VacanteVO vacanteDetail;
 
     private int cves_habilidades[];
 
@@ -115,6 +115,7 @@ public class SearchEstadiasBean implements Serializable {
         }
         Gson gson= new Gson();
         System.out.println("objeto seleccionado: "+gson.toJson(vacanteDetail));
+        RequestContext.getCurrentInstance().update("formulario");
     }
     
 
@@ -204,6 +205,22 @@ public class SearchEstadiasBean implements Serializable {
 
     public void setVacantes(List<VacanteVO> vacantes) {
         this.vacantes = vacantes;
+    }
+
+    public BuscaEstadiasDAO getDao() {
+        return dao;
+    }
+
+    public void setDao(BuscaEstadiasDAO dao) {
+        this.dao = dao;
+    }
+
+    public VacanteVO getVacanteDetail() {
+        return vacanteDetail;
+    }
+
+    public void setVacanteDetail(VacanteVO vacanteDetail) {
+        this.vacanteDetail = vacanteDetail;
     }
 
 }

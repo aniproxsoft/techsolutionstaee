@@ -77,6 +77,8 @@ public class BuscaEstadiasDAOImplements implements BuscaEstadiasDAO {
                 vacante.setDireccion(respuesta.getString(18));
                 vacante.setConocimientos(getConocimientoDetail(vacante.getId_vacante()));
                 vacante.setHabilidades(getHabilidadesDetail(vacante.getId_vacante()));
+                vacante.setNum_telefono(respuesta.getString(19));
+                vacante.setCorreo_empresa(respuesta.getString(20));
                 vacantes.add(vacante);
 
             }

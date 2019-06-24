@@ -34,7 +34,24 @@
             </div>
         </nav> 
 
-        <h:form>
+        <h:form id="formulario" >
+            <center>
+
+                <p:panel id="form_view" style="display: none" >
+                    <h:panelGrid  columns="2" width="60%">
+                        <h:outputText style="font-size: 20px;color: #038C65; font-weight: bold" value="${beanSearchEstadias.vacanteDetail.titulo}"/>
+                        <h:outputText style="font-size: 15px; font-weight: bold" value="${beanSearchEstadias.vacanteDetail.nombre}" />
+                        <h:outputText  value="${beanSearchEstadias.vacanteDetail.direccion}" />
+                        <h:outputText style=" font-weight: bold;" value="$ #{beanSearchEstadias.vacanteDetail.salario_min} - $ #{beanSearchEstadias.vacanteDetail.salario_max} Mensuales" 
+                                      rendered="${beanSearchEstadias.vacanteDetail.renderSalario}" />
+                        <h:outputText style=" color: grey" value="${beanSearchEstadias.vacanteDetail.vacante_desc}"/>
+
+                    </h:panelGrid>
+                </p:panel>
+                hola
+
+            </center>
+            <br/>
             <div id="content_form" style="margin-left: 2%">
 
                 <h:panelGrid id="panel" columns="5" width="100%" >
@@ -149,9 +166,9 @@
                                 <h:outputText style=" font-weight: bold;" value="$ #{vacante.salario_min} - $ #{vacante.salario_max} Mensuales" 
                                               rendered="${vacante.renderSalario}" />
                                 <h:outputText style=" color: grey" value="${vacante.vacante_descCorta}..."/>
-                                 <p:commandButton style="width: 50px; height: 30px;" 
-                                                  actionListener="${beanSearchEstadias.showDetail(vacante)}"
-                                                  value="Ver" title="Buscar"></p:commandButton>
+                                <p:commandButton style="width: 50px; height: 30px;" 
+                                                 actionListener="${beanSearchEstadias.showDetail(vacante)}"
+                                                 value="Ver" title="Ver detalle" onclick="mostrar()"></p:commandButton>
                             </h:panelGrid>
                         </p:panel>
 
@@ -160,6 +177,12 @@
 
             </center>
 
+            <script type="text/javascript">
+                function mostrar() {
+                    $('#form_view').css('display', 'block');
+                    //$('#formulario\\:btn_nuevo').css('display','none');
+                }
+            </script>
         </h:form>
 
 

@@ -37,6 +37,8 @@ public class VacanteVO {
     private boolean renderSalario = false;
     private List<HabilidadVO> habilidades;
     private List<ConocimientoVO> conocimientos;
+    private String num_telefono;
+    private String correo_empresa;
 
     public Integer getId_vacante() {
         return id_vacante;
@@ -212,5 +214,21 @@ public class VacanteVO {
 
     public void setConocimientos(List<ConocimientoVO> conocimientos) {
         this.conocimientos = conocimientos;
+    }
+
+    public String getNum_telefono() {
+        return num_telefono;
+    }
+
+    public void setNum_telefono(String num_telefono) {
+        this.num_telefono = num_telefono;
+    }
+
+    public String getCorreo_empresa() {
+        return correo_empresa;
+    }
+
+    public void setCorreo_empresa(String correo_empresa) {
+        this.correo_empresa = correo_empresa;
     }
 }
