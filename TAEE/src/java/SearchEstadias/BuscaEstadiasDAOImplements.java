@@ -63,6 +63,9 @@ public class BuscaEstadiasDAOImplements implements BuscaEstadiasDAO {
                 vacante.setNombre_perfil(respuesta.getString(7));
                 vacante.setEdad_min(respuesta.getInt(8));
                 vacante.setEdad_max(respuesta.getInt(9));
+                if(vacante.getEdad_min()>0||vacante.getEdad_max()>0){
+                    vacante.setRenderEdad(true);
+                }
                 vacante.setSalario_min(respuesta.getDouble(10));
                 vacante.setSalario_max(respuesta.getDouble(11));
                 if(vacante.getSalario_max()>0.0 || vacante.getSalario_min()>0.0){
@@ -70,13 +73,22 @@ public class BuscaEstadiasDAOImplements implements BuscaEstadiasDAO {
                 }
                 vacante.setHora_inicial(respuesta.getString(12));
                 vacante.setHora_final(respuesta.getString(13));
+                if(vacante.getHora_inicial()!=null||vacante.getHora_final()!=null){
+                    vacante.setRenderHora(true);
+                }
                 vacante.setExperiencia(respuesta.getString(14));
+                if(vacante.getExperiencia()!=null || vacante.getExperiencia()!=""){
+                    vacante.setRenderExperiencia(true);
+                }
                 vacante.setId_empresa(respuesta.getInt(15));
                 vacante.setNombre(respuesta.getString(16));
                 vacante.setStatus(respuesta.getString(17));
                 vacante.setDireccion(respuesta.getString(18));
                 vacante.setConocimientos(getConocimientoDetail(vacante.getId_vacante()));
                 vacante.setHabilidades(getHabilidadesDetail(vacante.getId_vacante()));
+                if(vacante.getHabilidades().size()>0){
+                    vacante.setRenderHabilidades(true);
+                }
                 vacante.setNum_telefono(respuesta.getString(19));
                 vacante.setCorreo_empresa(respuesta.getString(20));
                 vacantes.add(vacante);

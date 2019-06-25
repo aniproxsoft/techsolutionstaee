@@ -43,7 +43,7 @@ public class SearchEstadiasBean implements Serializable {
     private Integer cve_perfil;
     private int cves_conocimientos[];
     private VacanteVO vacanteDetail;
-
+    private boolean renderView;
     private int cves_habilidades[];
 
     /**
@@ -105,19 +105,20 @@ public class SearchEstadiasBean implements Serializable {
         System.out.println("perfil: " + cve_perfil);
         vacantes = new ArrayList<>();
         vacantes = dao.searchVacantes(cve_perfil, jsonHabilidades, jsonConocimientos);
-        System.out.println("res" + vacantes.size());
+//        System.out.println("res" + vacantes.size());
         RequestContext.getCurrentInstance().update("vacantes");
 
     }
-    public void showDetail(VacanteVO selectedVacante){
-        if(selectedVacante!=null){
-            vacanteDetail=selectedVacante;
+
+    public void showDetail(VacanteVO selectedVacante) {
+        if (selectedVacante != null) {
+            vacanteDetail = selectedVacante;
         }
-        Gson gson= new Gson();
-        System.out.println("objeto seleccionado: "+gson.toJson(vacanteDetail));
+        Gson gson = new Gson();
+        renderView=true;
+//        System.out.println("objeto seleccionado: " + gson.toJson(vacanteDetail));
         RequestContext.getCurrentInstance().update("formulario");
     }
-    
 
     public List<NivelAcademicoVO> getNiveles() {
         return niveles;
@@ -221,6 +222,14 @@ public class SearchEstadiasBean implements Serializable {
 
     public void setVacanteDetail(VacanteVO vacanteDetail) {
         this.vacanteDetail = vacanteDetail;
+    }
+
+    public boolean isRenderView() {
+        return renderView;
+    }
+
+    public void setRenderView(boolean renderView) {
+        this.renderView = renderView;
     }
 
 }

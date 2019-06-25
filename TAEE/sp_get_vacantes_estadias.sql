@@ -52,7 +52,8 @@ BEGIN
 		WHERE v.id_perfil=perfil 
 		and cv.id_conocimiento in(SELECT id from temp_conocimiento)
 		and hv.id_habilidades in(SELECT id from temp_habilidad)
-		and v.status='1';
+		and v.status='1'
+		and e.status=3;
     else
     	SELECT DISTINCT v.id_vacante,titulo,vacante_desc,
 		na.nombre_nivel,ca.carrera_desc, 
@@ -70,7 +71,8 @@ BEGIN
         INNER JOIN ciudad ci on e.id_ciudad= ci.id_ciudad and e.id_estado=ci.id_estado
 		WHERE v.id_perfil=perfil 
 		and cv.id_conocimiento in(SELECT id from temp_conocimiento)
-		and v.status='1';
+		and v.status='1'
+		and e.status=3;
     end if;
 
    	

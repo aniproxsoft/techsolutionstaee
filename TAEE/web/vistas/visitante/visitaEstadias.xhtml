@@ -14,7 +14,7 @@
         <title>TAEG</title>
 
     </h:head>
-    <h:body>
+    <body>
         <nav class="navbar navbar-utn">
             <div class="container-fluid">
                 <div class="navbar-header">
@@ -37,18 +37,66 @@
         <h:form id="formulario" >
             <center>
 
-                <p:panel id="form_view" style="display: none" >
-                    <h:panelGrid  columns="2" width="60%">
+                <p:panel id="form_view" rendered="${beanSearchEstadias.renderView}" style="width: 60%">
+                    <h:panelGrid  columns="1" width="100%">
                         <h:outputText style="font-size: 20px;color: #038C65; font-weight: bold" value="${beanSearchEstadias.vacanteDetail.titulo}"/>
+                        <br/>
                         <h:outputText style="font-size: 15px; font-weight: bold" value="${beanSearchEstadias.vacanteDetail.nombre}" />
+                        <br/>
+                        <h:outputText value="Nivel academico: ${beanSearchEstadias.vacanteDetail.nombre_nivel} " />
+
+                        <h:outputText value="Carrera: ${beanSearchEstadias.vacanteDetail.carrera_desc}"/>
+
+                        <br/>
+                        <h:outputText value="Direccion:" />
                         <h:outputText  value="${beanSearchEstadias.vacanteDetail.direccion}" />
+                        <br/>
+                        <h:panelGroup rendered="´${beanSearchEstadias.vacanteDetail.renderExperiencia}">
+                            <h:outputText style="font-weight: bold" value="Experiencia: ${beanSearchEstadias.vacanteDetail.experiencia}"/>
+                        </h:panelGroup>
+                        <h:panelGroup rendered="${beanSearchEstadias.vacanteDetail.renderEdad}">
+                            <h:outputText value="Edad mimima: ${beanSearchEstadias.vacanteDetail.edad_min}" />
+                            <h:outputText value="Edad maxima: ${beanSearchEstadias.vacanteDetail.edad_max}" />
+                        </h:panelGroup>
+                        <br/>
+                        <h:panelGroup rendered="${beanSearchEstadias.vacanteDetail.renderHora}">
+                            <h:outputText value="Horario ${beanSearchEstadias.vacanteDetail.hora_inicial}-${beanSearchEstadias.vacanteDetail.hora_final}" />
+
+                        </h:panelGroup>
+                        <br/>
+
                         <h:outputText style=" font-weight: bold;" value="$ #{beanSearchEstadias.vacanteDetail.salario_min} - $ #{beanSearchEstadias.vacanteDetail.salario_max} Mensuales" 
                                       rendered="${beanSearchEstadias.vacanteDetail.renderSalario}" />
+                        <br/>
+                        <h:outputText value="Descripción de la vacante: "/>
                         <h:outputText style=" color: grey" value="${beanSearchEstadias.vacanteDetail.vacante_desc}"/>
+                        <br/>
+                        <div style="width: 30%">
+                            <p:dataList value="${beanSearchEstadias.vacanteDetail.conocimientos}"
+                                        var="conocimiento" type="ordered" >
+                                <f:facet name="header">
+                                    Conocimientos
+                                </f:facet>
+                                ${conocimiento.conoc_desc}
+                            </p:dataList>
+                        </div>
+                        <p:dataList value="${beanSearchEstadias.vacanteDetail.habilidades}"
+                                    var="habilidad" type="ordered" rendered="${beanSearchEstadias.vacanteDetail.renderHabilidades}">
+                            <f:facet name="header">
+                                Habilidades
+                            </f:facet>
+                            ${habilidad.habilidad_desc}
+                        </p:dataList>
+
+                        <br/>
+                        <h:outputText style="font-weight: bold" value="Contacto: " />
+                        <h:outputText value="Correo: ${beanSearchEstadias.vacanteDetail.correo_empresa} " />
+                        <h:outputText value="Telefono: ${beanSearchEstadias.vacanteDetail.num_telefono}" />
 
                     </h:panelGrid>
+
+
                 </p:panel>
-                hola
 
             </center>
             <br/>
@@ -166,9 +214,9 @@
                                 <h:outputText style=" font-weight: bold;" value="$ #{vacante.salario_min} - $ #{vacante.salario_max} Mensuales" 
                                               rendered="${vacante.renderSalario}" />
                                 <h:outputText style=" color: grey" value="${vacante.vacante_descCorta}..."/>
-                                <p:commandButton style="width: 50px; height: 30px;" 
+                                <p:commandButton style="width: 50px; height: 30px;" id="boton" onclick="subir()"
                                                  actionListener="${beanSearchEstadias.showDetail(vacante)}"
-                                                 value="Ver" title="Ver detalle" onclick="mostrar()"></p:commandButton>
+                                                 value="Ver" title="Ver detalle" ></p:commandButton>
                             </h:panelGrid>
                         </p:panel>
 
@@ -179,13 +227,18 @@
 
             <script type="text/javascript">
                 function mostrar() {
-                    $('#form_view').css('display', 'block');
+                    $('#formulario\\:form_view').css('display', 'block');
                     //$('#formulario\\:btn_nuevo').css('display','none');
                 }
+                function subir() {
+                    //referimos el elemento ( clase o identificador de acción )
+                    $('html, body').animate({scrollTop: 0}, 'slow'); //seleccionamos etiquetas,clase o identificador destino, creamos animación hacia top de la página.
+                }
+
             </script>
         </h:form>
 
 
 
-    </h:body>
+    </body>
 </html>

@@ -39,6 +39,10 @@ public class VacanteVO {
     private List<ConocimientoVO> conocimientos;
     private String num_telefono;
     private String correo_empresa;
+    private boolean renderEdad;
+    private boolean renderExperiencia;
+    private boolean renderHora;
+    private boolean renderHabilidades;
 
     public Integer getId_vacante() {
         return id_vacante;
@@ -230,5 +234,37 @@ public class VacanteVO {
 
     public void setCorreo_empresa(String correo_empresa) {
         this.correo_empresa = correo_empresa;
+    }
+
+    public boolean isRenderEdad() {
+        return renderEdad;
+    }
+
+    public void setRenderEdad(boolean renderEdad) {
+        this.renderEdad = renderEdad;
+    }
+
+    public boolean isRenderExperiencia() {
+        return renderExperiencia;
+    }
+
+    public void setRenderExperiencia(boolean renderExperiencia) {
+        this.renderExperiencia = renderExperiencia;
+    }
+
+    public boolean isRenderHora() {
+        return renderHora;
+    }
+
+    public void setRenderHora(boolean renderHora) {
+        this.renderHora = renderHora;
+    }
+
+    public boolean isRenderHabilidades() {
+        return renderHabilidades;
+    }
+
+    public void setRenderHabilidades(boolean renderHabilidades) {
+        this.renderHabilidades = renderHabilidades;
     }
 }
