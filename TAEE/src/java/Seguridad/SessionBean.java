@@ -50,4 +50,32 @@ public class SessionBean implements Serializable {
 //        System.out.println("entra logout");
         FacesContext.getCurrentInstance().getExternalContext().invalidateSession();
     }
+
+    public String volver() {
+        UsuarioVO u = null;
+        String redireccion = "";
+        u = (UsuarioVO) FacesContext.getCurrentInstance().getExternalContext().getSessionMap().get("user");
+        if (u != null) {
+
+            switch (u.getRol()) {
+                case 2:
+
+                    redireccion = "/vistas/iniciar_sesion/empresas_egresados.xhtml?faces-redirect=true";
+                    break;
+                case 1:
+
+                    redireccion = "/vistas/iniciar_sesion/empresas_estadias.xhtml?faces-redirect=true";
+                    break;
+                case 3:
+
+                    redireccion = "/vistas/iniciar_sesion/empresario_index.xhtml?faces-redirect=true";
+                    break;
+                default:
+                    break;
+            }
+
+        }
+//        System.out.println("driec: "+redireccion);
+        return redireccion;
+    }
 }

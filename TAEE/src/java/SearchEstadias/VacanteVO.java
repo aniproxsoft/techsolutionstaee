@@ -43,6 +43,7 @@ public class VacanteVO {
     private boolean renderExperiencia;
     private boolean renderHora;
     private boolean renderHabilidades;
+    private boolean renderEdad2;
 
     public Integer getId_vacante() {
         return id_vacante;
@@ -266,5 +267,13 @@ public class VacanteVO {
 
     public void setRenderHabilidades(boolean renderHabilidades) {
         this.renderHabilidades = renderHabilidades;
+    }
+
+    public boolean isRenderEdad2() {
+        return renderEdad2;
+    }
+
+    public void setRenderEdad2(boolean renderEdad2) {
+        this.renderEdad2 = renderEdad2;
     }
 }

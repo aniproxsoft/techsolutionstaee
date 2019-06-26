@@ -22,8 +22,8 @@
                 </div>
                 <ul class="nav navbar-nav">
                     <li ><h:link outcome="/index.xhtml"  value="Inicio"></h:link></li>
-                    <li class="active"><h:link  outcome="/vistas/visitante/visitaEstadias.xhtml" value="Estadías"></h:link></li>
-                    <li><h:link outcome="/vistas/empleos_egresados/empleos_egresados.xhtml"    value="Empleos"></h:link></li>
+                    <li><h:link  outcome="/vistas/visitante/visitaEstadias.xhtml" value="Estadías"></h:link></li>
+                    <li class="active"><h:link  outcome="/vistas/empleos_egresados/empleos_egresados.xhtml"    value="Empleos"></h:link></li>
                     <li><h:link  outcome="/vistas/empresarios/empresarios.xhtml" value="Empresarios"></h:link></li>
 
                 </ul>
@@ -34,45 +34,49 @@
             </div>
         </nav> 
         <p:messages id="mensajes" showDetail="true" closable="true"/>
+
         <h:form id="formulario" >
             <center>
 
-                <p:panel id="form_view" rendered="${beanSearchEstadias.renderView}" style="width: 60%">
+                <p:panel id="form_view" rendered="${beanBuscaEmpleosEgresados.renderView}" style="width: 60%">
                     <h:panelGrid  columns="1" width="100%">
-                        <h:outputText style="font-size: 20px;color: #038C65; font-weight: bold" value="${beanSearchEstadias.vacanteDetail.titulo}"/>
+                        <h:outputText style="font-size: 20px;color: #038C65; font-weight: bold" value="${beanBuscaEmpleosEgresados.vacanteDetail.titulo}"/>
                         <br/>
-                        <h:outputText style="font-size: 15px; font-weight: bold" value="${beanSearchEstadias.vacanteDetail.nombre}" />
+                        <h:outputText style="font-size: 15px; font-weight: bold" value="${beanBuscaEmpleosEgresados.vacanteDetail.nombre}" />
                         <br/>
-                        <h:outputText value="Nivel academico: ${beanSearchEstadias.vacanteDetail.nombre_nivel} " />
+                        <h:outputText value="Nivel academico: ${beanBuscaEmpleosEgresados.vacanteDetail.nombre_nivel} " />
 
-                        <h:outputText value="Carrera: ${beanSearchEstadias.vacanteDetail.carrera_desc}"/>
+                        <h:outputText value="Carrera: ${beanBuscaEmpleosEgresados.vacanteDetail.carrera_desc}"/>
 
                         <br/>
                         <h:outputText value="Direccion:" />
-                        <h:outputText  value="${beanSearchEstadias.vacanteDetail.direccion}" />
+                        <h:outputText  value="${beanBuscaEmpleosEgresados.vacanteDetail.direccion}" />
                         <br/>
-                        <h:panelGroup rendered="´${beanSearchEstadias.vacanteDetail.renderExperiencia}">
-                            <h:outputText style="font-weight: bold" value="Experiencia: ${beanSearchEstadias.vacanteDetail.experiencia}"/>
+                        <h:panelGroup rendered="´${beanBuscaEmpleosEgresados.vacanteDetail.renderExperiencia}">
+                            <h:outputText style="font-weight: bold" value="Experiencia: ${beanBuscaEmpleosEgresados.vacanteDetail.experiencia} años"/>
                         </h:panelGroup>
-                        <h:panelGroup rendered="${beanSearchEstadias.vacanteDetail.renderEdad}">
-                            <h:outputText value="Edad mimima: ${beanSearchEstadias.vacanteDetail.edad_min}" />
-                            <h:outputText value="Edad maxima: ${beanSearchEstadias.vacanteDetail.edad_max}" />
+                        <h:panelGroup rendered="${beanBuscaEmpleosEgresados.vacanteDetail.renderEdad}">
+                            <h:outputText value="Edad mimima: ${beanBuscaEmpleosEgresados.vacanteDetail.edad_min} años" /><br/>
+
                         </h:panelGroup>
+                        <h:panelGrid rendered="${beanBuscaEmpleosEgresados.vacanteDetail.renderEdad2}">
+                            <h:outputText value="Edad maxima: ${beanBuscaEmpleosEgresados.vacanteDetail.edad_max} años" ></h:outputText>
+                        </h:panelGrid>
                         <br/>
-                        <h:panelGroup rendered="${beanSearchEstadias.vacanteDetail.renderHora}">
-                            <h:outputText value="Horario ${beanSearchEstadias.vacanteDetail.hora_inicial}-${beanSearchEstadias.vacanteDetail.hora_final}" />
+                        <h:panelGroup rendered="${beanBuscaEmpleosEgresados.vacanteDetail.renderHora}">
+                            <h:outputText value="Horario ${beanBuscaEmpleosEgresados.vacanteDetail.hora_inicial} - ${beanBuscaEmpleosEgresados.vacanteDetail.hora_final}" />
 
                         </h:panelGroup>
                         <br/>
 
-                        <h:outputText style=" font-weight: bold;" value="$ #{beanSearchEstadias.vacanteDetail.salario_min} - $ #{beanSearchEstadias.vacanteDetail.salario_max} Mensuales" 
-                                      rendered="${beanSearchEstadias.vacanteDetail.renderSalario}" />
+                        <h:outputText style=" font-weight: bold;" value="$ #{beanBuscaEmpleosEgresados.vacanteDetail.salario_min} - $ #{beanBuscaEmpleosEgresados.vacanteDetail.salario_max} Mensuales" 
+                                      rendered="${beanBuscaEmpleosEgresados.vacanteDetail.renderSalario}" />
                         <br/>
                         <h:outputText value="Descripción de la vacante: "/>
-                        <h:outputText style=" color: grey" value="${beanSearchEstadias.vacanteDetail.vacante_desc}"/>
+                        <h:outputText style=" color: grey" value="${beanBuscaEmpleosEgresados.vacanteDetail.vacante_desc}"/>
                         <br/>
                         <div style="width: 30%">
-                            <p:dataList value="${beanSearchEstadias.vacanteDetail.conocimientos}"
+                            <p:dataList value="${beanBuscaEmpleosEgresados.vacanteDetail.conocimientos}"
                                         var="conocimiento" type="ordered" >
                                 <f:facet name="header">
                                     Conocimientos
@@ -80,8 +84,8 @@
                                 ${conocimiento.conoc_desc}
                             </p:dataList>
                         </div>
-                        <p:dataList value="${beanSearchEstadias.vacanteDetail.habilidades}"
-                                    var="habilidad" type="ordered" rendered="${beanSearchEstadias.vacanteDetail.renderHabilidades}">
+                        <p:dataList value="${beanBuscaEmpleosEgresados.vacanteDetail.habilidades}"
+                                    var="habilidad" type="ordered" rendered="${beanBuscaEmpleosEgresados.vacanteDetail.renderHabilidades}">
                             <f:facet name="header">
                                 Habilidades
                             </f:facet>
@@ -90,8 +94,8 @@
 
                         <br/>
                         <h:outputText style="font-weight: bold" value="Contacto: " />
-                        <h:outputText value="Correo: ${beanSearchEstadias.vacanteDetail.correo_empresa} " />
-                        <h:outputText value="Telefono: ${beanSearchEstadias.vacanteDetail.num_telefono}" />
+                        <h:outputText value="Correo: ${beanBuscaEmpleosEgresados.vacanteDetail.correo_empresa} " />
+                        <h:outputText value="Telefono: ${beanBuscaEmpleosEgresados.vacanteDetail.num_telefono}" />
 
                     </h:panelGrid>
 
@@ -107,30 +111,30 @@
                     <h:panelGroup layout="span">
                         <p:outputLabel  for="nivel" value="Nivel academico:" /><br/>
                         <p:selectOneMenu id="nivel" style="width:230px"
-                                         value="${beanSearchEstadias.cve_nivel}"
+                                         value="${beanBuscaEmpleosEgresados.cve_nivel}"
                                          required="true" 
                                          requiredMessage="Debe seleccionar un nivel academico">
                             <f:selectItem itemLabel="Selecciona uno" itemValue="${null}"   />
-                            <f:selectItems  value="${beanSearchEstadias.niveles}" var="nivel" 
+                            <f:selectItems  value="${beanBuscaEmpleosEgresados.niveles}" var="nivel" 
                                             itemLabel="${nivel.nombre_nivel}" 
                                             itemValue="${nivel.id_nivel}" />
                             <p:ajax event="change" update="carrera" 
-                                    listener="${beanSearchEstadias.buscaCarreras()}" />
+                                    listener="${beanBuscaEmpleosEgresados.buscaCarreras()}" />
                         </p:selectOneMenu>
                         <p:message for="nivel"  />
                     </h:panelGroup>
                     <h:panelGroup layout="span" >
                         <p:outputLabel  for="carrera" value="Carrera:" /><br/>
                         <p:selectOneMenu id="carrera" style="width:250px" 
-                                         value="${beanSearchEstadias.cve_carrera}"
+                                         value="${beanBuscaEmpleosEgresados.cve_carrera}"
                                          required="true" 
                                          requiredMessage="Debe seleccionar una carrera.">
                             <f:selectItem itemLabel="Selecciona uno"  />
-                            <f:selectItems value="${beanSearchEstadias.carreras}" var="carrera" 
+                            <f:selectItems value="${beanBuscaEmpleosEgresados.carreras}" var="carrera" 
                                            itemLabel="${carrera.carrera_desc}" 
                                            itemValue="${carrera.id_carrera}" />
                             <p:ajax event="change" update="perfil" 
-                                    listener="${beanSearchEstadias.buscaPerfiles()}" />
+                                    listener="${beanBuscaEmpleosEgresados.buscaPerfiles()}" />
 
                         </p:selectOneMenu>
                         <p:message for="carrera" />
@@ -138,14 +142,14 @@
                     <h:panelGroup layout="span" >
                         <p:outputLabel  for="perfil" value="Perfil:" /><br/>
                         <p:selectOneMenu id="perfil" style="width:250px" required="true" 
-                                         requiredMessage="Debe seleccionar un perfil" value="${beanSearchEstadias.cve_perfil}">
+                                         requiredMessage="Debe seleccionar un perfil" value="${beanBuscaEmpleosEgresados.cve_perfil}">
                             <f:selectItem itemLabel="Selecciona uno"   
                                           />
-                            <f:selectItems value="${beanSearchEstadias.perfiles}" var="perfil" 
+                            <f:selectItems value="${beanBuscaEmpleosEgresados.perfiles}" var="perfil" 
                                            itemLabel="${perfil.nombre_perfil}" 
                                            itemValue="${perfil.id_perfil}" />
                             <p:ajax event="change" update="conocimiento" 
-                                    listener="${beanSearchEstadias.buscaConocimientos()}" />
+                                    listener="${beanBuscaEmpleosEgresados.buscaConocimientos()}" />
                         </p:selectOneMenu>
                         <p:message for="perfil" />
                     </h:panelGroup>
@@ -154,8 +158,8 @@
                                               filter="true" filterMatchMode="startsWith"
                                               panelStyle="width:250px" required="true" 
                                               requiredMessage="Debe seleccionar un conocimiento"
-                                              value="${beanSearchEstadias.cves_conocimientos}">
-                            <f:selectItems value="${beanSearchEstadias.conocimientos}" var="conocimiento" 
+                                              value="${beanBuscaEmpleosEgresados.cves_conocimientos}">
+                            <f:selectItems value="${beanBuscaEmpleosEgresados.conocimientos}" var="conocimiento" 
                                            itemLabel="${conocimiento.conoc_desc}" 
                                            itemValue="${conocimiento.id_conocimiento}" />
 
@@ -165,9 +169,9 @@
                     <h:panelGroup>
                         <p:selectCheckboxMenu id="habilidad" label="Habilidades"
                                               filter="true" filterMatchMode="startsWith" 
-                                              panelStyle="width:250px"  value="${beanSearchEstadias.cves_habilidades}"
+                                              panelStyle="width:250px"  value="${beanBuscaEmpleosEgresados.cves_habilidades}"
                                               >
-                            <f:selectItems value="${beanSearchEstadias.habilidades}" var="habilidad" 
+                            <f:selectItems value="${beanBuscaEmpleosEgresados.habilidades}" var="habilidad" 
                                            itemLabel="${habilidad.habilidad_desc}" 
                                            itemValue="${habilidad.id_habilidad}" />
                         </p:selectCheckboxMenu>
@@ -178,7 +182,7 @@
 
                     <h:panelGroup >
                         <p:commandButton value="" style="width: 60px; height: 40px;" process="panel" 
-                                         update="panel,vacantes" actionListener="${beanSearchEstadias.buscaEstadias()}"
+                                         update="panel,vacantes" actionListener="${beanBuscaEmpleosEgresados.buscaEmpleosEgresados()}"
                                          class="glyphicon glyphicon-search" title="Buscar"></p:commandButton>
                     </h:panelGroup>
 
@@ -197,7 +201,7 @@
 
             <center>
                 <div id="content_vacantes" style="width: 60%; margin-top: 2%">
-                    <p:dataGrid var="vacante" value="${beanSearchEstadias.vacantes}" columns="1"
+                    <p:dataGrid var="vacante" value="${beanBuscaEmpleosEgresados.vacantes}" columns="1"
                                 paginator="true" id="vacantes" rows="10"
                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
                                 rowsPerPageTemplate="6,12,16">
@@ -215,7 +219,7 @@
                                               rendered="${vacante.renderSalario}" />
                                 <h:outputText style=" color: grey" value="${vacante.vacante_descCorta}..."/>
                                 <p:commandButton style="width: 50px; height: 30px;" id="boton" onclick="subir()"
-                                                 actionListener="${beanSearchEstadias.showDetail(vacante)}"
+                                                 actionListener="${beanBuscaEmpleosEgresados.showDetail(vacante)}"
                                                  value="Ver" title="Ver detalle" ></p:commandButton>
                             </h:panelGrid>
                         </p:panel>

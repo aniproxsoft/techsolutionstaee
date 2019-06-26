@@ -3,43 +3,50 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package SearchEstadias;
+package SearchEmpleosEgresados;
 
+import SearchEstadias.BuscaEstadiasDAO;
+import SearchEstadias.BuscaEstadiasDAOImplements;
+import SearchEstadias.VacanteVO;
 import com.google.gson.Gson;
-import java.io.Serializable;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import java.util.ArrayList;
 import java.util.List;
 import javax.annotation.PostConstruct;
+import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.context.FacesContext;
+import org.primefaces.context.RequestContext;
 import vacantes.CarreraVO;
 import vacantes.ConocimientoVO;
 import vacantes.HabilidadVO;
 import vacantes.NivelAcademicoVO;
 import vacantes.PerfilVO;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import java.util.ArrayList;
-import javax.faces.application.FacesMessage;
-import javax.faces.context.FacesContext;
-import org.primefaces.context.RequestContext;
 
 /**
  *
  * @author ANIPROXTOART
  */
-@ManagedBean(name = "beanSearchEstadias")
+@ManagedBean(name = "beanBuscaEmpleosEgresados")
 @ViewScoped
-public class SearchEstadiasBean implements Serializable {
+public class BuscaEmpleosEgresadosBean {
 
+    /**
+     * Creates a new instance of BuscaEmpleosEgresadosBean
+     */
+    public BuscaEmpleosEgresadosBean() {
+    }
     private List<NivelAcademicoVO> niveles;
+
     private List<CarreraVO> carreras;
     private List<PerfilVO> perfiles;
     private List<ConocimientoVO> conocimientos;
     private List<HabilidadVO> habilidades;
     private List<VacanteVO> vacantes;
     private BuscaEstadiasDAO dao;
+    BuscaEmpleosEgresadosDAO dao2;
     private Integer cve_nivel;
     private Integer cve_carrera;
     private Integer cve_perfil;
@@ -53,6 +60,7 @@ public class SearchEstadiasBean implements Serializable {
      */
     @PostConstruct
     public void init() {
+        dao2 = new BuscaEmpleosEgresadosDAOImplemets();
         dao = new BuscaEstadiasDAOImplements();
         niveles = dao.getNiveles();
         habilidades = dao.getHabilidades();
@@ -62,7 +70,7 @@ public class SearchEstadiasBean implements Serializable {
 
     public void buscaCarreras() {
         carreras = new ArrayList<>();
-        carreras.add(dao.getCarreras(cve_nivel).get(0));
+        carreras = dao.getCarreras(cve_nivel);
     }
 
     public void buscaPerfiles() {
@@ -73,11 +81,7 @@ public class SearchEstadiasBean implements Serializable {
         conocimientos = dao.getConocimientos(cve_perfil);
     }
 
-    public SearchEstadiasBean() {
-
-    }
-
-    public void buscaEstadias() {
+    public void buscaEmpleosEgresados() {
         JsonArray jarray_conoc = new JsonArray();
         JsonArray jarray_habil = new JsonArray();
         String jsonHabilidades = "";
@@ -106,7 +110,7 @@ public class SearchEstadiasBean implements Serializable {
 //        System.out.println("c: " + jsonConocimientos);
 //        System.out.println("perfil: " + cve_perfil);
         vacantes = new ArrayList<>();
-        vacantes = dao.searchVacantes(cve_perfil, jsonHabilidades, jsonConocimientos);
+        vacantes = dao2.searchVacantes(cve_perfil, jsonHabilidades, jsonConocimientos);
         if (vacantes.size() == 0) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Aún no hay vacantes para este perfil"));
             RequestContext.getCurrentInstance().update("mensajes");
@@ -116,7 +120,6 @@ public class SearchEstadiasBean implements Serializable {
 
         }
 //        System.out.println("res" + vacantes.size());
-        RequestContext.getCurrentInstance().update("vacantes");
 
     }
 
