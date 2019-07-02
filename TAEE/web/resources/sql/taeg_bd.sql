@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 26-06-2019 a las 20:34:08
+-- Tiempo de generación: 02-07-2019 a las 02:15:01
 -- Versión del servidor: 5.7.19
 -- Versión de PHP: 5.6.31
 
@@ -347,7 +347,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_estadia` (IN `perfi
 		v.id_perfil,p.nombre_perfil, edad_min,edad_max,
 		salario_min,salario_max, hora_inicial,hora_final, 
 		experiencia,v.id_empresa,e.nombre,v.status,concat(e.direccion,',', es.nombre_estado,',',ci.nombre_ciudad)
-		,e.num_telefono,e.correo_empresa
+		,e.num_telefono,e.correo_empresa,v.ayuda_economica
 		from vacante v 
 		RIGHT join conocimiento_vac cv on v.id_vacante=cv.id_vacante
 		RIGHT join habilidad_vac hv on v.id_vacante=hv.id_vacante 
@@ -368,7 +368,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_estadia` (IN `perfi
 		v.id_perfil,p.nombre_perfil, edad_min,edad_max,
 		salario_min,salario_max, hora_inicial,hora_final, 
 		experiencia,v.id_empresa,e.nombre,v.status,concat(e.direccion,',', es.nombre_estado,',',ci.nombre_ciudad)
-		,e.num_telefono,e.correo_empresa
+		,e.num_telefono,e.correo_empresa,v.ayuda_economica
 		from vacante v 
 		RIGHT join conocimiento_vac cv on v.id_vacante=cv.id_vacante
 		INNER JOIN perfil p on v.id_perfil=p.id_perfil
@@ -488,7 +488,7 @@ CREATE TABLE IF NOT EXISTS `carreras` (
 --
 
 INSERT INTO `carreras` (`id_carrera`, `id_nivel`, `carrera_desc`) VALUES
-(1, 1, 'TIC Área Sistemas Informáticos'),
+(1, 1, 'TIC Área Desarrollo de Software multiplataforma'),
 (2, 1, 'TIC Área Multimedia y Comercio Electrónico'),
 (3, 1, 'Administración Área Recursos Humanos'),
 (4, 2, 'Tecnologías de la Información y Comunicación'),
@@ -731,7 +731,15 @@ INSERT INTO `habilidad` (`id_habilidad`, `habilidad_desc`) VALUES
 (1, 'Proactivo'),
 (2, 'Trabajo en equipo'),
 (3, 'Optimista'),
-(4, 'Toma de decisiones');
+(4, 'Toma de decisiones'),
+(5, 'Pasión'),
+(6, 'Adaptabilidad '),
+(7, 'Comunicación efectiva'),
+(8, 'Creatividad'),
+(9, 'Perseverancia'),
+(10, 'Organización'),
+(11, 'Flexibilidad'),
+(12, 'Tolerancia');
 
 -- --------------------------------------------------------
 
@@ -906,6 +914,7 @@ CREATE TABLE IF NOT EXISTS `vacante` (
   `experiencia` int(11) DEFAULT NULL,
   `id_empresa` int(11) DEFAULT NULL,
   `status` varchar(1) NOT NULL,
+  `ayuda_economica` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id_vacante`),
   KEY `fk_perfil` (`id_perfil`)
 ) ENGINE=MyISAM AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
@@ -914,24 +923,24 @@ CREATE TABLE IF NOT EXISTS `vacante` (
 -- Volcado de datos para la tabla `vacante`
 --
 
-INSERT INTO `vacante` (`id_vacante`, `titulo`, `vacante_desc`, `id_perfil`, `edad_min`, `edad_max`, `salario_min`, `salario_max`, `hora_inicial`, `hora_final`, `experiencia`, `id_empresa`, `status`) VALUES
-(1, 'Tester Jr contratacion inmediata', 'MAR SYSTEMS, es una empresa Mexicana Lider en Tecnologias de la Informacion, con presencia Internacional, y con mas de 15 años proporcionando servicios de TI.', 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 5, '1'),
-(2, 'TESTER', 'Funciones: \r\nPruebas funcionales, de regresion, integracion y uat en apps y software a la medida.\r\nEjecucion de plan de pruebas, pruebas de escritorio, preparacion de datos de prueba, preparacion de ambientes para verificar que los requisitos se hayan cumplido.\r\nRegistro de evidencia de las pruebas realizadas.\r\nConocimiento de herramientas para registro y seguimiento de incidencias.\r\nConfiguracion de ambientes para pruebas\r\nSoporte a usuarios.', 4, NULL, NULL, 6000.00, 8000.00, NULL, NULL, NULL, 2, '1'),
-(3, 'DESARROLLADOR WEB', 'Contratacion Tiempo completo Permanente', 1, NULL, NULL, 4000.00, 6000.00, NULL, NULL, NULL, 3, '1'),
-(4, 'DESARROLLADOR WEB', 'Ofrecemos: Sueldo competitivo, prestaciones superiores a la ley seguro de vida, seguro de gastos medicos mayores, comedor, fondo de ahorro, etc   bonos por desempeño', 1, NULL, NULL, 6000.00, 10000.00, NULL, NULL, NULL, 4, '1'),
-(5, 'Desarrollo Web', 'Somos una empresa mexicana proveedora de servicios de tecnologia de informacion de mision critica, busca nuevos integrantes para fortalecer su equipo de trabajo', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, '1'),
-(6, 'ANALISTA DE SISTEMAS', 'Principales funciones:  Medir utilizacion de herramientas Soporte a Usuarios Plan de Actualizacion Medir efectividad de la informacion', 3, NULL, NULL, 6000.00, 10000.00, NULL, NULL, NULL, 2, '1'),
-(7, 'Analista UI Jr.', 'Beneficios: Tarjeta de Descuentos Medicos 8 dias de vacaciones Seguro de Vida Gastos funerarios', 3, NULL, NULL, 3000.00, 6000.00, NULL, NULL, NULL, 3, '1'),
-(8, 'DBA  Oracle', 'OFRECEMOS: Sueldo competitivo. Prestaciones de ley y superiores. Horario laboral de lunes a viernes. Lugar de trabajo Periferico Sur.', 5, NULL, NULL, 5000.00, 7000.00, NULL, NULL, NULL, 4, '1'),
-(9, 'Administrador base de datos DBA Postgres', 'Actividades: Administracion de la infraestructura de TI', 5, NULL, NULL, 4500.00, 5500.00, NULL, NULL, NULL, 3, '1'),
-(10, 'CONSULTOR IT , MANAGER, LIDER DE PROYECTO IT', 'OFRECEMOS: SEGURO MEDICO DE GASTOS MAYORES. CRECIMIENTO. ESTABILIDAD. DESARROLLO.', 2, NULL, NULL, 8000.00, 10000.00, NULL, NULL, NULL, 2, '1'),
-(11, 'ESPECIALISTA EN RECURSOS HUMANOS', 'IMPORTANTE FINANCIERA\r\nAPOYO ECONOMICO FAMILIAR\r\nSOLICITA\r\nESPECIALISTA EN RECURSOS HUMANOS\r\nPARA LA ZONA EN ALVARO OBREGON \r\nCON DISPONIBILIDAD PARA ACUDIR A TACUBAYA, SAN BERNABE, CUAJIMALPA\r\nManejara a su cargo 10 sucursales aledanias a la zona\r\n', 6, 0, 0, 13000.00, 15000.00, '', '', 2, 6, '1'),
-(12, 'Becario ambiental', 'Empresa dedicada a la fabricacion de productos quimicos solicita becario ambiental con experiencia, puntualidad,\r\n', 7, 0, 0, 8000.00, 12000.00, '', '', 0, 7, '1'),
-(13, 'ANALISTA DE SOPORTE A LA PRODUCCION', 'Contratacion Tiempo completo o Permanente\r\n', 8, 0, 0, 0.00, 0.00, '', '', 2, 8, ''),
-(14, 'CONSULTOR DE PROCESOS RAD', 'Contratacion: Tiempo completo Permanente\r\n', 10, 22, 0, 18000.00, 18000.00, '', '', 2, 8, '1'),
-(15, 'COORDINADOR DE MERCADOTECNIA', 'Contratacion Permanente', 9, 20, 0, 7000.00, 7000.00, '8:00 am', '18:00 pm', 1, 9, '1'),
-(16, 'Desarrollador movil Android/IOS JR12 a 20 mil y SR20 a 35mil', 'En IMDS instituto mexicano de desarrolladores de software solicitamos\r\nDesarrollador movil\r\n', 1, 24, 0, 15000.00, 30000.00, '', '', 1, 10, '1'),
-(17, 'Administrador de la Base de Datos MS SqlServer', 'En GINgroup ofrecemos las mejores soluciones integrales de vanguardia en administración de capital humano de esta manera nuestros clientes pueden enfocar su talento y sus recursos en hacer crecer su negocio, mientras nosotros nos encargamos de administrar su capital humano de manera eficiente.\r\n', 5, 0, 0, 22000.00, 30000.00, '', '', 5, 10, '1');
+INSERT INTO `vacante` (`id_vacante`, `titulo`, `vacante_desc`, `id_perfil`, `edad_min`, `edad_max`, `salario_min`, `salario_max`, `hora_inicial`, `hora_final`, `experiencia`, `id_empresa`, `status`, `ayuda_economica`) VALUES
+(1, 'Tester Jr contratacion inmediata', 'MAR SYSTEMS, es una empresa Mexicana Lider en Tecnologias de la Informacion, con presencia Internacional, y con mas de 15 años proporcionando servicios de TI.', 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 5, '1', 1),
+(2, 'TESTER', 'Funciones: \r\nPruebas funcionales, de regresion, integracion y uat en apps y software a la medida.\r\nEjecucion de plan de pruebas, pruebas de escritorio, preparacion de datos de prueba, preparacion de ambientes para verificar que los requisitos se hayan cumplido.\r\nRegistro de evidencia de las pruebas realizadas.\r\nConocimiento de herramientas para registro y seguimiento de incidencias.\r\nConfiguracion de ambientes para pruebas\r\nSoporte a usuarios.', 4, NULL, NULL, 6000.00, 8000.00, NULL, NULL, NULL, 2, '1', 1),
+(3, 'DESARROLLADOR WEB', 'Contratacion Tiempo completo Permanente', 1, NULL, NULL, 4000.00, 6000.00, NULL, NULL, NULL, 3, '1', 1),
+(4, 'DESARROLLADOR WEB', 'Ofrecemos: Sueldo competitivo, prestaciones superiores a la ley seguro de vida, seguro de gastos medicos mayores, comedor, fondo de ahorro, etc   bonos por desempeño', 1, NULL, NULL, 6000.00, 10000.00, NULL, NULL, NULL, 4, '1', 1),
+(5, 'Desarrollo Web', 'Somos una empresa mexicana proveedora de servicios de tecnologia de informacion de mision critica, busca nuevos integrantes para fortalecer su equipo de trabajo', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, '1', 0),
+(6, 'ANALISTA DE SISTEMAS', 'Principales funciones:  Medir utilizacion de herramientas Soporte a Usuarios Plan de Actualizacion Medir efectividad de la informacion', 3, NULL, NULL, 6000.00, 10000.00, NULL, NULL, NULL, 2, '1', 1),
+(7, 'Analista UI Jr.', 'Beneficios: Tarjeta de Descuentos Medicos 8 dias de vacaciones Seguro de Vida Gastos funerarios', 3, NULL, NULL, 3000.00, 6000.00, NULL, NULL, NULL, 3, '1', 1),
+(8, 'DBA  Oracle', 'OFRECEMOS: Sueldo competitivo. Prestaciones de ley y superiores. Horario laboral de lunes a viernes. Lugar de trabajo Periferico Sur.', 5, NULL, NULL, 5000.00, 7000.00, NULL, NULL, NULL, 4, '1', 1),
+(9, 'Administrador base de datos DBA Postgres', 'Actividades: Administracion de la infraestructura de TI', 5, NULL, NULL, 4500.00, 5500.00, NULL, NULL, NULL, 3, '1', 1),
+(10, 'CONSULTOR IT , MANAGER, LIDER DE PROYECTO IT', 'OFRECEMOS: SEGURO MEDICO DE GASTOS MAYORES. CRECIMIENTO. ESTABILIDAD. DESARROLLO.', 2, NULL, NULL, 8000.00, 10000.00, NULL, NULL, NULL, 2, '1', 1),
+(11, 'ESPECIALISTA EN RECURSOS HUMANOS', 'IMPORTANTE FINANCIERA\r\nAPOYO ECONOMICO FAMILIAR\r\nSOLICITA\r\nESPECIALISTA EN RECURSOS HUMANOS\r\nPARA LA ZONA EN ALVARO OBREGON \r\nCON DISPONIBILIDAD PARA ACUDIR A TACUBAYA, SAN BERNABE, CUAJIMALPA\r\nManejara a su cargo 10 sucursales aledanias a la zona\r\n', 6, 0, 0, 13000.00, 15000.00, '', '', 2, 6, '1', 1),
+(12, 'Becario ambiental', 'Empresa dedicada a la fabricacion de productos quimicos solicita becario ambiental con experiencia, puntualidad,\r\n', 7, 0, 0, 8000.00, 12000.00, '', '', 0, 7, '1', 1),
+(13, 'ANALISTA DE SOPORTE A LA PRODUCCION', 'Contratacion Tiempo completo o Permanente\r\n', 8, 0, 0, 0.00, 0.00, '', '', 2, 8, '', 1),
+(14, 'CONSULTOR DE PROCESOS RAD', 'Contratacion: Tiempo completo Permanente\r\n', 10, 22, 0, 18000.00, 18000.00, '', '', 2, 8, '1', 1),
+(15, 'COORDINADOR DE MERCADOTECNIA', 'Contratacion Permanente', 9, 20, 0, 7000.00, 7000.00, '8:00 am', '18:00 pm', 1, 9, '1', 1),
+(16, 'Desarrollador movil Android/IOS JR12 a 20 mil y SR20 a 35mil', 'En IMDS instituto mexicano de desarrolladores de software solicitamos\r\nDesarrollador movil\r\n', 1, 24, 0, 15000.00, 30000.00, '', '', 1, 10, '1', 1),
+(17, 'Administrador de la Base de Datos MS SqlServer', 'En GINgroup ofrecemos las mejores soluciones integrales de vanguardia en administración de capital humano de esta manera nuestros clientes pueden enfocar su talento y sus recursos en hacer crecer su negocio, mientras nosotros nos encargamos de administrar su capital humano de manera eficiente.\r\n', 5, 0, 0, 22000.00, 30000.00, '', '', 5, 10, '1', 1);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

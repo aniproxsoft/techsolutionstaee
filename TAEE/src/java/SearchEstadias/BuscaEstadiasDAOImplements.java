@@ -91,6 +91,12 @@ public class BuscaEstadiasDAOImplements implements BuscaEstadiasDAO {
                 }
                 vacante.setNum_telefono(respuesta.getString(19));
                 vacante.setCorreo_empresa(respuesta.getString(20));
+                vacante.setAyuda_economica(respuesta.getBoolean(21));
+                if(vacante.isAyuda_economica()==true){
+                    vacante.setAyuda("Si");
+                }else{
+                    vacante.setAyuda("No");
+                }
                 vacantes.add(vacante);
 
             }

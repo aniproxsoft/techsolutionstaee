@@ -64,7 +64,12 @@
 
                         </h:panelGroup>
                         <br/>
-
+                        <h:panelGroup>
+                            <h:outputText value="Ayuda Económica: " />
+                            <h:outputText value="${beanSearchEstadias.vacanteDetail.ayuda}" />
+                            
+                        </h:panelGroup>
+                        <br/>
                         <h:outputText style=" font-weight: bold;" value="$ #{beanSearchEstadias.vacanteDetail.salario_min} - $ #{beanSearchEstadias.vacanteDetail.salario_max} Mensuales" 
                                       rendered="${beanSearchEstadias.vacanteDetail.renderSalario}" />
                         <br/>
@@ -200,7 +205,7 @@
                     <p:dataGrid var="vacante" value="${beanSearchEstadias.vacantes}" columns="1"
                                 paginator="true" id="vacantes" rows="10"
                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                rowsPerPageTemplate="6,12,16">
+                                rowsPerPageTemplate="6,12,16" >
 
                         <f:facet name="header">
                             Vacantes de estadía

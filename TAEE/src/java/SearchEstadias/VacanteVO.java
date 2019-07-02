@@ -44,6 +44,8 @@ public class VacanteVO {
     private boolean renderHora;
     private boolean renderHabilidades;
     private boolean renderEdad2;
+    private boolean ayuda_economica;
+    private String ayuda;
 
     public Integer getId_vacante() {
         return id_vacante;
@@ -275,5 +277,21 @@ public class VacanteVO {
 
     public void setRenderEdad2(boolean renderEdad2) {
         this.renderEdad2 = renderEdad2;
+    }
+
+    public boolean isAyuda_economica() {
+        return ayuda_economica;
+    }
+
+    public void setAyuda_economica(boolean ayuda_economica) {
+        this.ayuda_economica = ayuda_economica;
+    }
+
+    public String getAyuda() {
+        return ayuda;
+    }
+
+    public void setAyuda(String ayuda) {
+        this.ayuda = ayuda;
     }
 }

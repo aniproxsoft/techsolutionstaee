@@ -39,7 +39,7 @@ BEGIN
 		v.id_perfil,p.nombre_perfil, edad_min,edad_max,
 		salario_min,salario_max, hora_inicial,hora_final, 
 		experiencia,v.id_empresa,e.nombre,v.status,concat(e.direccion,',', es.nombre_estado,',',ci.nombre_ciudad)
-		,e.num_telefono,e.correo_empresa
+		,e.num_telefono,e.correo_empresa,v.ayuda_economica
 		from vacante v 
 		RIGHT join conocimiento_vac cv on v.id_vacante=cv.id_vacante
 		RIGHT join habilidad_vac hv on v.id_vacante=hv.id_vacante 
@@ -53,14 +53,14 @@ BEGIN
 		and cv.id_conocimiento in(SELECT id from temp_conocimiento)
 		and hv.id_habilidades in(SELECT id from temp_habilidad)
 		and v.status='1'
-		and e.status=3;
+		and e.status=2;
     else
     	SELECT DISTINCT v.id_vacante,titulo,vacante_desc,
 		na.nombre_nivel,ca.carrera_desc, 
 		v.id_perfil,p.nombre_perfil, edad_min,edad_max,
 		salario_min,salario_max, hora_inicial,hora_final, 
 		experiencia,v.id_empresa,e.nombre,v.status,concat(e.direccion,',', es.nombre_estado,',',ci.nombre_ciudad)
-		,e.num_telefono,e.correo_empresa
+		,e.num_telefono,e.correo_empresa,v.ayuda_economica
 		from vacante v 
 		RIGHT join conocimiento_vac cv on v.id_vacante=cv.id_vacante
 		INNER JOIN perfil p on v.id_perfil=p.id_perfil
@@ -72,7 +72,7 @@ BEGIN
 		WHERE v.id_perfil=perfil 
 		and cv.id_conocimiento in(SELECT id from temp_conocimiento)
 		and v.status='1'
-		and e.status=3;
+		and e.status=2;
     end if;
 
    	

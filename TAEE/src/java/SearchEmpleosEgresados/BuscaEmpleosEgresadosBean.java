@@ -70,7 +70,7 @@ public class BuscaEmpleosEgresadosBean {
 
     public void buscaCarreras() {
         carreras = new ArrayList<>();
-        carreras = dao.getCarreras(cve_nivel);
+        carreras.add(dao.getCarreras(cve_nivel).get(0));
     }
 
     public void buscaPerfiles() {
