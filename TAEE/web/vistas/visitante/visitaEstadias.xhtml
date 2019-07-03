@@ -65,9 +65,9 @@
                         </h:panelGroup>
                         <br/>
                         <h:panelGroup>
-                            <h:outputText value="Ayuda Económica: " />
-                            <h:outputText value="${beanSearchEstadias.vacanteDetail.ayuda}" />
-                            
+                            <h:outputText style="font-weight: bold" value="Ayuda Económica: " />
+                            <h:outputText style="font-weight: bold" value="${beanSearchEstadias.vacanteDetail.ayuda}" />
+
                         </h:panelGroup>
                         <br/>
                         <h:outputText style=" font-weight: bold;" value="$ #{beanSearchEstadias.vacanteDetail.salario_min} - $ #{beanSearchEstadias.vacanteDetail.salario_max} Mensuales" 
@@ -190,6 +190,7 @@
 
 
 
+
                 </h:panelGrid>
                 <!--<center style="margin-top: 20px">-->
 
@@ -197,15 +198,20 @@
 
 
             </div>
+            <div style="margin-left: 75%">
+                <h:commandButton actionListener="${beanSearchEstadias.generaReporte()}" 
+                                 title="Imprimir favoritas"  value="Imprimir" />
 
+            </div>
+            <br/>
 
 
             <center>
-                <div id="content_vacantes" style="width: 60%; margin-top: 2%">
+                <div id="content_vacantes" style="width: 60%; ">
                     <p:dataGrid var="vacante" value="${beanSearchEstadias.vacantes}" columns="1"
                                 paginator="true" id="vacantes" rows="10"
                                 paginatorTemplate="{CurrentPageReport}  {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
-                                rowsPerPageTemplate="6,12,16" >
+                                rowsPerPageTemplate="6,12,16" emptyMessage="Sin vaantes aún">
 
                         <f:facet name="header">
                             Vacantes de estadía
@@ -216,19 +222,34 @@
                                 <h:outputText style="font-size: 20px;color: #038C65; font-weight: bold" value="${vacante.titulo}"/>
                                 <h:outputText style="font-size: 15px; font-weight: bold" value="${vacante.nombre}" />
                                 <h:outputText  value="${vacante.direccion}" />
+                                <h:panelGroup>
+                                    <h:outputText style="font-weight: bold" value="Ayuda Económica: " />
+                                    <h:outputText style="font-weight: bold" value="${vacante.ayuda}" />
+
+                                </h:panelGroup>
                                 <h:outputText style=" font-weight: bold;" value="$ #{vacante.salario_min} - $ #{vacante.salario_max} Mensuales" 
                                               rendered="${vacante.renderSalario}" />
                                 <h:outputText style=" color: grey" value="${vacante.vacante_descCorta}..."/>
+
                                 <p:commandButton style="width: 50px; height: 30px;" id="boton" onclick="subir()"
                                                  actionListener="${beanSearchEstadias.showDetail(vacante)}"
                                                  value="Ver" title="Ver detalle" ></p:commandButton>
+                                <br/>
+                                <p:outputLabel for="check" value="Favorita: " />
+                                <p:selectBooleanCheckbox id="check" value="${vacante.check}" >
+                                    <p:ajax event="change"  listener="${beanSearchEstadias.addOrDeleteFav(vacante)}"/>
+                                </p:selectBooleanCheckbox>  
+
+
                             </h:panelGrid>
                         </p:panel>
 
-                    </p:dataGrid>
-                </div>
 
+                    </p:dataGrid>
+
+                </div>
             </center>
+
 
             <script type="text/javascript">
                 function ocultaMsj(time) {
@@ -247,6 +268,7 @@
                 }
 
             </script>
+
         </h:form>
 
 

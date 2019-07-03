@@ -17,12 +17,20 @@ import vacantes.HabilidadVO;
 import vacantes.NivelAcademicoVO;
 import vacantes.PerfilVO;
 import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import javax.faces.application.FacesMessage;
 import javax.faces.context.FacesContext;
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletResponse;
+import net.sf.jasperreports.engine.JRException;
+import net.sf.jasperreports.engine.JasperExportManager;
+import net.sf.jasperreports.engine.JasperFillManager;
+import net.sf.jasperreports.engine.JasperPrint;
+import net.sf.jasperreports.engine.JasperReport;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.primefaces.context.RequestContext;
 
 /**
@@ -39,6 +47,7 @@ public class SearchEstadiasBean implements Serializable {
     private List<ConocimientoVO> conocimientos;
     private List<HabilidadVO> habilidades;
     private List<VacanteVO> vacantes;
+    private List<VacanteVO> favoritas;
     private BuscaEstadiasDAO dao;
     private Integer cve_nivel;
     private Integer cve_carrera;
@@ -78,6 +87,7 @@ public class SearchEstadiasBean implements Serializable {
     }
 
     public void buscaEstadias() {
+        favoritas = new ArrayList<>();
         JsonArray jarray_conoc = new JsonArray();
         JsonArray jarray_habil = new JsonArray();
         String jsonHabilidades = "";
@@ -128,6 +138,34 @@ public class SearchEstadiasBean implements Serializable {
         renderView = true;
 //        System.out.println("objeto seleccionado: " + gson.toJson(vacanteDetail));
         RequestContext.getCurrentInstance().update("formulario");
+    }
+
+    public void addOrDeleteFav(VacanteVO favorita) {
+        if (favorita.isCheck()) {
+            favoritas.add(favorita);
+        }else{
+            favoritas.remove(favorita);
+        }
+//        System.out.println("tam: "+favoritas.size());
+    }
+
+    public void generaReporte() throws IOException, JRException {
+        if (favoritas.size() > 0) {
+            File jasper = new File(FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resources/reportes/vacantesFavoritas.jasper"));
+            JasperPrint print = JasperFillManager.fillReport(jasper.getPath(), null, new JRBeanCollectionDataSource(favoritas));
+            HttpServletResponse response = (HttpServletResponse) FacesContext.getCurrentInstance().getExternalContext().getResponse();
+            response.addHeader("Content-disposition", "attachment; filename=vacantes_favoritas.pdf");
+            ServletOutputStream stream = response.getOutputStream();
+            JasperExportManager.exportReportToPdfStream(print, stream);
+            stream.flush();
+            stream.close();
+            FacesContext.getCurrentInstance().responseComplete();
+        } else {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Debe seleccionar al menos una vacante favorita"));
+            RequestContext.getCurrentInstance().update("mensajes");
+            RequestContext.getCurrentInstance().execute("ocultaMsj(3000)");
+        }
+
     }
 
     public List<NivelAcademicoVO> getNiveles() {

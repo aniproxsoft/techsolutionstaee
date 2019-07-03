@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="842" pageHeight="595" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
+	<property name="ireport.zoom" value="1.0000000000000002"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<field name="nombre" class="java.lang.String"/>
+	<field name="nombre_nivel" class="java.lang.String"/>
+	<field name="carrera_desc" class="java.lang.String"/>
+	<field name="nombre_perfil" class="java.lang.String"/>
+	<field name="ayuda" class="java.lang.String"/>
+	<field name="direccion" class="java.lang.String"/>
+	<field name="num_telefono" class="java.lang.String"/>
+	<field name="correo_empresa" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement x="681" y="0" width="166" height="65" isRemoveLineWhenBlank="true" forecolor="#038C65"/>
+				<textElement verticalAlignment="Middle">
+					<font fontName="Serif" size="36" isBold="true"/>
+				</textElement>
+				<text><![CDATA[TAEG]]></text>
+			</staticText>
+			<image>
+				<reportElement x="14" y="0" width="117" height="79"/>
+				<imageExpression class="java.lang.String"><![CDATA["C:\\Users\\gabo0\\OneDrive\\Documentos\\Trabajos-ingenieria\\801\\Proyecto\\ProyectoTAEG\\TAEE\\web\\resources\\reportes\\utn.jpg"]]></imageExpression>
+			</image>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="42" splitType="Stretch">
+			<staticText>
+				<reportElement x="315" y="0" width="165" height="26" forecolor="#038C65"/>
+				<textElement>
+					<font fontName="Arial" size="18"/>
+				</textElement>
+				<text><![CDATA[Vacantes Favoritas]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="20" splitType="Stretch">
+			<staticText>
+				<reportElement stretchType="RelativeToBandHeight" mode="Opaque" x="0" y="0" width="117" height="20" forecolor="#038C65" backcolor="#CCFFCC"/>
+				<box>
+					<pen lineWidth="1.25" lineColor="#038C65"/>
+					<topPen lineWidth="1.25" lineColor="#038C65"/>
+					<leftPen lineWidth="1.25" lineColor="#038C65"/>
+					<bottomPen lineWidth="1.25" lineColor="#038C65"/>
+					<rightPen lineWidth="1.25" lineColor="#038C65"/>
+				</box>
+				<textElement verticalAlignment="Middle" markup="styled">
+					<font fontName="Arial" size="10" isBold="true" isItalic="false"/>
+					<paragraph lineSpacing="1_1_2" firstLineIndent="5" leftIndent="5">
+						<tabStop position="0" alignment="Center"/>
+					</paragraph>
+				</textElement>
+				<text><![CDATA[Empresa]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="117" y="0" width="100" height="20" forecolor="#038C65" backcolor="#CCFFCC"/>
+				<box>
+					<pen lineWidth="1.25" lineColor="#038C65"/>
+					<topPen lineWidth="1.25" lineColor="#038C65"/>
+					<leftPen lineWidth="1.25" lineColor="#038C65"/>
+					<bottomPen lineWidth="1.25" lineColor="#038C65"/>
+					<rightPen lineWidth="1.25" lineColor="#038C65"/>
+				</box>
+				<textElement verticalAlignment="Middle" rotation="None" markup="styled">
+					<font fontName="Arial" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Nivel Academico]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="217" y="0" width="98" height="20" forecolor="#038C65" backcolor="#CCFFCC"/>
+				<box>
+					<pen lineWidth="1.25" lineColor="#038C65"/>
+					<topPen lineWidth="1.25" lineColor="#038C65"/>
+					<leftPen lineWidth="1.25" lineColor="#038C65"/>
+					<bottomPen lineWidth="1.25" lineColor="#038C65"/>
+					<rightPen lineWidth="1.25" lineColor="#038C65"/>
+				</box>
+				<textElement verticalAlignment="Middle" rotation="None" markup="styled">
+					<font fontName="Arial" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Carrera]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="315" y="0" width="102" height="20" forecolor="#038C65" backcolor="#CCFFCC"/>
+				<box>
+					<pen lineWidth="1.25" lineColor="#038C65"/>
+					<topPen lineWidth="1.25" lineColor="#038C65"/>
+					<leftPen lineWidth="1.25" lineColor="#038C65"/>
+					<bottomPen lineWidth="1.25" lineColor="#038C65"/>
+					<rightPen lineWidth="1.25" lineColor="#038C65"/>
+				</box>
+				<textElement verticalAlignment="Middle" rotation="None" markup="styled">
+					<font fontName="Arial" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Perfil]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="417" y="0" width="63" height="20" forecolor="#038C65" backcolor="#CCFFCC"/>
+				<box>
+					<pen lineWidth="1.25" lineColor="#038C65"/>
+					<topPen lineWidth="1.25" lineColor="#038C65"/>
+					<leftPen lineWidth="1.25" lineColor="#038C65"/>
+					<bottomPen lineWidth="1.25" lineColor="#038C65"/>
+					<rightPen lineWidth="1.25" lineColor="#038C65"/>
+				</box>
+				<textElement verticalAlignment="Middle" rotation="None" markup="styled">
+					<font fontName="Arial" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Ayuda Eco.]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="480" y="0" width="122" height="20" forecolor="#038C65" backcolor="#CCFFCC"/>
+				<box>
+					<pen lineWidth="1.25" lineColor="#038C65"/>
+					<topPen lineWidth="1.25" lineColor="#038C65"/>
+					<leftPen lineWidth="1.25" lineColor="#038C65"/>
+					<bottomPen lineWidth="1.25" lineColor="#038C65"/>
+					<rightPen lineWidth="1.25" lineColor="#038C65"/>
+				</box>
+				<textElement verticalAlignment="Middle" rotation="None" markup="styled">
+					<font fontName="SansSerif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Dirección]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="702" y="0" width="100" height="20" forecolor="#038C65" backcolor="#CCFFCC"/>
+				<box>
+					<pen lineWidth="1.25" lineColor="#038C65"/>
+					<topPen lineWidth="1.25" lineColor="#038C65"/>
+					<leftPen lineWidth="1.25" lineColor="#038C65"/>
+					<bottomPen lineWidth="1.25" lineColor="#038C65"/>
+					<rightPen lineWidth="1.25" lineColor="#038C65"/>
+				</box>
+				<textElement verticalAlignment="Middle" rotation="None" markup="styled">
+					<font fontName="Arial" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Correro]]></text>
+			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="602" y="0" width="100" height="20" forecolor="#038C65" backcolor="#CCFFCC"/>
+				<box>
+					<pen lineWidth="1.25" lineColor="#038C65"/>
+					<topPen lineWidth="1.25" lineColor="#038C65"/>
+					<leftPen lineWidth="1.25" lineColor="#038C65"/>
+					<bottomPen lineWidth="1.25" lineColor="#038C65"/>
+					<rightPen lineWidth="1.25" lineColor="#038C65"/>
+				</box>
+				<textElement verticalAlignment="Middle" rotation="None" markup="styled">
+					<font fontName="Arial" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Telefono]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="60" splitType="Stretch">
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement mode="Transparent" x="117" y="0" width="100" height="56" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<pen lineWidth="1.25" lineColor="#038C65"/>
+					<topPen lineWidth="1.25" lineColor="#038C65"/>
+					<leftPen lineWidth="1.25" lineColor="#038C65"/>
+					<bottomPen lineWidth="1.25" lineColor="#038C65"/>
+					<rightPen lineWidth="1.25" lineColor="#038C65"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="styled">
+					<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{nombre_nivel}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement mode="Transparent" x="702" y="0" width="100" height="56" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<pen lineWidth="1.25" lineColor="#038C65"/>
+					<topPen lineWidth="1.25" lineColor="#038C65"/>
+					<leftPen lineWidth="1.25" lineColor="#038C65"/>
+					<bottomPen lineWidth="1.25" lineColor="#038C65"/>
+					<rightPen lineWidth="1.25" lineColor="#038C65"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="styled">
+					<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{correo_empresa}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement mode="Transparent" x="417" y="0" width="63" height="56" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<pen lineWidth="1.25" lineColor="#038C65"/>
+					<topPen lineWidth="1.25" lineColor="#038C65"/>
+					<leftPen lineWidth="1.25" lineColor="#038C65"/>
+					<bottomPen lineWidth="1.25" lineColor="#038C65"/>
+					<rightPen lineWidth="1.25" lineColor="#038C65"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="styled">
+					<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{ayuda}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement mode="Transparent" x="480" y="0" width="122" height="56" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<pen lineWidth="1.25" lineColor="#038C65"/>
+					<topPen lineWidth="1.25" lineColor="#038C65"/>
+					<leftPen lineWidth="1.25" lineColor="#038C65"/>
+					<bottomPen lineWidth="1.25" lineColor="#038C65"/>
+					<rightPen lineWidth="1.25" lineColor="#038C65"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="styled">
+					<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{direccion}]]></textFieldExpression>
+			</textField>
+			<textField isBlankWhenNull="false">
+				<reportElement x="0" y="0" width="117" height="56"/>
+				<box>
+					<pen lineWidth="1.25" lineColor="#038C65"/>
+					<topPen lineWidth="1.25" lineColor="#038C65"/>
+					<leftPen lineWidth="1.25" lineColor="#038C65"/>
+					<bottomPen lineWidth="1.25" lineColor="#038C65"/>
+					<rightPen lineWidth="1.25" lineColor="#038C65"/>
+				</box>
+				<textElement markup="styled">
+					<font isPdfEmbedded="false"/>
+					<paragraph lineSpacing="1_1_2" leftIndent="5">
+						<tabStop position="0" alignment="Right"/>
+					</paragraph>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{nombre}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement mode="Transparent" x="315" y="0" width="102" height="56" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<pen lineWidth="1.25" lineColor="#038C65"/>
+					<topPen lineWidth="1.25" lineColor="#038C65"/>
+					<leftPen lineWidth="1.25" lineColor="#038C65"/>
+					<bottomPen lineWidth="1.25" lineColor="#038C65"/>
+					<rightPen lineWidth="1.25" lineColor="#038C65"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="styled">
+					<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{nombre_perfil}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement mode="Transparent" x="602" y="0" width="100" height="56" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<pen lineWidth="1.25" lineColor="#038C65"/>
+					<topPen lineWidth="1.25" lineColor="#038C65"/>
+					<leftPen lineWidth="1.25" lineColor="#038C65"/>
+					<bottomPen lineWidth="1.25" lineColor="#038C65"/>
+					<rightPen lineWidth="1.25" lineColor="#038C65"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="styled">
+					<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{num_telefono}]]></textFieldExpression>
+			</textField>
+			<textField pattern="" isBlankWhenNull="false">
+				<reportElement mode="Transparent" x="217" y="0" width="98" height="56" forecolor="#000000" backcolor="#FFFFFF"/>
+				<box>
+					<pen lineWidth="1.25" lineColor="#038C65"/>
+					<topPen lineWidth="1.25" lineColor="#038C65"/>
+					<leftPen lineWidth="1.25" lineColor="#038C65"/>
+					<bottomPen lineWidth="1.25" lineColor="#038C65"/>
+					<rightPen lineWidth="1.25" lineColor="#038C65"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Top" rotation="None" markup="styled">
+					<font fontName="SansSerif" size="10" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
+				</textElement>
+				<textFieldExpression class="java.lang.String"><![CDATA[$F{carrera_desc}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="44" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch">
+			<staticText>
+				<reportElement x="338" y="17" width="142" height="20"/>
+				<textElement/>
+				<text><![CDATA[Copyright © Tech Solutions]]></text>
+			</staticText>
+			<textField pattern="EEEEE dd MMMMM yyyy">
+				<reportElement x="0" y="17" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="702" y="17" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.lang.Integer"><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="602" y="17" width="100" height="20"/>
+				<textElement textAlignment="Right"/>
+				<text><![CDATA[Página: ]]></text>
+			</staticText>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>
