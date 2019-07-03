@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="842" pageHeight="595" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.0000000000000002"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="0"/>
+	<property name="ireport.y" value="3"/>
 	<field name="nombre" class="java.lang.String"/>
 	<field name="nombre_nivel" class="java.lang.String"/>
 	<field name="carrera_desc" class="java.lang.String"/>
@@ -302,11 +302,6 @@
 				<textElement/>
 				<text><![CDATA[Copyright © Tech Solutions]]></text>
 			</staticText>
-			<textField pattern="EEEEE dd MMMMM yyyy">
-				<reportElement x="0" y="17" width="100" height="20"/>
-				<textElement/>
-				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
 			<textField>
 				<reportElement x="702" y="17" width="100" height="20"/>
 				<textElement/>
@@ -317,6 +312,11 @@
 				<textElement textAlignment="Right"/>
 				<text><![CDATA[Página: ]]></text>
 			</staticText>
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="0" y="17" width="100" height="20"/>
+				<textElement/>
+				<textFieldExpression class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
 		</band>
 	</pageFooter>
 	<summary>

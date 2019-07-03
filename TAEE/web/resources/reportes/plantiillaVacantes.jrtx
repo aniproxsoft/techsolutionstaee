@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE jasperTemplate PUBLIC "-//JasperReports//DTD Template//EN" "http://jasperreports.sourceforge.net/dtds/jaspertemplate.dtd">
-
-<jasperTemplate>
-	<style name="titulo_principal" forecolor="#009933" fontName="Berlin Sans FB" fontSize="26" isBold="false" isItalic="false" isUnderline="false" isStrikeThrough="false"/>
-</jasperTemplate>
