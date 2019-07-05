@@ -58,6 +58,7 @@ public class ReadExcel {
         columnas.add("Telefono");
         columnas.add("Folio de convenio");
         columnas.add("RFC de la Empresa");
+        columnas.add("Correo de Empresa");
         ciudades = dao.getCiudades();
         estados = dao.getEstados();
 
@@ -212,6 +213,9 @@ public class ReadExcel {
                             carga.setRfc(cell.toString());
 
                             break;
+                        case 8:
+                            carga.setCorreo_empresa(cell.toString());
+                            break;
 
                     }
 
@@ -279,6 +283,11 @@ public class ReadExcel {
                     observ += "El campo RFC de la Empresa esta en blanco" + ". ";
                 } else if (bulkLoad.get(i).getTelefono().length() > 20) {
                     observ += "El campo RFC de la Empresa excede numero de caracteres (20)" + ". ";
+                }
+                if(bulkLoad.get(i).getCorreo_empresa().equals("")|| bulkLoad.get(i).getCorreo_empresa()==null){
+                    observ += "El campo Correo de Empresa esta en blanco";
+                } else if (bulkLoad.get(i).getCorreo_empresa().length() > 50) {
+                    observ += "El campo Correo de Empresa  excede numero de caracteres (50)" + ". ";
                 }
 
                 if (observ.equals("")) {

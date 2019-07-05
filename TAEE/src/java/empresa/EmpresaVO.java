@@ -23,6 +23,7 @@ public class EmpresaVO {
     private String nombre_estado="";
     private String nombre_ciudad="";
     private String convenio="";
+    private String correo_empresa="";
 
     public Integer getId_empresa() {
         return id_empresa;
@@ -128,5 +129,13 @@ public class EmpresaVO {
 
     public void setNombre_empresa(String nombre_empresa) {
         this.nombre_empresa = nombre_empresa;
+    }
+
+    public String getCorreo_empresa() {
+        return correo_empresa;
+    }
+
+    public void setCorreo_empresa(String correo_empresa) {
+        this.correo_empresa = correo_empresa;
     }
 }

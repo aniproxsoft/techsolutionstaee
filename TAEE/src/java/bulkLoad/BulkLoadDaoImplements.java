@@ -96,6 +96,7 @@ public class BulkLoadDaoImplements implements BulkLoadDao {
                 bulk.setUpdates(respuesta.getInt(14));
                 bulk.setInserts(respuesta.getInt(15));
                 System.out.println(respuesta.getString(16));
+                bulk.setCorreo_empresa(respuesta.getString(17));
                 cargas.add(bulk);
             }
             return cargas;
