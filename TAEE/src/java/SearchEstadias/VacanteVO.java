@@ -6,6 +6,7 @@
 package SearchEstadias;
 
 import java.util.List;
+import javax.faces.context.FacesContext;
 import vacantes.ConocimientoVO;
 import vacantes.HabilidadVO;
 
@@ -47,6 +48,7 @@ public class VacanteVO {
     private boolean ayuda_economica;
     private String ayuda;
     private boolean check;
+    private String imagen_utn=FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resources/reportes/utn.jpg");
 
     public Integer getId_vacante() {
         return id_vacante;
@@ -302,5 +304,13 @@ public class VacanteVO {
 
     public void setCheck(boolean check) {
         this.check = check;
+    }
+
+    public String getImagen_utn() {
+        return imagen_utn;
+    }
+
+    public void setImagen_utn(String imagen_utn) {
+        this.imagen_utn = imagen_utn;
     }
 }
