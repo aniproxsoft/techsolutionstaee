@@ -23,10 +23,6 @@
 				</textElement>
 				<text><![CDATA[TAEG]]></text>
 			</staticText>
-			<image>
-				<reportElement x="14" y="0" width="117" height="79"/>
-				<imageExpression class="java.lang.String"><![CDATA["C:\\Users\\gabo0\\OneDrive\\Documentos\\Trabajos-ingenieria\\801\\Proyecto\\ProyectoTAEG\\TAEE\\web\\resources\\reportes\\utn.jpg"]]></imageExpression>
-			</image>
 		</band>
 	</title>
 	<pageHeader>
