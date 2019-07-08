@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 02-07-2019 a las 02:15:01
+-- Tiempo de generación: 08-07-2019 a las 18:17:33
 -- Versión del servidor: 5.7.19
 -- Versión de PHP: 5.6.31
 
@@ -100,12 +100,13 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_bulkload` (IN `empresas` VARCHAR
 					id_ciudad=JSON_EXTRACT(empresas, CONCAT('$[',_index,'].id_ciudad')),
 					codigo_postal=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,']. codigo_postal')), '"', '')),
 					num_telefono=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].telefono')), '"', '')),
-					folio_convenio=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].convenio')), '"', ''))
+					folio_convenio=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].convenio')), '"', '')),
+					correo_empresa=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].correo_empresa')), '"', ''))
 					Where rfc=(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].rfc')), '"', ''));
 
 					Set countUpdate= countUpdate+1;
 				else
-					Insert into empresa (nombre,direccion,id_estado,id_ciudad,codigo_postal,num_telefono,folio_convenio,rfc,status)
+					Insert into empresa (nombre,direccion,id_estado,id_ciudad,codigo_postal,num_telefono,folio_convenio,rfc,status,correo_empresa)
 					VALUES(
 						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].nombre_empresa')), '"', '')),
 						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,']. direccion')), '"', '')),
@@ -115,7 +116,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_bulkload` (IN `empresas` VARCHAR
 						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].telefono')), '"', '')),
 						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].convenio')), '"', '')),
 						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].rfc')), '"', '')),
-						'3'
+						'3',
+						(Select replace(JSON_EXTRACT(empresas, CONCAT('$[',_index,'].correo_empresa')), '"', ''))
 
 					);
 					SET COUNT = (select ROW_count());
@@ -137,7 +139,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_bulkload` (IN `empresas` VARCHAR
 				Set lote_id=1;
 			end if;
 			While _index2 < json_items2 Do
-				INSERT INTO bulkload_empresa (lote,nombre,direccion,estado,ciudad,codigo_postal,num_telefono,folio_convenio,rfc,observaciones) 
+				INSERT INTO bulkload_empresa (lote,nombre,direccion,estado,ciudad,codigo_postal,num_telefono,folio_convenio,rfc,observaciones,correo_empresa) 
 				VALUES (
 				lote_id,
 				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].nombre_empresa')), '"', '')),
@@ -148,7 +150,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_bulkload` (IN `empresas` VARCHAR
 				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].telefono')), '"', '')),
 				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].convenio')), '"', '')),
 				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].rfc')), '"', '')),
-				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].observaciones')), '"', ''))
+				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].observaciones')), '"', '')),
+				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].correo_empresa')), '"', ''))
 				); 
 				SET _index2 := _index2 + 1; 
 
@@ -175,7 +178,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_bulkload` (IN `empresas` VARCHAR
 			Set countFail=countbulk-suma;
 			
 			
-			Select lote,id_bulkload,nombre,direccion,estado,ciudad,codigo_postal,num_telefono,folio_convenio,rfc,observaciones,countbulk, countFail,countUpdate,countInsert,msj
+			Select lote,id_bulkload,nombre,direccion,estado,ciudad,codigo_postal,num_telefono,folio_convenio,rfc,observaciones,countbulk, countFail,countUpdate,countInsert,msj,correo_empresa
 			from bulkload_empresa where lote =lote_id;
 End$$
 
@@ -197,6 +200,15 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_conco_habil` (`clave` INT, `
 		INNER JOIN habilidad h on hv.id_habilidades= h.id_habilidad
 		where hv.id_vacante=clave;
 	END IF;
+END$$
+
+DROP PROCEDURE IF EXISTS `sp_get_empresas`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_empresas` (`tipo` INT)  BEGIN
+	SELECT id_empresa,direccion,nombre,id_estado,id_ciudad,
+	codigo_postal,id_usuario,num_telefono,folio_convenio,rfc,
+	status,correo_empresa
+	FROM empresa
+	where status=tipo;
 END$$
 
 DROP PROCEDURE IF EXISTS `sp_get_estados`$$
@@ -308,6 +320,29 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_egresados` (IN `per
 
 END$$
 
+DROP PROCEDURE IF EXISTS `sp_get_vacantes_egresados_por_empresa`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_egresados_por_empresa` (`empresa` INT)  BEGIN
+    	SELECT DISTINCT v.id_vacante,titulo,vacante_desc,
+		na.nombre_nivel,ca.carrera_desc, 
+		v.id_perfil,p.nombre_perfil, edad_min,edad_max,
+		salario_min,salario_max, hora_inicial,hora_final, 
+		experiencia,v.id_empresa,e.nombre,v.status,concat(e.direccion,',', es.nombre_estado,',',ci.nombre_ciudad)
+		,e.num_telefono,e.correo_empresa,v.ayuda_economica
+		from vacante v 
+		RIGHT join conocimiento_vac cv on v.id_vacante=cv.id_vacante
+		RIGHT join habilidad_vac hv on v.id_vacante=hv.id_vacante 
+		INNER JOIN perfil p on v.id_perfil=p.id_perfil
+		INNER JOIN empresa e on v.id_empresa=e.id_empresa
+		INNER JOIN carreras ca on p.id_carrera=ca.id_carrera
+		INNER JOIN nivel_academico na on ca.id_nivel= na.id_nivel
+        INNER JOIN estado es on e.id_estado = es.id_estado
+        INNER JOIN ciudad ci on e.id_ciudad= ci.id_ciudad and e.id_estado=ci.id_estado
+		WHERE  e.id_empresa=empresa
+		and v.status='1'
+		and e.status=2;
+ 
+END$$
+
 DROP PROCEDURE IF EXISTS `sp_get_vacantes_estadia`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_estadia` (IN `perfil` INT, IN `json_conocimiento` VARCHAR(65000), IN `json_habilidades` VARCHAR(65000))  BEGIN
 	DECLARE json_items int ;   
@@ -389,6 +424,29 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_estadia` (IN `perfi
 
 END$$
 
+DROP PROCEDURE IF EXISTS `sp_get_vacantes_estadia_por_empresa`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_estadia_por_empresa` (`empresa` INT)  BEGIN
+    	SELECT DISTINCT v.id_vacante,titulo,vacante_desc,
+		na.nombre_nivel,ca.carrera_desc, 
+		v.id_perfil,p.nombre_perfil, edad_min,edad_max,
+		salario_min,salario_max, hora_inicial,hora_final, 
+		experiencia,v.id_empresa,e.nombre,v.status,concat(e.direccion,',', es.nombre_estado,',',ci.nombre_ciudad)
+		,e.num_telefono,e.correo_empresa,v.ayuda_economica
+		from vacante v 
+		RIGHT join conocimiento_vac cv on v.id_vacante=cv.id_vacante
+		RIGHT join habilidad_vac hv on v.id_vacante=hv.id_vacante 
+		INNER JOIN perfil p on v.id_perfil=p.id_perfil
+		INNER JOIN empresa e on v.id_empresa=e.id_empresa
+		INNER JOIN carreras ca on p.id_carrera=ca.id_carrera
+		INNER JOIN nivel_academico na on ca.id_nivel= na.id_nivel
+        INNER JOIN estado es on e.id_estado = es.id_estado
+        INNER JOIN ciudad ci on e.id_ciudad= ci.id_ciudad and e.id_estado=ci.id_estado
+		WHERE  e.id_empresa=empresa
+		and v.status='1'
+		and e.status=3;
+ 
+END$$
+
 DELIMITER ;
 
 -- --------------------------------------------------------
@@ -411,6 +469,7 @@ CREATE TABLE IF NOT EXISTS `bulkload_empresa` (
   `folio_convenio` varchar(200) DEFAULT NULL,
   `rfc` varchar(200) DEFAULT NULL,
   `observaciones` varchar(5000) DEFAULT NULL,
+  `correo_empresa` varchar(500) NOT NULL,
   PRIMARY KEY (`lote`,`id_bulkload`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
@@ -418,55 +477,103 @@ CREATE TABLE IF NOT EXISTS `bulkload_empresa` (
 -- Volcado de datos para la tabla `bulkload_empresa`
 --
 
-INSERT INTO `bulkload_empresa` (`lote`, `id_bulkload`, `direccion`, `nombre`, `estado`, `ciudad`, `codigo_postal`, `usuario`, `num_telefono`, `folio_convenio`, `rfc`, `observaciones`) VALUES
-(1, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL),
-(1, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL),
-(1, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL),
-(1, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL),
-(1, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', NULL),
-(1, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', NULL),
-(2, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL),
-(2, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL),
-(2, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL),
-(2, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL),
-(2, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.'),
-(2, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. '),
-(3, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL),
-(3, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL),
-(3, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL),
-(3, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL),
-(3, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.'),
-(3, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. '),
-(4, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL),
-(4, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL),
-(4, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL),
-(4, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL),
-(4, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.'),
-(4, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. '),
-(5, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL),
-(5, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL),
-(5, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL),
-(5, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL),
-(5, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.'),
-(5, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. '),
-(6, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL),
-(6, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL),
-(6, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL),
-(6, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL),
-(6, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.'),
-(6, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. '),
-(7, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL),
-(7, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL),
-(7, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL),
-(7, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL),
-(7, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.'),
-(7, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. '),
-(8, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL),
-(8, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL),
-(8, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL),
-(8, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL),
-(8, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.'),
-(8, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. ');
+INSERT INTO `bulkload_empresa` (`lote`, `id_bulkload`, `direccion`, `nombre`, `estado`, `ciudad`, `codigo_postal`, `usuario`, `num_telefono`, `folio_convenio`, `rfc`, `observaciones`, `correo_empresa`) VALUES
+(1, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL, ''),
+(1, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL, ''),
+(1, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL, ''),
+(1, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL, ''),
+(1, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', NULL, ''),
+(1, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', NULL, ''),
+(2, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL, ''),
+(2, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL, ''),
+(2, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL, ''),
+(2, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL, ''),
+(2, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.', ''),
+(2, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. ', ''),
+(3, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL, ''),
+(3, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL, ''),
+(3, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL, ''),
+(3, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL, ''),
+(3, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.', ''),
+(3, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. ', ''),
+(4, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL, ''),
+(4, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL, ''),
+(4, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL, ''),
+(4, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL, ''),
+(4, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.', ''),
+(4, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. ', ''),
+(5, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL, ''),
+(5, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL, ''),
+(5, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL, ''),
+(5, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL, ''),
+(5, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.', ''),
+(5, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. ', ''),
+(6, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL, ''),
+(6, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL, ''),
+(6, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL, ''),
+(6, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL, ''),
+(6, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.', ''),
+(6, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. ', ''),
+(7, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL, ''),
+(7, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL, ''),
+(7, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL, ''),
+(7, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL, ''),
+(7, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.', ''),
+(7, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. ', ''),
+(8, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL, ''),
+(8, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL, ''),
+(8, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL, ''),
+(8, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL, ''),
+(8, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.', ''),
+(8, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. ', ''),
+(9, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL, 'upds@gmail.com'),
+(9, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL, 'salinas.e@gmail.com'),
+(9, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL, 'jobfit@yahoo.com'),
+(9, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL, 'mar@hotmail.com'),
+(9, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.', 'rsf@gmail.com'),
+(9, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. El campo Correo de Empresa esta en blanco', ''),
+(10, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL, 'upds@gmail.com'),
+(10, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL, 'salinas.e@gmail.com'),
+(10, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL, 'jobfit@yahoo.com'),
+(10, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL, 'mar@hotmail.com'),
+(10, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.', 'rsf@gmail.com'),
+(10, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. El campo Correo de Empresa esta en blanco', ''),
+(11, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL, 'upds@gmail.com'),
+(11, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL, 'salinas.e@gmail.com'),
+(11, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL, 'jobfit@yahoo.com'),
+(11, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL, 'mar@hotmail.com'),
+(11, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.', 'rsf@gmail.com'),
+(11, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. El campo Correo de Empresa esta en blanco', ''),
+(12, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL, 'upds@gmail.com'),
+(12, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL, 'salinas.e@gmail.com'),
+(12, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL, 'jobfit@yahoo.com'),
+(12, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL, 'mar@hotmail.com'),
+(12, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.', 'rsf@gmail.com'),
+(12, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. El campo Correo de Empresa esta en blanco', ''),
+(13, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL, 'upds@gmail.com'),
+(13, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL, 'salinas.e@gmail.com'),
+(13, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL, 'jobfit@yahoo.com'),
+(13, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL, 'mar@hotmail.com'),
+(13, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.', 'rsf@gmail.com'),
+(13, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. El campo Correo de Empresa esta en blanco', ''),
+(14, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL, 'upds@gmail.com'),
+(14, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL, 'salinas.e@gmail.com'),
+(14, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL, 'jobfit@yahoo.com'),
+(14, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL, 'mar@hotmail.com'),
+(14, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.', 'rsf@gmail.com'),
+(14, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. El campo Correo de Empresa esta en blanco', ''),
+(15, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL, 'upds@gmail.com'),
+(15, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL, 'salinas.e@gmail.com'),
+(15, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL, 'jobfit@yahoo.com'),
+(15, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL, 'mar@hotmail.com'),
+(15, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.', 'rsf@gmail.com'),
+(15, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. El campo Correo de Empresa esta en blanco', ''),
+(16, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', NULL, 'upds@gmail.com'),
+(16, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL, 'salinas.e@gmail.com'),
+(16, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL, 'jobfit@yahoo.com'),
+(16, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL, 'mar@hotmail.com'),
+(16, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.', 'rsf@gmail.com'),
+(16, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. El campo Correo de Empresa esta en blanco', '');
 
 -- --------------------------------------------------------
 
@@ -678,10 +785,10 @@ CREATE TABLE IF NOT EXISTS `empresa` (
 
 INSERT INTO `empresa` (`id_empresa`, `direccion`, `nombre`, `id_estado`, `id_ciudad`, `codigo_postal`, `id_usuario`, `num_telefono`, `folio_convenio`, `rfc`, `status`, `correo_empresa`) VALUES
 (1, 'Calle Dolores #420', 'Tech Solutions ', 1, 2, '571223', 1, '55334622', 'CONV123450', 'ref0192930291', '1', 'tech@gmail.com'),
-(2, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 2, 2, '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', '3', 'upds@hotmail.com'),
-(3, 'Calle 2 el faisan', 'Grupo salinas', 2, 2, '57888', NULL, '555565435', 'CONV826364', 'GP88273746', '3', 'gpsalinas@yahoo.com'),
-(4, 'Calle 5 el pericles', 'JOBFIT', 2, 2, '67888', NULL, '45366789', 'CONV5152367', 'JO626536', '3', 'jobfit@gmail.com'),
-(5, 'Almoyta num 91', 'MAR SYSTEMS', 1, 1, '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', '3', 'ms@hotmail.com'),
+(2, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 2, 2, '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', '3', 'upds@gmail.com'),
+(3, 'Calle 2 el faisan', 'Grupo salinas', 2, 2, '57888', NULL, '555565435', 'CONV826364', 'GP88273746', '3', 'salinas.e@gmail.com'),
+(4, 'Calle 5 el pericles', 'JOBFIT', 2, 2, '67888', NULL, '45366789', 'CONV5152367', 'JO626536', '3', 'jobfit@yahoo.com'),
+(5, 'Almoyta num 91', 'MAR SYSTEMS', 1, 1, '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', '3', 'mar@hotmail.com'),
 (6, '\nCiudad de Mexico ,Distrito Federal', 'Apoyo Economico Familiar, S.A. de C.V.\n', 2, 5, '54665', 4, '5566779922', 'EMP0103344', 'ROM92938D', '2', 'aef@hotmail.com'),
 (7, 'Iztacalco, Ciudad de Mexico', 'LOGUERKIM SA DE CV', 2, 7, '509494', 5, '578930948', 'CONV001OID9', 'ROPAUE33', '2', 'log@gmail.com'),
 (8, 'Tlalpan, Ciudad de Mexico ', 'Grupo Financiero Inbursa', 2, 4, '56788', 6, '55667788', 'CONVHDH9393', 'RFCIMBUR883', '2', 'prod@imbursa.com'),
@@ -820,7 +927,7 @@ CREATE TABLE IF NOT EXISTS `perfil` (
   `id_carrera` int(11) NOT NULL,
   PRIMARY KEY (`id_perfil`),
   KEY `fk_carrera_vacante_perfil` (`id_carrera`)
-) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `perfil`
@@ -836,7 +943,10 @@ INSERT INTO `perfil` (`id_perfil`, `nombre_perfil`, `id_carrera`) VALUES
 (7, 'Consultor ambiental', 8),
 (8, 'Analista de soporte a la produccion', 9),
 (9, 'Cordinador de mercadotecnia', 7),
-(10, 'Consultor de procesos', 7);
+(10, 'Consultor de procesos', 7),
+(11, 'Administrador de Redes', 1),
+(12, 'Tester', 1),
+(13, 'Diseñador Front-End', 1);
 
 -- --------------------------------------------------------
 
