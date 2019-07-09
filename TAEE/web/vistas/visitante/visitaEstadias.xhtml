@@ -106,8 +106,15 @@
             </center>
             <br/>
             <div id="content_form" style="margin-left: 2%">
-
-                <h:panelGrid id="panel" columns="5" width="100%" >
+                <p:outputLabel for="tipo_busqueda" value="Buscar por:" /><br/>
+                <p:selectOneMenu id="tipo_busqueda" value="${beanSearchEstadias.tipoBusqueda}">
+                    <f:selectItem itemLabel="Selecciona uno" itemValue="${null}"   />
+                    <f:selectItem itemLabel="Perfil" itemValue="1"   />
+                    <f:selectItem itemLabel="Empresa" itemValue="2"   />
+                    <p:ajax event="change" listener="${beanSearchEstadias.seleccionaBusqueda()}" />
+                </p:selectOneMenu><br/>
+                <h:panelGrid id="panel" columns="5" width="100%"  style="margin-top: 10px"
+                             rendered="${beanSearchEstadias.renderPorPerfil}" >
 
                     <h:panelGroup layout="span">
                         <p:outputLabel  for="nivel" value="Nivel academico:" /><br/>
@@ -192,6 +199,32 @@
 
 
                 </h:panelGrid>
+                <h:panelGrid id="panel2" style="margin-top: 10px; margin-left: 18%" columns="1" width="50%"
+                             rendered="${beanSearchEstadias.renderPorEmpresa}">
+
+                    <h:panelGroup>
+                        <p:outputLabel for="buscaEmpresa" value="Empresa" />
+                        <br/>
+                        <p:autoComplete id="buscaEmpresa" 
+                                        value="#{beanSearchEstadias.selectedEmpresa}" 
+                                        completeMethod="#{beanSearchEstadias.muestraEmpresas}"
+                                        var="company" itemLabel="#{company.nombre_empresa}" 
+                                        itemValue="#{company}" converter="empresaConverter" 
+                                        forceSelection="true" >
+                            <!--<p:ajax event="change" listener="${beanSearchEstadias.ver}"  />-->
+                        </p:autoComplete>
+                        <p:message for="buscaEmpresa" />
+
+                    </h:panelGroup>
+                    <br/>
+                    <h:panelGroup >
+                        <p:commandButton value="" style="width: 60px; height: 40px;" process="panel2" 
+                                         update="panel,vacantes" actionListener="${beanSearchEstadias.buscaEstadiasPorEmpresas()}"
+                                         class="glyphicon glyphicon-search" title="Buscar"></p:commandButton>
+                    </h:panelGroup>
+
+
+                </h:panelGrid>
                 <!--<center style="margin-top: 20px">-->
 
                 <!--</center>-->
@@ -200,7 +233,8 @@
             </div>
             <div style="margin-left: 75%">
                 <h:commandButton actionListener="${beanSearchEstadias.generaReporte()}" 
-                                 title="Imprimir favoritas"  value="Imprimir" />
+                                 title="Imprimir favoritas"  id="imprimir"
+                                 value="Imprimir" rendered="${beanSearchEstadias.renderBotonImprimir}" />
 
             </div>
             <br/>

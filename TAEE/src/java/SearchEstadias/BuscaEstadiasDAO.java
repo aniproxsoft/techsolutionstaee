@@ -17,12 +17,22 @@ import vacantes.PerfilVO;
  * @author ANIPROXTOART
  */
 public interface BuscaEstadiasDAO {
-    public List<VacanteVO> searchVacantes(Integer perfil,String jsonHabilidades,String jsonConociminetos);
+
+    public List<VacanteVO> searchVacantes(Integer perfil, String jsonHabilidades, String jsonConociminetos);
+
+    public List<VacanteVO> searchVacantesPorEmpresa(Integer empresa);
+
     public List<NivelAcademicoVO> getNiveles();
-    public List<CarreraVO>getCarreras(Integer clave);
-    public List<PerfilVO>getPerfiles(Integer clave);
-    public List<HabilidadVO>getHabilidades();
-    public List<ConocimientoVO>getConocimientos(Integer clave);
-    public List<ConocimientoVO>getConocimientoDetail(Integer claveVacante);
-    public List<HabilidadVO>getHabilidadesDetail(Integer claveVacante);
+
+    public List<CarreraVO> getCarreras(Integer clave);
+
+    public List<PerfilVO> getPerfiles(Integer clave);
+
+    public List<HabilidadVO> getHabilidades();
+
+    public List<ConocimientoVO> getConocimientos(Integer clave);
+
+    public List<ConocimientoVO> getConocimientoDetail(Integer claveVacante);
+
+    public List<HabilidadVO> getHabilidadesDetail(Integer claveVacante);
 }
