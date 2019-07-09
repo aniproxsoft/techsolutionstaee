@@ -225,6 +225,7 @@ public class SearchEstadiasBean implements Serializable {
             renderPorPerfil = false;
             renderPorEmpresa = true;
         }
+        renderView=false;
         renderBotonImprimir = true;
         vacantes = new ArrayList<>();
         RequestContext.getCurrentInstance().update("formulario");
@@ -239,7 +240,7 @@ public class SearchEstadiasBean implements Serializable {
             EmpresaVO skin = allEmpresas.get(i);
             if (skin.getNombre_empresa().toLowerCase().contains(query.toLowerCase())) {
                 filteredEmpresas.add(skin);
-                System.out.println("s:" + skin.getId_empresa());
+//                System.out.println("s:" + skin.getId_empresa());
             }
 
         }
