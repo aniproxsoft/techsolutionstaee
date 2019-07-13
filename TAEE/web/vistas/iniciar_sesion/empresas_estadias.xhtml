@@ -3,16 +3,133 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
       xmlns:h="http://xmlns.jcp.org/jsf/html"
-      xmlns:f="http://xmlns.jcp.org/jsf/core">
-    
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+
     <body>
 
         <ui:composition template="./../TemplateAdminEstadias.xhtml">
 
             <ui:define name="content">
-                Bienvenido
-            </ui:define>
 
+                <p:messages id="mensajes"   showDetail="true" closable="true"/>
+                <h:form id="formulario" >
+                    <center>
+                        <p:panel id="form_view" rendered="${beanEmpresaEstadia.form}" style="width: 75%">
+                            <h1 style="color: #038C65">Registro de Empresa para Estadía</h1>
+                            <h:panelGrid id="panel" columns="4" width="100%">
+                                <h:panelGroup>
+                                    <h:outputText value="Nombre Empresa:"  />
+                                    <p:inputText id="nombre" rendered="true" requiredMessage="Debe ingresar un nombre de Empresa"
+                                                 value="${beanEmpresaEstadia.empresa.nombre_empresa}" />
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <h:outputText value="Teléfono:"  />
+                                    <p:inputMask id="fon" rendered="true" requiredMessage="Debe ingresar un Teléfono"
+                                                 value="${beanEmpresaEstadia.empresa.telefono}" mask="9999999999"  />
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <h:outputText value="Correo:"   />
+                                    <p:inputText id="correo" rendered="true" requiredMessage="Debe ingresar un Correo"
+                                                 value="${beanEmpresaEstadia.empresa.correo_empresa}"  />
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <h:outputText value="Folio Convenio:"  />
+                                    <p:inputText id="fc" rendered="true" requiredMessage="Debe ingresar un Folio"
+                                                 value="${beanEmpresaEstadia.empresa.convenio}" />
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <h:outputText value="RFC (Moral/Fisico):"  />
+                                    <p:inputText id="rfc" rendered="true" requiredMessage="Debe ingresar un RFC" 
+                                                 value="${beanEmpresaEstadia.empresa.rfc}" />
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <h:outputText value="Dirección:" />
+                                    <p:inputText id="direccion" required="true" requiredMessage="Debe ingresar una Dirección"
+                                                 value="${beanEmpresaEstadia.empresa.direccion}" />
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <h:outputText value="Estado:" />
+                                    <p:selectOneMenu id="estado" required="true" requiredMessage="Debe elegir un Estado"
+                                                     value="${beanEmpresaEstadia.cve_estado}" >
+                                        <f:selectItem itemLabel="Seleccionar" itemValue=""/>
+                                        <f:selectItems value="${beanEmpresaEstadia.estados}" var="estado"
+                                                       itemLabel="${estado.nombre_estado}"
+                                                       itemValue="${estado.id_estado}"/>
+                                        <p:ajax event="change" update="ciudad" 
+                                                listener="${beanEmpresaEstadia.mostrarMunicipio()}" />
+                                    </p:selectOneMenu>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <h:outputText value="Municipio:" />
+                                    <p:selectOneMenu id="ciudad" required="true" requiredMessage="Debe elegir un Municipio" 
+                                                     value="${beanEmpresaEstadia.cve_municipio}" >
+                                        <f:selectItem itemLabel="Seleccionar" itemValue=""/>
+                                        <f:selectItems value="${beanEmpresaEstadia.ciudades}" var="mun"
+                                                       itemLabel="${mun.nombre_ciudad}"
+                                                       itemValue="${mun.id_ciudad}"/>
+                                    </p:selectOneMenu>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <h:outputText value="Codigo Postal:"  />
+                                    <p:inputText id="cp" required="true" requiredMessage="Debe ingresar un CP"
+                                                 value="${beanEmpresaEstadia.empresa.codigo_postal}" />
+                                </h:panelGroup>
+                            </h:panelGrid>
+                            <p:commandButton id="botonGuardar"  style="margin-top: 30px;" value="Guardar" 
+                                             actionListener="${beanEmpresaEstadia.insetarEmpresa()}" process="@form" update="formulario"/>
+                            <p:commandButton id="botonCancelar"  style="margin-top: 30px;" value="Cancelar"
+                                             actionListener="${beanEmpresaEstadia.cancelar()}" process="@this" title="Cancelar"/>
+                        </p:panel>
+                        <br/>
+                        <p:commandButton id="botonAgregar"  style="margin-top: 30px;" value="Agregar" actionListener="${beanEmpresaEstadia.mostrarFormulario()}" 
+                                         update="formulario"    title="Agregar Empresa"  ></p:commandButton>
+
+                        <center>
+                            <h2 style="color: #038C65">Empresas para Estadía</h2>
+                        </center>   
+                        <p:dataTable id="tabla1" rendered="true" var="emp" value="#{beanEmpresaEstadia.empresaList}"
+                                     >
+                            <p:column headerText="Nombre">
+                                <h:outputText value="${emp.nombre_empresa}" />
+                            </p:column>
+
+                            <p:column headerText="Dirección">
+                                <h:outputText value="${emp.direccion}" />
+                            </p:column>
+
+                            <p:column headerText="Teléfono">
+                                <h:outputText value="${emp.telefono}"/>
+                            </p:column>
+
+                            <p:column headerText="Correo">
+                                <h:outputText value="${emp.correo_empresa}"/>
+                            </p:column>
+
+                            <p:column headerText="Opciones">
+                                <p:commandButton id="botonEditar"  style="margin-top: 20px; " value="Editar" actionListener="${beanEmpresaEstadia.datosEmpres(emp)}" process="@this" />
+                                <p:commandButton id="botonEliminar"  style="margin-top: 20px; " value="Eliminar" 
+                                                 actionListener="${beanEmpresaEstadia.EliminarEmpresaEstadia(emp)}" process="@this"  > 
+                                </p:commandButton>
+                            </p:column>
+                        </p:dataTable>
+
+                    </center>
+                    <script type="text/javascript">
+                        function ocultaMsj(time) {
+                            setTimeout(function () {
+                                $("#mensajes").children("div").slideUp();
+                                return false;
+                            }, time);
+                        }
+
+
+                    </script>
+                </h:form>
+            </ui:define>
+            <ui:define name="bottom">
+
+            </ui:define>
         </ui:composition>
 
     </body>
