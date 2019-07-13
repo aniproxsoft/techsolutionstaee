@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.4
+-- version 4.8.4
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 08-07-2019 a las 18:17:33
--- Versión del servidor: 5.7.19
--- Versión de PHP: 5.6.31
+-- Tiempo de generación: 13-07-2019 a las 22:25:16
+-- Versión del servidor: 5.7.24
+-- Versión de PHP: 7.2.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -182,6 +182,25 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_bulkload` (IN `empresas` VARCHAR
 			from bulkload_empresa where lote =lote_id;
 End$$
 
+DROP PROCEDURE IF EXISTS `sp_delete_empresa_estadia`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_delete_empresa_estadia` (IN `tipo` INT)  BEGIN
+	DECLARE var_mensaje varchar(50);
+	DECLARE var_success boolean;
+	DECLARE var_n integer;
+
+	UPDATE empresa emp SET emp.status='0'
+	where emp.id_empresa =tipo and emp.status='3';
+	SET var_n = (select ROW_count());
+	if(var_n >0)then
+		set var_mensaje='El registro se Elimino correctamente';
+		set var_success= true;
+	else
+		set var_mensaje='no se inserto prro';
+		set var_success= false;
+	end if;
+    SELECT var_mensaje,var_success;
+END$$
+
 DROP PROCEDURE IF EXISTS `sp_get_ciudades`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_ciudades` ()  BEGIN
 	SELECT id_ciudad,id_estado,nombre_ciudad from ciudad;
@@ -237,6 +256,12 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_listas_estadias` (`tabla` VA
 		where id_perfil=clave;
 
 	END CASE;
+END$$
+
+DROP PROCEDURE IF EXISTS `sp_get_municipios`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_municipios` (`tipo` INT)  BEGIN
+	SELECT id_ciudad,id_estado,nombre_ciudad from ciudad
+	where id_estado= tipo;
 END$$
 
 DROP PROCEDURE IF EXISTS `sp_get_vacantes_egresados`$$
@@ -445,6 +470,84 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_estadia_por_empresa
 		and v.status='1'
 		and e.status=3;
  
+END$$
+
+DROP PROCEDURE IF EXISTS `sp_insert_update_empresaEst`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_insert_update_empresaEst` (IN `editar` INT, IN `ln_id_empresa` INT, IN `ls_direccion` VARCHAR(200), IN `ls_nombre` VARCHAR(200), IN `ln_id_estado` INT, IN `ln_id_ciudad` INT, IN `ls_codigo_postal` VARCHAR(50), IN `ln_id_usuario` INT, IN `ls_num_telefono` VARCHAR(50), IN `ls_folio_convenio` VARCHAR(50), IN `ls_rfc` VARCHAR(50), IN `ls_status` VARCHAR(1), IN `ls_correo_empresa` VARCHAR(50))  BEGIN
+	DECLARE var_id integer;
+	DECLARE var_mensaje varchar(50);
+	DECLARE var_success boolean;
+	DECLARE var_n integer;
+	DECLARE var_exist integer;
+
+	IF(editar= 0)THEN
+		set var_exist =0;
+		select count(*) from empresa emp 
+		where (UPPER(emp.nombre)=UPPER(ls_nombre) or (UPPER(emp.id_empresa)=UPPER(ln_id_empresa))) and emp.status='3'
+		INTO var_exist;
+		IF(var_exist=0)THEN
+			select MAX(id_empresa)+1 INTO var_id From empresa;
+			IF(var_id IS NULL)THEN
+				set var_id=1;
+			END IF;
+			INSERT INTO empresa(
+			id_empresa,
+			direccion,
+			nombre,
+			id_estado,
+			id_ciudad,
+			codigo_postal,
+			id_usuario,
+			num_telefono,
+			folio_convenio,
+			rfc,
+			status,
+			correo_empresa)
+			VALUES(var_id,ls_direccion,ls_nombre,ln_id_estado,ln_id_ciudad,ls_codigo_postal,ln_id_usuario,ls_num_telefono,ls_folio_convenio,ls_rfc,ls_status,ls_correo_empresa);
+			SET var_n = (select ROW_count());
+			IF(var_n>0)THEN
+				set var_success= true;
+				set var_mensaje ='La Empresa se registro Correctamente';
+			ELSE 
+				set var_success= false;
+				set var_mensaje ='Error';	
+			END IF;
+        ELSE
+		set var_success= false;
+		set var_mensaje ='Error La Empresa ya Existe';
+		END IF;
+	
+	ELSEIF(editar=1 AND (SELECT COUNT(*) from empresa where status='3' and id_empresa=ln_id_empresa)>0)THEN
+			SELECT COUNT(*) From empresa emp where emp.id_empresa <> ln_id_empresa and  (UPPER(nombre)= UPPER(ls_nombre)) and emp.status='3' INTO var_exist;
+			IF(var_exist=0)THEN
+				UPDATE empresa SET
+				direccion = ls_direccion,
+				nombre =ls_nombre,
+				id_estado = ln_id_estado,
+				id_ciudad = ln_id_ciudad,
+				codigo_postal =ls_codigo_postal,
+				id_usuario =ln_id_usuario,
+				num_telefono =ls_num_telefono,
+				folio_convenio =ls_folio_convenio,
+				rfc =ls_rfc,
+				status =ls_status,
+				correo_empresa = ls_correo_empresa
+				where status='3' and id_empresa=ln_id_empresa;
+				SET var_n = (select ROW_count());
+				IF(var_n>0)THEN
+					set var_success= true;
+					set var_mensaje ='La Empresa se actualizó Correctamente';
+				ELSE 
+					set var_success= false;
+					set var_mensaje ='Error';	
+				END IF;
+			ELSE
+			set var_success= false;
+			set var_mensaje ='La Empresa NO se Actualizó';
+			END IF;
+		
+	END IF;
+	SELECT var_mensaje,var_success;
 END$$
 
 DELIMITER ;
@@ -777,7 +880,7 @@ CREATE TABLE IF NOT EXISTS `empresa` (
   KEY `fk_usuario` (`id_usuario`),
   KEY `fk_emp_ciudad` (`id_ciudad`),
   KEY `fk_emp_estado` (`id_estado`)
-) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `empresa`
@@ -785,7 +888,7 @@ CREATE TABLE IF NOT EXISTS `empresa` (
 
 INSERT INTO `empresa` (`id_empresa`, `direccion`, `nombre`, `id_estado`, `id_ciudad`, `codigo_postal`, `id_usuario`, `num_telefono`, `folio_convenio`, `rfc`, `status`, `correo_empresa`) VALUES
 (1, 'Calle Dolores #420', 'Tech Solutions ', 1, 2, '571223', 1, '55334622', 'CONV123450', 'ref0192930291', '1', 'tech@gmail.com'),
-(2, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 2, 2, '566576', NULL, '5566778899', 'CONV019293', 'UPS7172636', '3', 'upds@gmail.com'),
+(2, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 2, 2, '566576', 0, '5566778899', 'CONV019293', 'UPS7172636', '3', 'upds@gmail.com'),
 (3, 'Calle 2 el faisan', 'Grupo salinas', 2, 2, '57888', NULL, '555565435', 'CONV826364', 'GP88273746', '3', 'salinas.e@gmail.com'),
 (4, 'Calle 5 el pericles', 'JOBFIT', 2, 2, '67888', NULL, '45366789', 'CONV5152367', 'JO626536', '3', 'jobfit@yahoo.com'),
 (5, 'Almoyta num 91', 'MAR SYSTEMS', 1, 1, '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', '3', 'mar@hotmail.com'),
@@ -793,7 +896,8 @@ INSERT INTO `empresa` (`id_empresa`, `direccion`, `nombre`, `id_estado`, `id_ciu
 (7, 'Iztacalco, Ciudad de Mexico', 'LOGUERKIM SA DE CV', 2, 7, '509494', 5, '578930948', 'CONV001OID9', 'ROPAUE33', '2', 'log@gmail.com'),
 (8, 'Tlalpan, Ciudad de Mexico ', 'Grupo Financiero Inbursa', 2, 4, '56788', 6, '55667788', 'CONVHDH9393', 'RFCIMBUR883', '2', 'prod@imbursa.com'),
 (9, 'Atlacomulco de Fabela', 'Test and QA Corporation', 1, 4, '56788', 7, '6363627', 'CONVHDJD92', 'RFCQU8383S', '2', 'qua@gmail.com'),
-(10, 'Calle bolivar 192', 'INSTITUTO MEXICANO DE DESARROLLO DE SOFTWARE SC', 1, 8, '37374', 8, '5553626263', 'CONVUEURY', 'IMDDHD829', '2', 'imd@hotmail.com');
+(10, 'Calle bolivar 192', 'INSTITUTO MEXICANO DE DESARROLLO DE SOFTWARE SC', 1, 8, '37374', 8, '5553626263', 'CONVUEURY', 'IMDDHD829', '2', 'imd@hotmail.com'),
+(11, 'la bamba 429', 'TEECH096', 1, 1, '5700', 0, '5548150571', 'CO5555', 'RFC77267', '0', 'tec@gmail.com');
 
 -- --------------------------------------------------------
 
