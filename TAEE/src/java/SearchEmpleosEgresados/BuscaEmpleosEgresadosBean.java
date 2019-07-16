@@ -8,10 +8,13 @@ package SearchEmpleosEgresados;
 import SearchEstadias.BuscaEstadiasDAO;
 import SearchEstadias.BuscaEstadiasDAOImplements;
 import SearchEstadias.VacanteVO;
+import Services.ServiceEmpresas;
 import com.google.gson.Gson;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import empresa.EmpresaVO;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
@@ -54,6 +57,12 @@ public class BuscaEmpleosEgresadosBean {
     private VacanteVO vacanteDetail;
     private boolean renderView;
     private int cves_habilidades[];
+    private int tipoBusqueda;
+    private boolean renderPorPerfil;
+    private boolean renderPorEmpresa;
+    private EmpresaVO selectedEmpresa;
+    private ServiceEmpresas service;
+    List<EmpresaVO> empresasList;
 
     /**
      * Creates a new instance of SearchEstadiasBean
@@ -65,7 +74,9 @@ public class BuscaEmpleosEgresadosBean {
         niveles = dao.getNiveles();
         habilidades = dao.getHabilidades();
         vacantes = new ArrayList<>();
-
+        service=new ServiceEmpresas();
+        selectedEmpresa=new EmpresaVO();
+        empresasList = service.empresasEstadía(2);
     }
 
     public void buscaCarreras() {
@@ -79,6 +90,69 @@ public class BuscaEmpleosEgresadosBean {
 
     public void buscaConocimientos() {
         conocimientos = dao.getConocimientos(cve_perfil);
+    }
+     public EmpresaVO retrieveEmpresaByName(String name) {
+        Iterator<EmpresaVO> it = this.empresasList.iterator();
+        while (it.hasNext()) {
+            EmpresaVO emp = it.next();
+            if (name.equals(emp.getNombre_empresa() + "")) {
+                return emp;
+            }
+        }
+        return null;
+
+    }
+
+    public void seleccionaBusqueda() {
+        if (tipoBusqueda == 1) {
+            renderPorPerfil = true;
+            renderPorEmpresa = false;
+        } else if (tipoBusqueda == 2) {
+            renderPorPerfil = false;
+            renderPorEmpresa = true;
+        }
+        renderView = false;
+        vacantes = new ArrayList<>();
+        RequestContext.getCurrentInstance().update("formulario");
+    }
+
+    public List<EmpresaVO> muestraEmpresas(String query) {
+        List<EmpresaVO> allEmpresas = service.empresasEstadía(2);
+
+        List<EmpresaVO> filteredEmpresas = new ArrayList<EmpresaVO>();
+
+        for (int i = 0; i < allEmpresas.size(); i++) {
+            EmpresaVO skin = allEmpresas.get(i);
+            if (skin.getNombre_empresa().toLowerCase().contains(query.toLowerCase())) {
+                filteredEmpresas.add(skin);
+//                System.out.println("s:" + skin.getId_empresa());
+            }
+
+        }
+
+        return filteredEmpresas;
+    }
+     public void buscaEmpleosPorEmpresas() {
+        System.out.println("select: " + selectedEmpresa.getId_empresa());
+
+        
+        vacantes = new ArrayList<>();
+        vacantes = dao2.searchVacantesPorEmpresa(selectedEmpresa.getId_empresa());
+        System.out.println("tam"+vacantes.size());
+        if (vacantes.size() == 0) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Aún no hay vacantes para este perfil"));
+            RequestContext.getCurrentInstance().update("mensajes");
+            RequestContext.getCurrentInstance().execute("ocultaMsj(3000)");
+
+        } else {
+            RequestContext.getCurrentInstance().update("vacantes");
+
+        }
+    }
+
+    public void ver() {
+        System.out.println("ver: " + selectedEmpresa.getNombre_empresa());
+
     }
 
     public void buscaEmpleosEgresados() {
@@ -243,6 +317,38 @@ public class BuscaEmpleosEgresadosBean {
 
     public void setRenderView(boolean renderView) {
         this.renderView = renderView;
+    }
+
+    public int getTipoBusqueda() {
+        return tipoBusqueda;
+    }
+
+    public void setTipoBusqueda(int tipoBusqueda) {
+        this.tipoBusqueda = tipoBusqueda;
+    }
+
+    public boolean isRenderPorPerfil() {
+        return renderPorPerfil;
+    }
+
+    public void setRenderPorPerfil(boolean renderPorPerfil) {
+        this.renderPorPerfil = renderPorPerfil;
+    }
+
+    public boolean isRenderPorEmpresa() {
+        return renderPorEmpresa;
+    }
+
+    public void setRenderPorEmpresa(boolean renderPorEmpresa) {
+        this.renderPorEmpresa = renderPorEmpresa;
+    }
+
+    public EmpresaVO getSelectedEmpresa() {
+        return selectedEmpresa;
+    }
+
+    public void setSelectedEmpresa(EmpresaVO selectedEmpresa) {
+        this.selectedEmpresa = selectedEmpresa;
     }
 
 }

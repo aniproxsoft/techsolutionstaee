@@ -55,6 +55,9 @@ public class LoginDaoImplements implements LoginDao {
                     us.setConvenio(respuesta.getString(13));
                     us.setRfc(respuesta.getString(14));
                     us.setStatus(respuesta.getString(15));
+                    us.setStatus_empresa(respuesta.getString(16));
+                    us.setId_usuario(respuesta.getInt(17));
+                    us.setId_empresa(respuesta.getInt(18));
                     ListaUser.add(us);
                 }else{
                     return null;

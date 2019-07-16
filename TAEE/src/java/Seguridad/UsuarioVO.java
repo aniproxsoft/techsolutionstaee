@@ -11,8 +11,8 @@ import empresa.EmpresaVO;
  *
  * @author ANIPROXTOART
  */
-public class UsuarioVO extends EmpresaVO{
-    
+public class UsuarioVO extends EmpresaVO {
+
     private Integer id_usuario;
     private String nombre;
     private String apellidos;
@@ -21,6 +21,7 @@ public class UsuarioVO extends EmpresaVO{
     private Integer rol;
     private String nombre_rol;
     private String status;
+    private String status_empresa;
 
     public String getNombre() {
         return nombre;
@@ -84,6 +85,14 @@ public class UsuarioVO extends EmpresaVO{
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getStatus_empresa() {
+        return status_empresa;
+    }
+
+    public void setStatus_empresa(String status_empresa) {
+        this.status_empresa = status_empresa;
     }
 
 }

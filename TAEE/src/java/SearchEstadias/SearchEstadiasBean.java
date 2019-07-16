@@ -157,8 +157,8 @@ public class SearchEstadiasBean implements Serializable {
 
             }
         }
-//        System.out.println("h: " + jsonHabilidades);
-//        System.out.println("c: " + jsonConocimientos);
+        System.out.println("h: " + jsonHabilidades);
+        System.out.println("c: " + jsonConocimientos);
 //        System.out.println("perfil: " + cve_perfil);
         vacantes = new ArrayList<>();
         vacantes = dao.searchVacantes(cve_perfil, jsonHabilidades, jsonConocimientos);
@@ -182,7 +182,7 @@ public class SearchEstadiasBean implements Serializable {
         }
         Gson gson = new Gson();
         renderView = true;
-//        System.out.println("objeto seleccionado: " + gson.toJson(vacanteDetail));
+        System.out.println("objeto seleccionado: " + gson.toJson(vacanteDetail));
         RequestContext.getCurrentInstance().update("formulario");
     }
 

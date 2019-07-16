@@ -18,6 +18,8 @@ public interface BuscaEmpleosEgresadosDAO {
 
     public List<VacanteVO> searchVacantes(Integer perfil, String jsonHabilidades, String jsonConociminetos);
 
+    public List<VacanteVO> searchVacantesPorEmpresa(Integer empresa);
+
     public List<ConocimientoVO> getConocimientoDetail(Integer claveVacante);
 
     public List<HabilidadVO> getHabilidadesDetail(Integer claveVacante);
