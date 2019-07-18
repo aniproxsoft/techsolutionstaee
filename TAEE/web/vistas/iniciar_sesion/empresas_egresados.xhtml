@@ -153,13 +153,15 @@
                                         <p:commandButton id="botonAprobar"  style="margin-top: 20px; " value="Aprobar" 
                                                          process="@this" 
                                                          actionListener="${beanAdminEmpresasEgresados.aprobarEmpresa(empresa)}" > 
-                                            <p:confirm header="¡Atención!" icon="pi pi-exclamation-triangle"
+                                            <p:confirm header="¡Atención!" 
                                                        message="¿Está seguro que desea aprobar esta empresa?"
                                                        ></p:confirm>
                                         </p:commandButton>
                                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" >
-                                            <p:commandButton value="Aceptar" type="button" styleClass="ui-confirmdialog-yes"/>
-                                            <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" />
+                                            <center>
+                                                <p:commandButton value="Aceptar" type="button" styleClass="ui-confirmdialog-yes"/>
+                                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" />
+                                            </center>
                                         </p:confirmDialog>
                                     </center>
 
