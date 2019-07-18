@@ -74,8 +74,8 @@ public class BuscaEmpleosEgresadosBean {
         niveles = dao.getNiveles();
         habilidades = dao.getHabilidades();
         vacantes = new ArrayList<>();
-        service=new ServiceEmpresas();
-        selectedEmpresa=new EmpresaVO();
+        service = new ServiceEmpresas();
+        selectedEmpresa = new EmpresaVO();
         empresasList = service.empresasEstadía(2);
     }
 
@@ -91,7 +91,8 @@ public class BuscaEmpleosEgresadosBean {
     public void buscaConocimientos() {
         conocimientos = dao.getConocimientos(cve_perfil);
     }
-     public EmpresaVO retrieveEmpresaByName(String name) {
+
+    public EmpresaVO retrieveEmpresaByName(String name) {
         Iterator<EmpresaVO> it = this.empresasList.iterator();
         while (it.hasNext()) {
             EmpresaVO emp = it.next();
@@ -132,13 +133,13 @@ public class BuscaEmpleosEgresadosBean {
 
         return filteredEmpresas;
     }
-     public void buscaEmpleosPorEmpresas() {
+
+    public void buscaEmpleosPorEmpresas() {
         System.out.println("select: " + selectedEmpresa.getId_empresa());
 
-        
         vacantes = new ArrayList<>();
         vacantes = dao2.searchVacantesPorEmpresa(selectedEmpresa.getId_empresa());
-        System.out.println("tam"+vacantes.size());
+        System.out.println("tam" + vacantes.size());
         if (vacantes.size() == 0) {
             FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "Aún no hay vacantes para este perfil"));
             RequestContext.getCurrentInstance().update("mensajes");

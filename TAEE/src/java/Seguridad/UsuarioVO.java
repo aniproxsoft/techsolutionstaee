@@ -22,6 +22,7 @@ public class UsuarioVO extends EmpresaVO {
     private String nombre_rol;
     private String status;
     private String status_empresa;
+    private String actividad;
 
     public String getNombre() {
         return nombre;
@@ -93,6 +94,14 @@ public class UsuarioVO extends EmpresaVO {
 
     public void setStatus_empresa(String status_empresa) {
         this.status_empresa = status_empresa;
+    }
+
+    public String getActividad() {
+        return actividad;
+    }
+
+    public void setActividad(String actividad) {
+        this.actividad = actividad;
     }
 
 }

@@ -2,12 +2,35 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
-      xmlns:p="http://primefaces.org/ui"
-      xmlns:h="http://xmlns.jcp.org/jsf/html">
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui">
 
     <body>
 
         <ui:composition template="./../TemplateAdmininEgresados.xhtml">
+
+            <ui:define name="top">
+                <h:form>
+                    <nav class="navbar navbar-utn">
+                        <div class="container-fluid">
+                            <div class="navbar-header">
+                                <a class="navbar-brand" href="#">TAEG</a>
+                            </div>
+                            <ul class="nav navbar-nav">
+                                <li ><h:link outcome="/vistas/iniciar_sesion/empresas_egresados.xhtml"  value="Aprobar"></h:link></li>
+                                <li class="active"><h:link outcome="/vistas/egresados/empresas_desaprobar.xhtml"  value="Desaprobar"></h:link></li>
+
+
+                            </ul>
+                            <ul class="nav navbar-nav  navbar-right">
+                                <!--<li><a href="#"><span class="glyphicon glyphicon-user"></span> Registrate</a></li>-->
+                                <li><p:commandLink value="Cerrar sesión" actionListener="${beanSession.cerrarSesion()}" action="/vistas/iniciar_sesion/iniciar_sesion.xhtml?faces-redirect=true" ><span class="glyphicon glyphicon-log-out"></span></p:commandLink></li>
+
+                            </ul>
+                        </div>
+                    </nav> 
+                </h:form>
+            </ui:define>
 
             <ui:define name="content">
                 <p:messages id="mensajes"   showDetail="true" closable="true"/>
@@ -109,26 +132,27 @@
                         </p:panel>
                     </center>
                     <center>
-                        <h2 style="margin-top: 6%; color: #038C65">Aprobar Empresas</h2><br/>
+                        <h2 style="margin-top: 6%; color: #038C65">Desaprobar Empresas</h2><br/>
                     </center>
                     <div style="margin-left: 40px">
-                        <p:outputLabel value="Empresa" for="buscaEmpresa" /><br/>
+                         <p:outputLabel value="Empresa" for="buscaEmpresa" /><br/>
                         <p:autoComplete size="40" id="buscaEmpresa" 
                                         value="#{beanAdminEmpresasEgresados.selectedEmpresa}" 
-                                        completeMethod="#{beanAdminEmpresasEgresados.muestraEmpresas}"
+                                        completeMethod="#{beanAdminEmpresasEgresados.muestraEmpresasAprobadas}"
                                         var="company" itemLabel="#{company.nombre_empresa}" 
-                                        itemValue="#{company}" converter="empresaConverterAdmin" 
+                                        itemValue="#{company}" converter="empresaConverterAdminAprob" 
                                         forceSelection="true" >
 
                         </p:autoComplete>
-                        <p:commandButton value="Buscar" actionListener="${beanAdminEmpresasEgresados.buscar()}" 
+                         <p:commandButton value="Buscar" actionListener="${beanAdminEmpresasEgresados.buscarAprob()}" 
                                          style="margin-left: 10px; "/>
+
 
                     </div>
                     <center>
                         <div style="width: 95%">
                             <p:dataTable id="data_table" rendered="true" var="empresa"
-                                         value="${beanAdminEmpresasEgresados.empresas}"
+                                         value="${beanAdminEmpresasEgresados.empresasAprobadas}"
                                          style="margin-top: 10px">
                                 <p:column headerText="Nombre">
                                     <h:outputText value="${empresa.nombre_empresa}" />
@@ -150,11 +174,11 @@
                                     <center>
                                         <p:commandButton id="botonVer"  style="margin-top: 20px; " value="Ver" 
                                                          process="@this" actionListener="${beanAdminEmpresasEgresados.ver(empresa)}" />
-                                        <p:commandButton id="botonAprobar"  style="margin-top: 20px; " value="Aprobar" 
+                                        <p:commandButton id="botonAprobar"  style="margin-top: 20px; " value="Desaprobar" 
                                                          process="@this" 
-                                                         actionListener="${beanAdminEmpresasEgresados.aprobarEmpresa(empresa)}" > 
+                                                         actionListener="${beanAdminEmpresasEgresados.desaprobarEmpresa(empresa)}" > 
                                             <p:confirm header="¡Atención!" icon="pi pi-exclamation-triangle"
-                                                       message="¿Está seguro que desea aprobar esta empresa?"
+                                                       message="¿Está seguro que desea desaprobar esta empresa?"
                                                        ></p:confirm>
                                         </p:commandButton>
                                         <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" >
@@ -185,6 +209,7 @@
                 </h:form>
 
             </ui:define>
+
             <ui:define name="bottom">
 
             </ui:define>
