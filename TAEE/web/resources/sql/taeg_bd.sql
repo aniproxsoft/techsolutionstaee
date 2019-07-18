@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.4
+-- version 4.8.4
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 18-07-2019 a las 06:00:41
--- Versión del servidor: 5.7.19
--- Versión de PHP: 5.6.31
+-- Tiempo de generación: 18-07-2019 a las 18:05:27
+-- Versión del servidor: 5.7.24
+-- Versión de PHP: 7.2.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -632,7 +632,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_insert_update_empresaEst` (IN `e
 			rfc,
 			status,
 			correo_empresa)
-			VALUES(var_id,ls_direccion,ls_nombre,ln_id_estado,ln_id_ciudad,ls_codigo_postal,ln_id_usuario,ls_num_telefono,ls_folio_convenio,ls_rfc,ls_status,ls_correo_empresa);
+			VALUES(var_id,ls_direccion,ls_nombre,ln_id_estado,ln_id_ciudad,ls_codigo_postal,null,ls_num_telefono,ls_folio_convenio,ls_rfc,ls_status,ls_correo_empresa);
 			SET var_n = (select ROW_count());
 			IF(var_n>0)THEN
 				set var_success= true;
@@ -655,7 +655,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_insert_update_empresaEst` (IN `e
 				id_estado = ln_id_estado,
 				id_ciudad = ln_id_ciudad,
 				codigo_postal =ls_codigo_postal,
-				id_usuario =ln_id_usuario,
 				num_telefono =ls_num_telefono,
 				folio_convenio =ls_folio_convenio,
 				rfc =ls_rfc,
@@ -1115,7 +1114,7 @@ CREATE TABLE IF NOT EXISTS `empresa` (
   KEY `fk_usuario` (`id_usuario`),
   KEY `fk_emp_ciudad` (`id_ciudad`),
   KEY `fk_emp_estado` (`id_estado`)
-) ENGINE=MyISAM AUTO_INCREMENT=15 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `empresa`
@@ -1134,7 +1133,8 @@ INSERT INTO `empresa` (`id_empresa`, `direccion`, `nombre`, `id_estado`, `id_ciu
 (10, 'Calle bolivar 192', 'INSTITUTO MEXICANO DE DESARROLLO DE SOFTWARE SC', 1, 8, '37374', 8, '5553626263', 'CONVUEURY', 'IMDDHD829', '2', 'imd@hotmail.com'),
 (11, 'la bamba 429', 'TEECH096', 1, 1, '5700', 0, '5548150571', 'CO5555', 'RFC77267', '0', 'tec@gmail.com'),
 (13, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 2, 2, '50000', NULL, '5566778899', 'CONV019293', 'UPS7172639', '3', 'upds@gmail.com'),
-(14, 'El barro 320', 'ANIPROX SOFT', 1, 4, '57800', 9, '5562386648', NULL, 'RFCEMP012', '1', 'aniproxsoft@gmail.com');
+(14, 'El barro 320', 'ANIPROX SOFT', 1, 4, '57800', 9, '5562386648', NULL, 'RFCEMP012', '1', 'aniproxsoft@gmail.com'),
+(15, 'Las Flores 5454', 'Mozcaltli', 2, 6, '654554', NULL, '8558545515', 'FO515151', 'RFC2116541631', '0', 'moz@hotmail.com');
 
 -- --------------------------------------------------------
 

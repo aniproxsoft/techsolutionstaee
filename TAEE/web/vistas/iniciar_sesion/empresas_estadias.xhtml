@@ -19,37 +19,37 @@
                             <h1 style="color: #038C65">Registro de Empresa para Estadía</h1>
                             <h:panelGrid id="panel" columns="4" width="100%">
                                 <h:panelGroup>
-                                    <h:outputText value="Nombre Empresa:"  />
+                                    <h:outputText value="Nombre Empresa:"  /><br/>
                                     <p:inputText id="nombre" rendered="true" requiredMessage="Debe ingresar un nombre de Empresa"
                                                  value="${beanEmpresaEstadia.empresa.nombre_empresa}" />
                                 </h:panelGroup>
                                 <h:panelGroup>
-                                    <h:outputText value="Teléfono:"  />
+                                    <h:outputText value="Teléfono:"  /><br/>
                                     <p:inputMask id="fon" rendered="true" requiredMessage="Debe ingresar un Teléfono"
                                                  value="${beanEmpresaEstadia.empresa.telefono}" mask="9999999999"  />
                                 </h:panelGroup>
                                 <h:panelGroup>
-                                    <h:outputText value="Correo:"   />
+                                    <h:outputText value="Correo:"   /><br/>
                                     <p:inputText id="correo" rendered="true" requiredMessage="Debe ingresar un Correo"
                                                  value="${beanEmpresaEstadia.empresa.correo_empresa}"  />
                                 </h:panelGroup>
                                 <h:panelGroup>
-                                    <h:outputText value="Folio Convenio:"  />
+                                    <h:outputText value="Folio Convenio:"  /><br/>
                                     <p:inputText id="fc" rendered="true" requiredMessage="Debe ingresar un Folio"
                                                  value="${beanEmpresaEstadia.empresa.convenio}" />
                                 </h:panelGroup>
                                 <h:panelGroup>
-                                    <h:outputText value="RFC (Moral/Fisico):"  />
+                                    <h:outputText value="RFC (Moral/Fisico):"  /><br/>
                                     <p:inputText id="rfc" rendered="true" requiredMessage="Debe ingresar un RFC" 
                                                  value="${beanEmpresaEstadia.empresa.rfc}" />
                                 </h:panelGroup>
                                 <h:panelGroup>
-                                    <h:outputText value="Dirección:" />
+                                    <h:outputText value="Dirección:" /><br/>
                                     <p:inputText id="direccion" required="true" requiredMessage="Debe ingresar una Dirección"
                                                  value="${beanEmpresaEstadia.empresa.direccion}" />
                                 </h:panelGroup>
                                 <h:panelGroup>
-                                    <h:outputText value="Estado:" />
+                                    <h:outputText value="Estado:" /><br/>
                                     <p:selectOneMenu id="estado" required="true" requiredMessage="Debe elegir un Estado"
                                                      value="${beanEmpresaEstadia.cve_estado}" >
                                         <f:selectItem itemLabel="Seleccionar" itemValue=""/>
@@ -61,7 +61,7 @@
                                     </p:selectOneMenu>
                                 </h:panelGroup>
                                 <h:panelGroup>
-                                    <h:outputText value="Municipio:" />
+                                    <h:outputText value="Municipio:" /><br/>
                                     <p:selectOneMenu id="ciudad" required="true" requiredMessage="Debe elegir un Municipio" 
                                                      value="${beanEmpresaEstadia.cve_municipio}" >
                                         <f:selectItem itemLabel="Seleccionar" itemValue=""/>
@@ -71,7 +71,7 @@
                                     </p:selectOneMenu>
                                 </h:panelGroup>
                                 <h:panelGroup>
-                                    <h:outputText value="Codigo Postal:"  />
+                                    <h:outputText value="Codigo Postal:"  /><br/>
                                     <p:inputText id="cp" required="true" requiredMessage="Debe ingresar un CP"
                                                  value="${beanEmpresaEstadia.empresa.codigo_postal}" />
                                 </h:panelGroup>
@@ -107,12 +107,23 @@
                             </p:column>
 
                             <p:column headerText="Opciones">
-                                <p:commandButton id="botonEditar"  style="margin-top: 20px; " value="Editar" actionListener="${beanEmpresaEstadia.datosEmpres(emp)}" process="@this" />
-                                <p:commandButton id="botonEliminar"  style="margin-top: 20px; " value="Eliminar" 
-                                                 actionListener="${beanEmpresaEstadia.EliminarEmpresaEstadia(emp)}" process="@this"  > 
-                                </p:commandButton>
+                                <center>
+                                    <p:commandButton id="botonEditar" onclick="subir()"  style="margin-top: 20px; " value="Editar" actionListener="${beanEmpresaEstadia.datosEmpres(emp)}" process="@this" />
+                                    <p:commandButton id="botonEliminar"  style="margin-top: 20px; " value="Eliminar" 
+                                                     actionListener="${beanEmpresaEstadia.EliminarEmpresaEstadia(emp)}"  > 
+                                        <p:confirm header="!Atención¡" message="¿Estás seguro que deseas eliminar el registro?" />
+                                    </p:commandButton>
+                                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                        <center>
+                                        <p:commandButton value="Aceptar" type="button"  styleClass="ui-confirmdialog-yes" />
+                                        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" />
+                                        </center>
+                                    </p:confirmDialog>
+                                </center>
                             </p:column>
+
                         </p:dataTable>
+
 
                     </center>
                     <script type="text/javascript">
@@ -121,6 +132,11 @@
                                 $("#mensajes").children("div").slideUp();
                                 return false;
                             }, time);
+                        }
+
+                        function subir() {
+                            //referimos el elemento ( clase o identificador de acción )
+                            $('html, body').animate({scrollTop: 0}, 'slow'); //seleccionamos etiquetas,clase o identificador destino, creamos animación hacia top de la página.
                         }
 
 

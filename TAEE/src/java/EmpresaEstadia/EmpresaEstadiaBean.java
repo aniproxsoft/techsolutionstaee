@@ -10,14 +10,10 @@ import empresa.EmpresaVO;
 import empresa.EstadoVO;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import javax.annotation.PostConstruct;
-import javax.faces.application.FacesMessage;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
-import javax.faces.context.FacesContext;
-import jdk.nashorn.internal.ir.RuntimeNode;
 import org.primefaces.context.RequestContext;
 
 /**
@@ -48,14 +44,23 @@ public class EmpresaEstadiaBean implements Serializable {
 
     public void insetarEmpresa() {
         if (empresa.getId_empresa() != null) {
-            empresa.getNombre_empresa();
-            System.out.println("nombre" + empresa.getNombre_empresa());
-            System.out.println("telefono" + empresa.getTelefono());
+            empresa.setId_estado(cve_estado);
+            empresa.setId_ciudad(cve_municipio);
             dao.insertUpdate(empresa, 1);
             RequestContext.getCurrentInstance().execute("ocultaMsj(3000)");
             cancelar();
-        }else
-            System.out.println("hola");
+        }else if(empresa.getId_empresa()== null){
+            empresa.setId_estado(cve_estado);
+            empresa.setId_ciudad(cve_municipio);
+            empresa.setStatus("3");
+            empresa.setId_empresa(0);
+            empresa.setId_usuario(0);
+            dao.insertUpdate(empresa, 0);
+            RequestContext.getCurrentInstance().execute("ocultaMsj(3000)");
+            cancelar();
+            mostrarEmpresas();
+        }
+            
 //        
 
     }
