@@ -64,6 +64,7 @@ public class AdminEmpresasEgresadosDAOImplements implements AdminEmpresasEgresad
                     empresa.setActividad("Inactivo");
 
                 }
+                empresa.setVacantes_publicadas(respuesta.getInt("vacantes_publicadas"));
                 empresas.add(empresa);
 
             }

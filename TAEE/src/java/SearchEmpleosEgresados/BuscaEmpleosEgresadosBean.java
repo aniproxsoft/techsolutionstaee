@@ -135,7 +135,7 @@ public class BuscaEmpleosEgresadosBean {
     }
 
     public void buscaEmpleosPorEmpresas() {
-        System.out.println("select: " + selectedEmpresa.getId_empresa());
+//        System.out.println("select: " + selectedEmpresa.getId_empresa());
 
         vacantes = new ArrayList<>();
         vacantes = dao2.searchVacantesPorEmpresa(selectedEmpresa.getId_empresa());

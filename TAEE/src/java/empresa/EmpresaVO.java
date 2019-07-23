@@ -24,6 +24,7 @@ public class EmpresaVO {
     private String nombre_ciudad="";
     private String convenio="";
     private String correo_empresa="";
+    private int vacantes_publicadas;
 
     public Integer getId_empresa() {
         return id_empresa;
@@ -137,5 +138,13 @@ public class EmpresaVO {
 
     public void setCorreo_empresa(String correo_empresa) {
         this.correo_empresa = correo_empresa;
+    }
+
+    public int getVacantes_publicadas() {
+        return vacantes_publicadas;
+    }
+
+    public void setVacantes_publicadas(int vacantes_publicadas) {
+        this.vacantes_publicadas = vacantes_publicadas;
     }
 }

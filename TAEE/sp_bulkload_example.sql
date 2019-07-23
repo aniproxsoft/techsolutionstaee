@@ -16,7 +16,8 @@ BEGIN
 	DECLARE _index2 int UNSIGNED DEFAULT 0;
 	DECLARE suma int UNSIGNED DEFAULT 0;
 	DECLARE countbulk int;
-  		
+	DECLARE id_new int;
+  			
 			WHILE _index < json_items DO 
   				Select count(*) 
   				from empresa 
@@ -68,9 +69,14 @@ BEGIN
 				Set lote_id=1;
 			end if;
 			While _index2 < json_items2 Do
-				INSERT INTO bulkload_empresa (lote,nombre,direccion,estado,ciudad,codigo_postal,num_telefono,folio_convenio,rfc,observaciones,correo_empresa) 
+				select max(id_bulkload)+1 from bulkload_empresa where lote=lote_id into id_new;
+				if(id_new is null)then
+					Set id_new=1;
+				end if;
+				INSERT INTO bulkload_empresa (lote,id_bulkload,nombre,direccion,estado,ciudad,codigo_postal,num_telefono,folio_convenio,rfc,observaciones,correo_empresa) 
 				VALUES (
 				lote_id,
+				id_new,
 				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].nombre_empresa')), '"', '')),
 				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].direccion')), '"', '')),
 				(Select replace(JSON_EXTRACT(bulkloads, CONCAT('$[',_index2,'].nombre_estado')), '"', '')),
@@ -106,7 +112,7 @@ BEGIN
 
 			Set countFail=countbulk-suma;
 			
-			
+			COMMIT;
 			Select lote,id_bulkload,nombre,direccion,estado,ciudad,codigo_postal,num_telefono,folio_convenio,rfc,observaciones,countbulk, countFail,countUpdate,countInsert,msj,correo_empresa
 			from bulkload_empresa where lote =lote_id;
 End

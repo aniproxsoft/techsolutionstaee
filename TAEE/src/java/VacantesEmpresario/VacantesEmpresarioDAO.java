@@ -5,10 +5,19 @@
  */
 package VacantesEmpresario;
 
+import SearchEstadias.VacanteVO;
+import java.util.List;
+
 /**
  *
  * @author ANIPROXTOART
  */
 public interface VacantesEmpresarioDAO {
-    
+
+    public List<VacanteVO> getVacantesEmpresario(int empresa_id);
+
+    public boolean insertUpdateVcanteEmpresario(String json_vacante, String json_conocimiento, String json_habilidades, int opcion);
+
+    public boolean deleteVacanteEmpresario(int vacante_id);
+
 }

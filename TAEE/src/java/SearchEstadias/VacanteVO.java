@@ -48,6 +48,9 @@ public class VacanteVO {
     private boolean ayuda_economica;
     private String ayuda;
     private boolean check;
+    private int id_nivel;
+    private int id_carrera;
+    
     private String imagen_utn=FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resources/reportes/utn.jpg");
 
     public Integer getId_vacante() {
@@ -312,5 +315,21 @@ public class VacanteVO {
 
     public void setImagen_utn(String imagen_utn) {
         this.imagen_utn = imagen_utn;
+    }
+
+    public int getId_nivel() {
+        return id_nivel;
+    }
+
+    public void setId_nivel(int id_nivel) {
+        this.id_nivel = id_nivel;
+    }
+
+    public int getId_carrera() {
+        return id_carrera;
+    }
+
+    public void setId_carrera(int id_carrera) {
+        this.id_carrera = id_carrera;
     }
 }
