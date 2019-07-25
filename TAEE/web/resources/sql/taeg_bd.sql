@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.4
+-- version 4.7.4
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 18-07-2019 a las 18:05:27
--- Versión del servidor: 5.7.24
--- Versión de PHP: 7.2.14
+-- Tiempo de generación: 25-07-2019 a las 23:01:49
+-- Versión del servidor: 5.7.19
+-- Versión de PHP: 5.6.31
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -338,7 +338,8 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_empresas_egresados` (IN `tip
 	em.id_estado,em.id_ciudad,codigo_postal,
 	num_telefono,rfc,em.status as status_empresa,correo_empresa,
 	us.id_usuario,us.nombre as nombre_usuario,apellidos,
-	email,id_rol,us.status as 		   status_usuario,es.nombre_estado,ci.nombre_ciudad
+	email,id_rol,us.status as status_usuario,es.nombre_estado,ci.nombre_ciudad,
+	(SELECT COUNT(*) from vacante v where v.id_empresa=em.id_empresa )as vacantes_publicadas
 	FROM empresa em
 	JOIN usuario us on em.id_usuario=us.id_usuario
     JOIN estado es on em.id_estado= es.id_estado
@@ -589,13 +590,16 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_estadia_por_empresa
 END$$
 
 DROP PROCEDURE IF EXISTS `sp_get_vacantes_usuario`$$
-CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_usuario` (`empresa_id` INT)  BEGIN
-	SELECT id_vacante,titulo,vacante_desc,id_perfil,
-	edad_min,edad_max,salario_min,salario_max,
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_usuario` (IN `empresa_id` INT)  BEGIN
+	SELECT id_vacante,titulo,vacante_desc,v.id_perfil, p.nombre_perfil,c.carrera_desc,
+	edad_min,edad_max,salario_min,salario_max,n.nombre_nivel,
 	hora_inicial,hora_final,experiencia,em.id_empresa,
-	v.status as status_empresa,ayuda_economica
+	v.status as status_empresa,ayuda_economica,n.id_nivel,c.id_carrera
 	FROM vacante v
 	JOIN empresa em on v.id_empresa=em.id_empresa 
+    JOIN perfil p on v.id_perfil=p.id_perfil
+    JOIN carreras c ON p.id_carrera=c.id_carrera
+    join nivel_academico n on c.id_nivel=n.id_nivel
 	where em.id_empresa=empresa_id
 	and em.status='2'
 	and v.status='1';
@@ -828,6 +832,56 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_insert_update_vacante_egresados`
 	SELECT flag,msj,id_new;
 END$$
 
+DROP PROCEDURE IF EXISTS `sp_registrar_user`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_registrar_user` (IN `nombre_u` VARCHAR(50), IN `apellido_u` VARCHAR(50), IN `email_u` VARCHAR(50), IN `pass` VARCHAR(50), IN `direccion_em` VARCHAR(50), IN `nombre_em` VARCHAR(50), IN `estado` INT, IN `ciudad` INT, IN `cp` INT, IN `telefono` VARCHAR(13), IN `rfc_em` VARCHAR(15), IN `email_em` VARCHAR(50))  BEGIN
+    DECLARE flag boolean;
+    DECLARE count int;
+    DECLARE id_user int;
+    DECLARE msj varchar (100);
+    DECLARE countEmail int;
+    DECLARE countRFC int;
+    SELECT (max(id_usuario) +1) as id_u from usuario INTO id_user;
+    if(id_user<1)THEN
+    	set id_user=1;
+    end if;
+    SELECT COUNT(*) FROM usuario WHERE email=email_u INTO countEmail;
+    SELECT COUNT(*) FROM empresa WHERE rfc=rfc_em INTO countRFC;
+
+    IF(countEmail >0 OR countRFC>0)THEN
+        SET flag=false;
+        SET msj='Un usuario con este email o RFC ya ha sido registrado';
+        SET id_user=0;
+    ELSE
+        INSERT INTO usuario (id_usuario,nombre,apellidos,email,password,id_rol,status)      
+        VALUES (id_user,nombre_u,apellido_u,email_u,MD5(pass),3,1);
+        
+        SET COUNT = ROW_COUNT();
+        IF(COUNT>0) THEN 
+        
+            INSERT INTO empresa (direccion, nombre, id_estado, id_ciudad,        
+                codigo_postal,id_usuario,num_telefono,rfc, status,correo_empresa) 
+            VALUES(direccion_em,
+                nombre_em,estado,ciudad,cp,id_user,telefono,rfc_em,1,email_em);
+            SET COUNT = ROW_count();
+            IF (COUNT>0) THEN
+            SET flag = true;
+            SET msj = 'Registro exitoso. Su solicitud esta en proceso.';
+            ELSE
+            SET flag = false;
+            SET msj = 'Error, no se insertó en la segunda tabla.';
+            END IF;
+        ELSE
+            SET flag = false;
+            SET msj = 'Error no se inserto en la primera tabla';
+        END IF;
+    END IF;
+
+
+
+    
+    SELECT flag, msj, id_user;
+END$$
+
 DROP PROCEDURE IF EXISTS `sp_search_empresas_egresados`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_search_empresas_egresados` (`empresa_id` INT)  BEGIN
 	SELECT id_empresa,direccion,em.nombre as nombre_empresa,
@@ -908,7 +962,13 @@ INSERT INTO `bulkload_empresa` (`lote`, `id_bulkload`, `direccion`, `nombre`, `e
 (6, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL, 'jobfit@yahoo.com'),
 (6, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL, 'mar@hotmail.com'),
 (6, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.', 'rsf@gmail.com'),
-(6, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. El campo Correo de Empresa esta en blanco', '');
+(6, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. El campo Correo de Empresa esta en blanco', ''),
+(7, 1, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 'CDMX', 'Alvaro Obregon', '50000', NULL, '5566778899', 'CONV019293', 'UPS7172639', NULL, 'upds@gmail.com'),
+(7, 2, 'Calle 2 el faisan', 'Grupo salinas', 'CDMX', 'Cuauhtemoc', '57888', NULL, '555565435', 'CONV826364', 'GP88273746', NULL, 'salinas.e@gmail.com'),
+(7, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL, 'jobfit@yahoo.com'),
+(7, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL, 'mar@hotmail.com'),
+(7, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.', 'rsf@gmail.com'),
+(7, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. El campo Correo de Empresa esta en blanco', '');
 
 -- --------------------------------------------------------
 
@@ -1072,9 +1132,16 @@ INSERT INTO `conocimiento_vac` (`id_vacante`, `id_conocimiento`) VALUES
 (18, 1),
 (19, 1),
 (20, 1),
+(21, 1),
+(22, 1),
+(23, 1),
+(24, 1),
+(26, 1),
 (4, 2),
 (6, 3),
 (7, 3),
+(25, 3),
+(27, 3),
 (8, 4),
 (9, 5),
 (10, 6),
@@ -1114,7 +1181,7 @@ CREATE TABLE IF NOT EXISTS `empresa` (
   KEY `fk_usuario` (`id_usuario`),
   KEY `fk_emp_ciudad` (`id_ciudad`),
   KEY `fk_emp_estado` (`id_estado`)
-) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `empresa`
@@ -1134,7 +1201,10 @@ INSERT INTO `empresa` (`id_empresa`, `direccion`, `nombre`, `id_estado`, `id_ciu
 (11, 'la bamba 429', 'TEECH096', 1, 1, '5700', 0, '5548150571', 'CO5555', 'RFC77267', '0', 'tec@gmail.com'),
 (13, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 2, 2, '50000', NULL, '5566778899', 'CONV019293', 'UPS7172639', '3', 'upds@gmail.com'),
 (14, 'El barro 320', 'ANIPROX SOFT', 1, 4, '57800', 9, '5562386648', NULL, 'RFCEMP012', '1', 'aniproxsoft@gmail.com'),
-(15, 'Las Flores 5454', 'Mozcaltli', 2, 6, '654554', NULL, '8558545515', 'FO515151', 'RFC2116541631', '0', 'moz@hotmail.com');
+(15, 'Las Flores 5454', 'Mozcaltli', 2, 6, '654554', NULL, '8558545515', 'FO515151', 'RFC2116541631', '0', 'moz@hotmail.com'),
+(16, 'Matanzas 888', 'Phoenix', 1, 28, '578282', NULL, '5636363663', 'CONV33773', 'RFC26267627', '0', 'ave@hotmail.com'),
+(17, 'Casa de las flores', 'Ubisoft', 1, 1, '15432', 10, '5533443322', NULL, 'RFCASEAA', '1', 'ubi@soft.com'),
+(18, 'El caiman 34', 'King Soft', 1, 6, '5566447', 11, '5546438394', NULL, 'RFC83847HDH', '1', 'king@yahoo.com');
 
 -- --------------------------------------------------------
 
@@ -1228,7 +1298,18 @@ INSERT INTO `habilidad_vac` (`id_vacante`, `id_habilidades`) VALUES
 (13, 2),
 (14, 4),
 (15, 1),
+(16, 1),
 (16, 2),
+(16, 3),
+(16, 4),
+(16, 5),
+(16, 6),
+(16, 7),
+(16, 8),
+(16, 9),
+(16, 10),
+(16, 11),
+(16, 12),
 (17, 1),
 (17, 2),
 (17, 3),
@@ -1238,7 +1319,21 @@ INSERT INTO `habilidad_vac` (`id_vacante`, `id_habilidades`) VALUES
 (19, 1),
 (19, 2),
 (20, 1),
-(20, 4);
+(20, 4),
+(21, 1),
+(23, 2),
+(27, 1),
+(27, 2),
+(27, 3),
+(27, 4),
+(27, 5),
+(27, 6),
+(27, 7),
+(27, 8),
+(27, 9),
+(27, 10),
+(27, 11),
+(27, 12);
 
 -- --------------------------------------------------------
 
@@ -1312,7 +1407,7 @@ CREATE TABLE IF NOT EXISTS `usuario` (
   `status` varchar(1) NOT NULL,
   PRIMARY KEY (`id_usuario`),
   KEY `fk_usuario_rol` (`id_rol`)
-) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `usuario`
@@ -1327,7 +1422,9 @@ INSERT INTO `usuario` (`id_usuario`, `nombre`, `apellidos`, `email`, `password`,
 (6, 'Ramiro', 'Hernandez', 'ram@hotmail.com', 'e10adc3949ba59abbe56e057f20f883e', 3, '1'),
 (7, 'Ariana', 'Palencia Escobar', 'arp@yahoo.com', 'e10adc3949ba59abbe56e057f20f883e', 3, '1'),
 (8, 'Ramses', 'El Grande', 'rami@gmail.com', 'e10adc3949ba59abbe56e057f20f883e', 3, '1'),
-(9, 'Tony ', 'RodzBar', 'barrera.01yea@gmail.com', 'e10adc3949ba59abbe56e057f20f883e', 3, '1');
+(9, 'Tony ', 'RodzBar', 'barrera.01yea@gmail.com', 'e10adc3949ba59abbe56e057f20f883e', 3, '1'),
+(10, 'Rogelio', 'Espinoza', 'esp@hotmail.com', 'e10adc3949ba59abbe56e057f20f883e', 3, '1'),
+(11, 'Enrrique', 'Gaitan', 'erri@hotmail.com', 'e10adc3949ba59abbe56e057f20f883e', 3, '1');
 
 -- --------------------------------------------------------
 
@@ -1375,7 +1472,7 @@ CREATE TABLE IF NOT EXISTS `vacante` (
   `ayuda_economica` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id_vacante`),
   KEY `fk_perfil` (`id_perfil`)
-) ENGINE=InnoDB AUTO_INCREMENT=51 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `vacante`
@@ -1394,12 +1491,19 @@ INSERT INTO `vacante` (`id_vacante`, `titulo`, `vacante_desc`, `id_perfil`, `eda
 (10, 'CONSULTOR IT , MANAGER, LIDER DE PROYECTO IT', 'OFRECEMOS: SEGURO MEDICO DE GASTOS MAYORES. CRECIMIENTO. ESTABILIDAD. DESARROLLO.', 2, NULL, NULL, 8000.00, 10000.00, NULL, NULL, NULL, 2, '1', 1),
 (11, 'ESPECIALISTA EN RECURSOS HUMANOS', 'IMPORTANTE FINANCIERA\r\nAPOYO ECONOMICO FAMILIAR\r\nSOLICITA\r\nESPECIALISTA EN RECURSOS HUMANOS\r\nPARA LA ZONA EN ALVARO OBREGON \r\nCON DISPONIBILIDAD PARA ACUDIR A TACUBAYA, SAN BERNABE, CUAJIMALPA\r\nManejara a su cargo 10 sucursales aledanias a la zona\r\n', 6, 0, 0, 13000.00, 15000.00, '', '', 2, 6, '1', 1),
 (12, 'Becario ambiental', 'Empresa dedicada a la fabricacion de productos quimicos solicita becario ambiental con experiencia, puntualidad,\r\n', 7, 0, 0, 8000.00, 12000.00, '', '', 0, 7, '1', 1),
-(13, 'ANALISTA DE SOPORTE A LA PRODUCCION', 'Contratacion Tiempo completo o Permanente\r\n', 8, 0, 0, 0.00, 0.00, '', '', 2, 8, '', 1),
+(13, 'ANALISTA DE SOPORTE A LA PRODUCCION', 'Contratacion Tiempo completo o Permanente\r\n', 8, 0, 0, 0.00, 0.00, '', '', 2, 8, '1', 1),
 (14, 'CONSULTOR DE PROCESOS RAD', 'Contratacion: Tiempo completo Permanente\r\n', 10, 22, 0, 18000.00, 18000.00, '', '', 2, 8, '1', 1),
 (15, 'COORDINADOR DE MERCADOTECNIA', 'Contratacion Permanente', 9, 20, 0, 7000.00, 7000.00, '8:00 am', '18:00 pm', 1, 9, '1', 1),
-(16, 'Desarrollador movil Android/IOS JR12 a 20 mil y SR20 a 35mil', 'En IMDS instituto mexicano de desarrolladores de software solicitamos\r\nDesarrollador movil\r\n', 1, 24, 0, 15000.00, 30000.00, '', '', 1, 10, '1', 1),
-(17, 'Administrador de la Base de Datos MS SqlServer', 'En GINgroup ofrecemos las mejores soluciones integrales de vanguardia en administración de capital humano de esta manera nuestros clientes pueden enfocar su talento y sus recursos en hacer crecer su negocio, mientras nosotros nos encargamos de administrar su capital humano de manera eficiente.\r\n', 5, 0, 0, 22000.00, 30000.00, '', '', 5, 10, '1', 1),
-(20, 'PROGRAMADOR WEB', 'Desarrollar apis en java para consulta de services', 1, 0, 0, 3000.00, 3000.00, NULL, NULL, NULL, 6, '0', 1);
+(16, 'Desarrollador movil Android/IOS JR12 a 20 mil y SR20 a 35mil', 'En IMDS instituto mexicano de desarrolladores de software solicitamos Desarrollador movil', 1, 24, 12, 30000.00, 30000.00, NULL, NULL, 1, 10, '1', 1),
+(17, 'Administrador de la Base de Datos MS SqlServer', 'En GINgroup ofrecemos las mejores soluciones integrales de vanguardia en administración de capital humano de esta manera nuestros clientes pueden enfocar su talento y sus recursos en hacer crecer su negocio, mientras nosotros nos encargamos de administrar su capital humano de manera eficiente.\\r\\n', 5, NULL, NULL, 22000.00, 30000.00, '09:00 pm', '07:00 am', 5, 10, '1', 1),
+(20, 'PROGRAMADOR WEB', 'Desarrollar apis en java para consulta de services', 1, 0, 0, 3000.00, 3000.00, NULL, NULL, NULL, 6, '0', 1),
+(21, 'sssss', 'sssssssssssssssssssssssss', 1, 33, 33, 3333.00, 333.00, '11:11 am', '11:11 am', 3, 10, '0', 0),
+(22, 'aaaaaaaaaaa', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 1, 11, 11, NULL, NULL, NULL, NULL, 1, 10, '0', 0),
+(23, 'aaaaa', 'ssssssssssssssssss', 1, NULL, NULL, NULL, NULL, NULL, NULL, 1, 10, '0', 0),
+(24, 'aaaax', 'xxxxxxxxxxxxxxxxxxxxxxxxx', 2, NULL, NULL, NULL, NULL, NULL, NULL, 1, 10, '0', 0),
+(25, 'dcccccccc', 'ccvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv', 3, NULL, NULL, NULL, NULL, NULL, NULL, 0, 10, '0', 0),
+(26, 'hhhhhhhh', 'nnnnnnnnnnnnnnnnnnn', 1, NULL, NULL, NULL, NULL, NULL, NULL, 0, 10, '0', 0),
+(27, 'Analista de software', 'Analizar el funcionamiento del software', 3, 23, 60, 50000.00, 7000.00, '09:00 am', '06:00 pm', 1, 10, '1', 0);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
