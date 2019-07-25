@@ -46,7 +46,7 @@
                                 <p:inputText id="pass" type="password" value="${beanLogin.user.contraseña}" style="width: 320px"  required="true" > </p:inputText><br/>
                                 <p:message for="pass" />
                                 <p:column>
-                                    <h:link class="red-link" value="Crear cuenta"></h:link>
+                                    <h:link class="red-link" outcome="/vistas/empresarios/registroEmpresarios.xhtml" value="Crear cuenta"></h:link>
                                     <p:commandButton id="enviar" action="#{beanLogin.iniciarSesion()}" value="Enviar"  update="panel" style="margin-top: 15px;margin-left: 75%"></p:commandButton>
                                 </p:column>
 

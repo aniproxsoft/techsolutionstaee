@@ -99,7 +99,9 @@
                         <h:outputText value="Telefono: ${beanSearchEstadias.vacanteDetail.num_telefono}" />
 
                     </h:panelGrid>
-
+                    <center>
+                        <p:commandButton actionListener="${beanSearchEstadias.cerrar()}" value="Cerrar" />  
+                    </center>
 
                 </p:panel>
             </center>
@@ -210,7 +212,6 @@
                                         var="company" itemLabel="#{company.nombre_empresa}" 
                                         itemValue="#{company}" converter="empresaConverter" 
                                         forceSelection="true" >
-                            <!--<p:ajax event="change" listener="${beanSearchEstadias.ver}"  />-->
                         </p:autoComplete>
                         <p:message for="buscaEmpresa" />
 

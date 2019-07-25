@@ -117,6 +117,12 @@ public class BuscaEmpleosEgresadosBean {
         RequestContext.getCurrentInstance().update("formulario");
     }
 
+    public void cerrar() {
+
+        renderView = false;
+        RequestContext.getCurrentInstance().update("formulario");
+    }
+
     public List<EmpresaVO> muestraEmpresas(String query) {
         List<EmpresaVO> allEmpresas = service.empresasEstadía(2);
 

@@ -31,6 +31,8 @@ public class ConverterEmpresa implements Converter {
                                     "#{beanSearchEstadias}", SearchEstadiasBean.class);
 
             SearchEstadiasBean bean = (SearchEstadiasBean) vex.getValue(fc.getELContext());
+            System.out.println("v: " + value);
+
             Object o = bean.retrieveEmpresaByName(value);
 //            System.out.println("obj: "+o.getClass());
             return o;
@@ -38,12 +40,13 @@ public class ConverterEmpresa implements Converter {
             return null;
         }
 
+        
     }
 
     @Override
     public String getAsString(FacesContext fc, UIComponent uic, Object o) {
         if (o != null) {
-            String s = ((EmpresaVO) o).getNombre_empresa()+ "";
+            String s = ((EmpresaVO) o).getNombre_empresa() + "";
             return s;
         } else {
             return "";

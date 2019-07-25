@@ -77,7 +77,7 @@ public class BuscaEstadiasDAOImplements implements BuscaEstadiasDAO {
                     vacante.setRenderHora(true);
                 }
                 vacante.setExperiencia(respuesta.getString(14));
-                if(vacante.getExperiencia()!=null || vacante.getExperiencia()!=""){
+                if(vacante.getExperiencia()!=null ){
                     vacante.setRenderExperiencia(true);
                 }
                 vacante.setId_empresa(respuesta.getInt(15));

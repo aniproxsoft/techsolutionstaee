@@ -74,11 +74,11 @@ public class BuscaEmpleosEgresadosDAOImplemets implements BuscaEmpleosEgresadosD
                 }
                 vacante.setHora_inicial(respuesta.getString(12));
                 vacante.setHora_final(respuesta.getString(13));
-                if(!((vacante.getHora_inicial().equals(""))||!(vacante.getHora_final().equals("")))||(vacante.getHora_inicial()!=null||vacante.getHora_final()!=null)){
+                if((vacante.getHora_inicial()!=null||vacante.getHora_final()!=null)){
                     vacante.setRenderHora(true);
                 }
                 vacante.setExperiencia(respuesta.getString(14));
-                if(vacante.getExperiencia()!=null || !(vacante.getExperiencia().equals(""))){
+                if(vacante.getExperiencia()!=null){
                     vacante.setRenderExperiencia(true);
                 }
                 vacante.setId_empresa(respuesta.getInt(15));

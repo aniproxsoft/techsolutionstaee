@@ -1,0 +1,249 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <h:outputStylesheet name="./css/bootstrap.css"/>
+        <h:outputStylesheet name="./css/formularios.css"/>
+        <h:outputScript name="./js/bootstrap.min.js"/>
+        <title>TAEG</title>
+    </h:head>
+
+    <body>
+
+
+        <nav class="navbar navbar-utn">
+            <div class="container-fluid">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="#">TAEG</a>
+                </div>
+                <ul class="nav navbar-nav">
+                    <li><h:link outcome="/index.xhtml"  value="Inicio"></h:link></li>
+                    <li><h:link outcome="/vistas/visitante/visitaEstadias.xhtml"  value="Estadías"></h:link></li>
+                    <li><h:link outcome="/vistas/empleos_egresados/empleos_egresados.xhtml"   value="Empleos"></h:link></li>
+                    <li class="active"><h:link   outcome="/vistas/empresarios/empresarios.xhtml" value="Empresarios"></h:link></li>
+
+                </ul>
+                <ul class="nav navbar-nav  navbar-right">
+                    <!--<li><a href="#"><span class="glyphicon glyphicon-user"></span> Registrate</a></li>-->
+                    <li ><h:link value="Iniciar sesión "  outcome="/vistas/iniciar_sesion/iniciar_sesion.xhtml"><span class="glyphicon glyphicon-log-in"></span></h:link></li>
+                </ul>
+            </div>
+        </nav> 
+
+        <p:messages id="mensajes" showDetail="true" closable="true"/>
+        <h:form id="formulario" >
+            <center>
+                <h1 style="color: #038C65; margin-top: 10 px">Registro de Usuario</h1>
+                <br/>
+                <p:panel id="form_view" style="width: 75%">
+                    <h3 style="color: #038C65">Datos de Usuario</h3>
+                    <h:panelGrid id="panel2" columns="4" width="100%">
+                        <h:panelGroup>
+                            <h:outputText value="Nombre:"  /><br/>
+                            <p:inputText id="nombre_us" required="true"
+                                         requiredMessage="Debe ingresar un nombre"
+                                         value="${beanRegistroEmresarios.user.nombre}" 
+                                         validatorMessage="Debe ingresar minimo 3 digitos naximo 50">
+
+                                <f:validateLength minimum="3" maximum="50" />
+
+                            </p:inputText>
+                            <p:message for="nombre_us" />
+
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <h:outputText value="Apellidos"  /><br/>
+                            <p:inputText id="apellidos_us" required="true"
+                                         requiredMessage="Debe ingresar sus Apellidos"
+                                         value="${beanRegistroEmresarios.user.apellidos}" 
+                                         validatorMessage="Debe ingresar minimo 3 caracteres naximo 50">
+
+                                <f:validateLength minimum="3" maximum="50" />
+
+                            </p:inputText>
+                            <p:message for="apellidos_us" />
+
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <h:outputText value="Correo"  /><br/>
+                            <p:inputText id="correo_us" required="true" type="email"
+                                         requiredMessage="Debe ingresar su correo"
+                                         value="${beanRegistroEmresarios.user.correo}" 
+                                         validatorMessage="Debe ingresar minimo 3 caracteres naximo 50">
+
+                                <f:validateLength minimum="3" maximum="50" />
+
+                            </p:inputText>
+                            <p:message for="correo_us" />
+
+                        </h:panelGroup>
+                        <p:column />
+                        <h:panelGroup>
+                            <h:outputText value="Contraseña"  /><br/>
+                            <p:inputText id="pass1" required="true" type="password"
+                                         requiredMessage="Debe ingresar su contraseña"
+                                         value="${beanRegistroEmresarios.user.contraseña}" 
+                                         validatorMessage="Debe ingresar minimo 6 caracteres naximo 50">
+
+                                <f:validateLength minimum="6" maximum="50" />
+
+                            </p:inputText>
+                            <p:message for="pass1" />
+
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <h:outputText value="Confirmar Contraseña"  /><br/>
+                            <p:inputText id="pass2" required="true" type="password"
+                                         requiredMessage="Debe ingresar su contraseña"
+                                         value="${beanRegistroEmresarios.contraseña2}" 
+                                         validatorMessage="Debe ingresar minimo 6 caracteres naximo 50">
+
+                                <f:validateLength minimum="6" maximum="50" />
+
+                            </p:inputText>
+                            <p:message for="pass2" />
+
+                        </h:panelGroup>
+                    </h:panelGrid>
+                    <hr/>
+                    <h3 style="color: #038C65">Datos de Empresa</h3>
+                    <h:panelGrid id="panel" columns="4" width="100%">
+                        <h:panelGroup>
+                            <h:outputText value="Nombre Empresa:"  /><br/>
+                            <p:inputText id="nombre" required="true"
+                                         requiredMessage="Debe ingresar un nombre de Empresa"
+                                         value="${beanRegistroEmresarios.user.nombre_empresa}" 
+                                         validatorMessage="Debe ingresar minimo 3 digitos naximo 50">
+
+                                <f:validateLength minimum="3" maximum="50" />
+
+                            </p:inputText>
+                            <p:message for="nombre" />
+
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <h:outputText value="Teléfono:"  /><br/>
+                            <p:inputMask id="fon" required="true"  
+                                         requiredMessage="Debe ingresar un Teléfono"
+                                         value="${beanRegistroEmresarios.user.telefono}" mask="9999999999"
+                                         validatorMessage="Debe ingresar minimo 10 digitos naximo 13">
+
+                                <f:validateLength minimum="10" maximum="13" />
+                            </p:inputMask>
+                            <p:message for="fon" />
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <h:outputText value="Correo de la empresa:"   /><br/>
+                            <p:inputText id="correo" required="true" type="email"
+                                         requiredMessage="Debe ingresar un Correo"
+                                         value="${beanRegistroEmresarios.user.correo_empresa}" 
+                                         validatorMessage="Debe ingresar minimo 3 digitos naximo 50">
+
+                                <f:validateLength minimum="3" maximum="50" />
+
+                            </p:inputText>
+                            <p:message for="correo" />
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <h:outputText value="Folio Convenio:"  /><br/>
+                            <p:inputText id="fc" required="true" requiredMessage="Debe ingresar un Folio"
+                                         value="${beanRegistroEmresarios.user.convenio}" 
+                                         validatorMessage="Debe ingresar minimo 3 digitos naximo 20">
+
+                                <f:validateLength minimum="3" maximum="20" />
+
+                            </p:inputText>
+                            <p:message for="fc" />
+
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <h:outputText value="RFC (Moral/Fisico):"  /><br/>
+                            <p:inputText id="rfc" required="true" requiredMessage="Debe ingresar un RFC" 
+                                         value="${beanRegistroEmresarios.user.rfc}" 
+                                         validatorMessage="Debe ingresar minimo 3 digitos naximo 20">
+
+                                <f:validateLength minimum="3" maximum="20" />
+
+                            </p:inputText>
+                            <p:message for="rfc" />
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <h:outputText value="Dirección:" /><br/>
+                            <p:inputText id="direccion" required="true" requiredMessage="Debe ingresar una Dirección"
+                                         value="${beanRegistroEmresarios.user.direccion}" 
+                                         validatorMessage="Debe ingresar minimo 3 digitos naximo 50">
+
+                                <f:validateLength minimum="3" maximum="50" />
+
+                            </p:inputText>
+                            <p:message for="direccion" />
+
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <h:outputText value="Estado:" /><br/>
+                            <p:selectOneMenu id="estado" required="true" 
+                                             requiredMessage="Debe elegir un Estado"
+                                             value="${beanRegistroEmresarios.cve_estado}" >
+                                <f:selectItem itemLabel="Seleccionar" itemValue=""/>
+                                <f:selectItems value="${beanEmpresaEstadia.estados}" var="estado"
+                                               itemLabel="${estado.nombre_estado}"
+                                               itemValue="${estado.id_estado}"/>
+                                <p:ajax event="change" update="ciudad" 
+                                        listener="${beanRegistroEmresarios.mostrarMunicipio()}" />
+                            </p:selectOneMenu>
+                            <p:message for="estado" />
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <h:outputText value="Municipio:" /><br/>
+                            <p:selectOneMenu id="ciudad" required="true" 
+                                             requiredMessage="Debe elegir un Municipio" 
+                                             value="${beanRegistroEmresarios.cve_municipio}" >
+                                <f:selectItem itemLabel="Seleccionar" itemValue=""/>
+                                <f:selectItems value="${beanRegistroEmresarios.ciudades}" var="mun"
+                                               itemLabel="${mun.nombre_ciudad}"
+                                               itemValue="${mun.id_ciudad}"/>
+                            </p:selectOneMenu>
+                            <p:message for="ciudad" />
+                        </h:panelGroup>
+                        <h:panelGroup>
+                            <h:outputText value="Codigo Postal:"  /><br/>
+                            <p:inputText id="cp" required="true" requiredMessage="Debe ingresar un CP"
+                                         value="${beanRegistroEmresarios.user.codigo_postal}" 
+                                         validatorMessage="Debe ingresa minimo 3 maximo 15"             >
+                                <f:validateLength minimum="3" maximum="15" />
+                            </p:inputText>
+                            <p:message for="cp" />
+                        </h:panelGroup>
+                    </h:panelGrid>
+                    <p:commandButton id="botonGuardar"  style="margin-top: 30px;" value="Registrarse" 
+                                     actionListener="${beanRegistroEmresarios.registrarUsuario()}" 
+                                     process="@form" update="formulario"/>
+                    <p:commandButton id="botonCancelar"  style="margin-top: 30px;" value="Cancelar"
+                                     action="/vistas/empresarios/empresarios.xhtml" process="@this" title="Cancelar"/>
+                </p:panel>
+            </center>
+            <script type="text/javascript">
+                function ocultaMsj(time) {
+                    setTimeout(function () {
+                        $("#mensajes").children("div").slideUp();
+                        return false;
+                    }, time);
+                }
+
+                function subir() {
+                    //referimos el elemento ( clase o identificador de acción )
+                    $('html, body').animate({scrollTop: 0}, 'slow'); //seleccionamos etiquetas,clase o identificador destino, creamos animación hacia top de la página.
+                }
+
+            </script>
+        </h:form>
+
+
+    </body>
+</html>

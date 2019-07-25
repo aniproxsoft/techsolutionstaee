@@ -117,6 +117,11 @@ public class SearchEstadiasBean implements Serializable {
 
         }
     }
+    public void cerrar(){
+        
+        renderView=false;
+        RequestContext.getCurrentInstance().update("formulario");
+    }
 
     public EmpresaVO retrieveEmpresaByName(String name) {
         Iterator<EmpresaVO> it = this.empresasList.iterator();

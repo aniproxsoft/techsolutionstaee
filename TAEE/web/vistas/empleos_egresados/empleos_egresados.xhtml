@@ -98,7 +98,9 @@
 
                     </h:panelGrid>
 
-
+                    <center>
+                        <p:commandButton actionListener="${beanBuscaEmpleosEgresados.cerrar()}" value="Cerrar" />  
+                    </center>
                 </p:panel>
 
             </center>
@@ -207,7 +209,7 @@
                                         value="#{beanBuscaEmpleosEgresados.selectedEmpresa}" 
                                         completeMethod="#{beanBuscaEmpleosEgresados.muestraEmpresas}"
                                         var="company" itemLabel="#{company.nombre_empresa}" 
-                                        itemValue="#{company}" converter="empresaConverter" 
+                                        itemValue="#{company}" converter="empresaConverterEgresados" 
                                         forceSelection="true" >
                             <!--<p:ajax event="change" listener="${beanBuscaEmpleosEgresados.ver}"  />-->
                         </p:autoComplete>
