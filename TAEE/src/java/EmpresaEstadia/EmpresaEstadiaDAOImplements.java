@@ -211,4 +211,49 @@ public class EmpresaEstadiaDAOImplements implements EmpresaEstadiaDAO {
         return false;
 
     }
+
+    @Override
+    public List<EmpresaVO> searchEmresasEgresados(Integer tipo,Integer id_empresa) {
+        List<EmpresaVO> empresas = new ArrayList<>();
+        Connection con = null;
+        try {
+            conexion = new ConnectionDB();
+            con = conexion.conectarBD();
+            java.sql.CallableStatement query = con.prepareCall("{call sp_search_empresas_estadias(?,?)}");
+            query.setInt(1, tipo);
+            query.setInt(2, id_empresa);
+            query.execute();
+            ResultSet respuesta = query.getResultSet();
+            EmpresaVO empresa = null;
+            while (respuesta.next()) {
+                empresa = new EmpresaVO();
+                empresa.setId_empresa(respuesta.getInt("id_empresa"));
+                empresa.setDireccion(respuesta.getString("direccion"));
+                empresa.setNombre_empresa(respuesta.getString("nombre"));
+                empresa.setId_estado(respuesta.getInt("id_estado"));
+                empresa.setId_ciudad(respuesta.getInt("id_ciudad"));
+                empresa.setCodigo_postal(respuesta.getString("codigo_postal"));
+                empresa.setId_usuario(respuesta.getInt("id_usuario"));
+                empresa.setTelefono(respuesta.getString("num_telefono"));
+                empresa.setConvenio(respuesta.getString("folio_convenio"));
+                empresa.setRfc(respuesta.getString("rfc"));
+                empresa.setStatus(respuesta.getString("status"));
+                empresa.setCorreo_empresa(respuesta.getString("correo_empresa"));
+                empresas.add(empresa);
+                System.out.println("empresa..."+empresa.getNombre_empresa());
+            }
+            return empresas;
+        } catch (IOException ex) {
+            Logger.getLogger(EmpresaEstadiaDAOImplements.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(EmpresaEstadiaDAOImplements.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (InstantiationException ex) {
+            Logger.getLogger(EmpresaEstadiaDAOImplements.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IllegalAccessException ex) {
+            Logger.getLogger(EmpresaEstadiaDAOImplements.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (SQLException ex) {
+            Logger.getLogger(EmpresaEstadiaDAOImplements.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
 }

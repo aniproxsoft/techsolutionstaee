@@ -18,4 +18,5 @@ public interface EmpresaEstadiaDAO {
     public List<CiudadVO> getMunicipios(Integer clave);
     public boolean deleteEmpresa(Integer clave);
     public boolean insertUpdate(EmpresaVO empresa,Integer editar);
+    public List<EmpresaVO> searchEmresasEgresados(Integer tipo,Integer id_empresa);
 }

@@ -5,11 +5,13 @@
  */
 package EmpresaEstadia;
 
+import Services.ServiceEmpresas;
 import empresa.CiudadVO;
 import empresa.EmpresaVO;
 import empresa.EstadoVO;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.bean.ManagedBean;
@@ -32,13 +34,20 @@ public class EmpresaEstadiaBean implements Serializable {
     private List<CiudadVO> ciudades;
     private int cve_estado;
     private int cve_municipio;
+    private ServiceEmpresas service;
+    private List<EmpresaVO> empresasList;
+    private EmpresaVO selectEmpresa;
+    private List<EmpresaVO> empresas;
 
     @PostConstruct
     public void init() {
         empresa = new EmpresaVO();
+        selectEmpresa= new EmpresaVO();
         dao = new EmpresaEstadiaDAOImplements();
         mostrarEmpresas();
         estados = dao.getEstados();
+        service = new ServiceEmpresas();
+        empresasList = service.empresasEstadía(3);
 
     }
 
@@ -49,7 +58,7 @@ public class EmpresaEstadiaBean implements Serializable {
             dao.insertUpdate(empresa, 1);
             RequestContext.getCurrentInstance().execute("ocultaMsj(3000)");
             cancelar();
-        }else if(empresa.getId_empresa()== null){
+        } else if (empresa.getId_empresa() == null) {
             empresa.setId_estado(cve_estado);
             empresa.setId_ciudad(cve_municipio);
             empresa.setStatus("3");
@@ -60,9 +69,47 @@ public class EmpresaEstadiaBean implements Serializable {
             cancelar();
             mostrarEmpresas();
         }
-            
-//        
 
+//        
+    }
+
+    public List<EmpresaVO> muestraEmpresas(String query) {
+        List<EmpresaVO> allEmpresas = service.empresasEstadía(3);
+
+        List<EmpresaVO> filteredEmpresas = new ArrayList<EmpresaVO>();
+
+        for (int i = 0; i < allEmpresas.size(); i++) {
+            EmpresaVO skin = allEmpresas.get(i);
+            if (skin.getNombre_empresa().toLowerCase().contains(query.toLowerCase())) {
+                filteredEmpresas.add(skin);
+                System.out.println("s:" + skin.getId_empresa());
+            }
+
+        }
+
+        return filteredEmpresas;
+    }
+
+    public EmpresaVO retrieveEmpresaByName(String name) {
+        Iterator<EmpresaVO> it = this.empresasList.iterator();
+        while (it.hasNext()) {
+            EmpresaVO emp = it.next();
+            if (name.equals(emp.getNombre_empresa() + "")) {
+                return emp;
+            }
+        }
+        return null;
+
+    }
+    public void buscar() {
+//        System.out.println("c: " + selectedEmpresa.getId_empresa());
+        if (selectEmpresa != null) {
+            if (selectEmpresa.getId_empresa() > 0) {
+                System.out.println("id: " + selectEmpresa.getId_empresa());
+                empresaList = dao.searchEmresasEgresados(3,selectEmpresa.getId_empresa());
+                RequestContext.getCurrentInstance().update("formulario:tabla1");
+            }
+        }
     }
 
     public void mostrarMunicipio() {
@@ -87,10 +134,10 @@ public class EmpresaEstadiaBean implements Serializable {
 
     public void mostrarFormulario() {
         setForm(true);
-        empresa = new  EmpresaVO();
+        empresa = new EmpresaVO();
         cve_estado = 0;
         cve_municipio = 0;
-        RequestContext.getCurrentInstance().update("formulario"); 
+        RequestContext.getCurrentInstance().update("formulario");
     }
 
     public void cancelar() {
@@ -173,5 +220,38 @@ public class EmpresaEstadiaBean implements Serializable {
     public void setCve_municipio(int cve_municipio) {
         this.cve_municipio = cve_municipio;
     }
+
+    public ServiceEmpresas getService() {
+        return service;
+    }
+
+    public void setService(ServiceEmpresas service) {
+        this.service = service;
+    }
+
+    public List<EmpresaVO> getEmpresasList() {
+        return empresasList;
+    }
+
+    public void setEmpresasList(List<EmpresaVO> empresasList) {
+        this.empresasList = empresasList;
+    }
+
+    public EmpresaVO getSelectEmpresa() {
+        return selectEmpresa;
+    }
+
+    public void setSelectEmpresa(EmpresaVO selectEmpresa) {
+        this.selectEmpresa = selectEmpresa;
+    }
+
+    public List<EmpresaVO> getEmpresas() {
+        return empresas;
+    }
+
+    public void setEmpresas(List<EmpresaVO> empresas) {
+        this.empresas = empresas;
+    }
+    
 
 }

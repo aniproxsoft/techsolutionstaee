@@ -21,7 +21,8 @@
                                 <h:panelGroup>
                                     <h:outputText value="Nombre Empresa:"  /><br/>
                                     <p:inputText id="nombre" rendered="true" requiredMessage="Debe ingresar un nombre de Empresa"
-                                                 value="${beanEmpresaEstadia.empresa.nombre_empresa}" />
+                                                 value="${beanEmpresaEstadia.empresa.nombre_empresa}"
+                                                 maxlength="50"/>
                                 </h:panelGroup>
                                 <h:panelGroup>
                                     <h:outputText value="Teléfono:"  /><br/>
@@ -31,22 +32,22 @@
                                 <h:panelGroup>
                                     <h:outputText value="Correo:"   /><br/>
                                     <p:inputText id="correo" rendered="true" requiredMessage="Debe ingresar un Correo"
-                                                 value="${beanEmpresaEstadia.empresa.correo_empresa}"  />
+                                                 value="${beanEmpresaEstadia.empresa.correo_empresa}" maxlength="50" />
                                 </h:panelGroup>
                                 <h:panelGroup>
                                     <h:outputText value="Folio Convenio:"  /><br/>
                                     <p:inputText id="fc" rendered="true" requiredMessage="Debe ingresar un Folio"
-                                                 value="${beanEmpresaEstadia.empresa.convenio}" />
+                                                 value="${beanEmpresaEstadia.empresa.convenio}" maxlength="20" />
                                 </h:panelGroup>
                                 <h:panelGroup>
                                     <h:outputText value="RFC (Moral/Fisico):"  /><br/>
                                     <p:inputText id="rfc" rendered="true" requiredMessage="Debe ingresar un RFC" 
-                                                 value="${beanEmpresaEstadia.empresa.rfc}" />
+                                                 value="${beanEmpresaEstadia.empresa.rfc}" maxlength="20" />
                                 </h:panelGroup>
                                 <h:panelGroup>
                                     <h:outputText value="Dirección:" /><br/>
                                     <p:inputText id="direccion" required="true" requiredMessage="Debe ingresar una Dirección"
-                                                 value="${beanEmpresaEstadia.empresa.direccion}" />
+                                                 value="${beanEmpresaEstadia.empresa.direccion}" maxlength="200" />
                                 </h:panelGroup>
                                 <h:panelGroup>
                                     <h:outputText value="Estado:" /><br/>
@@ -73,7 +74,7 @@
                                 <h:panelGroup>
                                     <h:outputText value="Codigo Postal:"  /><br/>
                                     <p:inputText id="cp" required="true" requiredMessage="Debe ingresar un CP"
-                                                 value="${beanEmpresaEstadia.empresa.codigo_postal}" />
+                                                 value="${beanEmpresaEstadia.empresa.codigo_postal}" maxlength="15" />
                                 </h:panelGroup>
                             </h:panelGrid>
                             <p:commandButton id="botonGuardar"  style="margin-top: 30px;" value="Guardar" 
@@ -87,9 +88,28 @@
 
                         <center>
                             <h2 style="color: #038C65">Empresas para Estadía</h2>
-                        </center>   
+                        </center>
+                    </center>
+
+                    <div style="margin-left: 40px">
+                        <p:outputLabel value="Empresa" for="buscaEmpresa" /> <br/>
+                        <p:autoComplete size="40" id="buscaEmpresa" 
+                                        value="#{beanEmpresaEstadia.selectEmpresa}" 
+                                        completeMethod="#{beanEmpresaEstadia.muestraEmpresas}"
+                                        var="company" itemLabel="#{company.nombre_empresa}" 
+                                        itemValue="#{company}" converter="empresaConverterAdminEstadia" 
+                                        forceSelection="true" >
+
+                        </p:autoComplete>
+                        <p:commandButton value="Buscar" actionListener="${beanEmpresaEstadia.buscar()}" 
+                                         style="margin-left: 10px; " />
+
+                    </div>
+                    <br/>
+                    <center>
+                    <div style="width: 95%">
                         <p:dataTable id="tabla1" rendered="true" var="emp" value="#{beanEmpresaEstadia.empresaList}"
-                                     >
+                                     paginator="true" rows="10">
                             <p:column headerText="Nombre">
                                 <h:outputText value="${emp.nombre_empresa}" />
                             </p:column>
@@ -115,32 +135,34 @@
                                     </p:commandButton>
                                     <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
                                         <center>
-                                        <p:commandButton value="Aceptar" type="button"  styleClass="ui-confirmdialog-yes" />
-                                        <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" />
+                                            <p:commandButton value="Aceptar" type="button"  styleClass="ui-confirmdialog-yes" />
+                                            <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" />
                                         </center>
                                     </p:confirmDialog>
                                 </center>
                             </p:column>
 
                         </p:dataTable>
-
-
+                    </div>
                     </center>
-                    <script type="text/javascript">
-                        function ocultaMsj(time) {
-                            setTimeout(function () {
-                                $("#mensajes").children("div").slideUp();
-                                return false;
-                            }, time);
-                        }
-
-                        function subir() {
-                            //referimos el elemento ( clase o identificador de acción )
-                            $('html, body').animate({scrollTop: 0}, 'slow'); //seleccionamos etiquetas,clase o identificador destino, creamos animación hacia top de la página.
-                        }
 
 
-                    </script>
+
+                        <script type="text/javascript">
+                            function ocultaMsj(time) {
+                                setTimeout(function () {
+                                    $("#mensajes").children("div").slideUp();
+                                    return false;
+                                }, time);
+                            }
+
+                            function subir() {
+                                //referimos el elemento ( clase o identificador de acción )
+                                $('html, body').animate({scrollTop: 0}, 'slow'); //seleccionamos etiquetas,clase o identificador destino, creamos animación hacia top de la página.
+                            }
+
+
+                        </script>
                 </h:form>
             </ui:define>
             <ui:define name="bottom">
