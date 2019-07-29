@@ -42,7 +42,7 @@ public class EmpresaEstadiaBean implements Serializable {
     @PostConstruct
     public void init() {
         empresa = new EmpresaVO();
-        selectEmpresa= new EmpresaVO();
+        selectEmpresa = new EmpresaVO();
         dao = new EmpresaEstadiaDAOImplements();
         mostrarEmpresas();
         estados = dao.getEstados();
@@ -101,15 +101,23 @@ public class EmpresaEstadiaBean implements Serializable {
         return null;
 
     }
+
     public void buscar() {
 //        System.out.println("c: " + selectedEmpresa.getId_empresa());
         if (selectEmpresa != null) {
             if (selectEmpresa.getId_empresa() > 0) {
                 System.out.println("id: " + selectEmpresa.getId_empresa());
-                empresaList = dao.searchEmresasEgresados(3,selectEmpresa.getId_empresa());
+                empresaList = dao.searchEmresasEgresados(3, selectEmpresa.getId_empresa());
                 RequestContext.getCurrentInstance().update("formulario:tabla1");
+
             }
+        } else {
+            System.out.println("perros");
+            init();
+            RequestContext.getCurrentInstance().update("formulario:tabla1");
+            selectEmpresa = null;
         }
+
     }
 
     public void mostrarMunicipio() {
@@ -252,6 +260,5 @@ public class EmpresaEstadiaBean implements Serializable {
     public void setEmpresas(List<EmpresaVO> empresas) {
         this.empresas = empresas;
     }
-    
 
 }
