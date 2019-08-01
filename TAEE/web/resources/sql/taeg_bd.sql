@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.7.4
+-- version 4.8.4
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 25-07-2019 a las 23:01:49
--- Versión del servidor: 5.7.19
--- Versión de PHP: 5.6.31
+-- Tiempo de generación: 01-08-2019 a las 01:38:42
+-- Versión del servidor: 5.7.24
+-- Versión de PHP: 7.2.14
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -303,6 +303,45 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_delete_vacante_egresados` (IN `v
 	SELECT flag,msj;
 END$$
 
+DROP PROCEDURE IF EXISTS `sp_delete_vacante_estadia`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_delete_vacante_estadia` (IN `vacante_id` INT)  BEGIN
+	DECLARE status_empresa varchar(1);
+	DECLARE flag boolean;
+	DECLARE msj varchar(500);
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+ 	BEGIN
+ 		set flag=false;
+ 		set msj='Error de sql.';
+ 		SELECT flag,msj;
+ 		
+ 	END; 
+ 	DECLARE EXIT HANDLER FOR SQLWARNING
+ 	BEGIN
+ 		set flag=false;
+ 		set msj=(select concat(msj,'Error de advertencia.'));
+ 		SELECT flag,msj;
+ 		
+ 	END;
+	START TRANSACTION;
+
+	SELECT em.status 
+	from empresa em
+	JOIN vacante v on v.id_empresa=em.id_empresa
+	where v.id_vacante=vacante_id into status_empresa;
+	IF(status_empresa='3')THEN
+		UPDATE vacante set
+		status='0'
+		where id_vacante=vacante_id;
+		set flag=true;
+		set msj='La vacante ha sido dada de Baja correctamente.';
+	ELSE 
+		set flag=false;
+		set msj='La vacante no se puede eliminar por alguna razón.';
+	END IF;
+	commit;
+	SELECT flag,msj;
+END$$
+
 DROP PROCEDURE IF EXISTS `sp_get_ciudades`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_ciudades` ()  BEGIN
 	SELECT id_ciudad,id_estado,nombre_ciudad from ciudad;
@@ -379,6 +418,37 @@ DROP PROCEDURE IF EXISTS `sp_get_municipios`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_municipios` (`tipo` INT)  BEGIN
 	SELECT id_ciudad,id_estado,nombre_ciudad from ciudad
 	where id_estado= tipo;
+END$$
+
+DROP PROCEDURE IF EXISTS `sp_get_search_adminEstadia`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_search_adminEstadia` (`empresa_id` INT)  BEGIN
+	SELECT id_vacante,titulo,vacante_desc,v.id_perfil, p.nombre_perfil,c.carrera_desc,
+	edad_min,edad_max,salario_min,salario_max,n.nombre_nivel,
+	hora_inicial,hora_final,experiencia,em.id_empresa,em.nombre,
+	v.status as status_empresa,ayuda_economica,n.id_nivel,c.id_carrera
+	FROM vacante v
+	JOIN empresa em on v.id_empresa=em.id_empresa 
+    JOIN perfil p on v.id_perfil=p.id_perfil
+    JOIN carreras c ON p.id_carrera=c.id_carrera
+    join nivel_academico n on c.id_nivel=n.id_nivel
+	where  em.status='3'
+	and em.id_empresa= empresa_id
+	and v.status='1';
+END$$
+
+DROP PROCEDURE IF EXISTS `sp_get_vacantes_adminEstadia`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_adminEstadia` ()  BEGIN
+	SELECT id_vacante,titulo,vacante_desc,v.id_perfil, p.nombre_perfil,c.carrera_desc,
+	edad_min,edad_max,salario_min,salario_max,n.nombre_nivel,
+	hora_inicial,hora_final,experiencia,em.id_empresa,em.nombre,
+	v.status as status_empresa,ayuda_economica,n.id_nivel,c.id_carrera
+	FROM vacante v
+	JOIN empresa em on v.id_empresa=em.id_empresa 
+    JOIN perfil p on v.id_perfil=p.id_perfil
+    JOIN carreras c ON p.id_carrera=c.id_carrera
+    join nivel_academico n on c.id_nivel=n.id_nivel
+	where  em.status='3'
+	and v.status='1';
 END$$
 
 DROP PROCEDURE IF EXISTS `sp_get_vacantes_egresados`$$
@@ -896,6 +966,15 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_search_empresas_egresados` (`emp
 	where em.id_empresa=empresa_id;
 END$$
 
+DROP PROCEDURE IF EXISTS `sp_search_empresas_estadias`$$
+CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_search_empresas_estadias` (`tipo` INT, `empresa_id` INT)  BEGIN
+	SELECT id_empresa,direccion,nombre,id_estado,id_ciudad,
+	codigo_postal,id_usuario,num_telefono,folio_convenio,rfc,
+	status,correo_empresa
+	FROM empresa
+	where status=tipo and id_empresa=empresa_id;
+END$$
+
 DELIMITER ;
 
 -- --------------------------------------------------------
@@ -1137,14 +1216,22 @@ INSERT INTO `conocimiento_vac` (`id_vacante`, `id_conocimiento`) VALUES
 (23, 1),
 (24, 1),
 (26, 1),
+(31, 1),
+(33, 1),
 (4, 2),
+(31, 2),
 (6, 3),
 (7, 3),
 (25, 3),
 (27, 3),
 (8, 4),
+(32, 4),
+(8, 5),
 (9, 5),
 (10, 6),
+(28, 6),
+(29, 6),
+(30, 6),
 (1, 7),
 (2, 7),
 (11, 8),
@@ -1154,7 +1241,10 @@ INSERT INTO `conocimiento_vac` (`id_vacante`, `id_conocimiento`) VALUES
 (13, 12),
 (15, 12),
 (16, 13),
+(31, 13),
+(33, 13),
 (16, 14),
+(31, 14),
 (17, 15);
 
 -- --------------------------------------------------------
@@ -1181,7 +1271,7 @@ CREATE TABLE IF NOT EXISTS `empresa` (
   KEY `fk_usuario` (`id_usuario`),
   KEY `fk_emp_ciudad` (`id_ciudad`),
   KEY `fk_emp_estado` (`id_estado`)
-) ENGINE=MyISAM AUTO_INCREMENT=19 DEFAULT CHARSET=latin1;
+) ENGINE=MyISAM AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `empresa`
@@ -1199,12 +1289,15 @@ INSERT INTO `empresa` (`id_empresa`, `direccion`, `nombre`, `id_estado`, `id_ciu
 (9, 'Atlacomulco de Fabela', 'Test and QA Corporation', 1, 4, '56788', 7, '6363627', 'CONVHDJD92', 'RFCQU8383S', '2', 'qua@gmail.com'),
 (10, 'Calle bolivar 192', 'INSTITUTO MEXICANO DE DESARROLLO DE SOFTWARE SC', 1, 8, '37374', 8, '5553626263', 'CONVUEURY', 'IMDDHD829', '2', 'imd@hotmail.com'),
 (11, 'la bamba 429', 'TEECH096', 1, 1, '5700', 0, '5548150571', 'CO5555', 'RFC77267', '0', 'tec@gmail.com'),
-(13, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 2, 2, '50000', NULL, '5566778899', 'CONV019293', 'UPS7172639', '3', 'upds@gmail.com'),
+(13, 'Tlalpan, Ciudad de México (Distrito Federal)', 'Universidad Pedregal Del Sur S C', 2, 2, '50000', NULL, '5566778899', 'CONV019293', 'UPS7172639', '0', 'upds@gmail.com'),
 (14, 'El barro 320', 'ANIPROX SOFT', 1, 4, '57800', 9, '5562386648', NULL, 'RFCEMP012', '1', 'aniproxsoft@gmail.com'),
 (15, 'Las Flores 5454', 'Mozcaltli', 2, 6, '654554', NULL, '8558545515', 'FO515151', 'RFC2116541631', '0', 'moz@hotmail.com'),
 (16, 'Matanzas 888', 'Phoenix', 1, 28, '578282', NULL, '5636363663', 'CONV33773', 'RFC26267627', '0', 'ave@hotmail.com'),
 (17, 'Casa de las flores', 'Ubisoft', 1, 1, '15432', 10, '5533443322', NULL, 'RFCASEAA', '1', 'ubi@soft.com'),
-(18, 'El caiman 34', 'King Soft', 1, 6, '5566447', 11, '5546438394', NULL, 'RFC83847HDH', '1', 'king@yahoo.com');
+(18, 'El caiman 34', 'King Soft', 1, 6, '5566447', 11, '5546438394', NULL, 'RFC83847HDH', '1', 'king@yahoo.com'),
+(19, 'Loma bonita 582', 'Luteam', 1, 2, '572021', NULL, '5915141531', 'co524125156546655645', '15szc5s1xc5ds51c51d6', '3', 'lu@hotmaul.com'),
+(20, 'LAS FLORES 678', 'Prosystem', 2, 6, '896665', NULL, '8662525652', 'X5Z75ZXXXXXXXXXXXXF5', 'RFC88848484448428888', '3', 'pro@gmail.com'),
+(21, 'seneca 123', 'quick', 2, 9, '96559', NULL, '8454548498', 'FOL454548', 'rfc4445877', '3', 'quick@gmail.com');
 
 -- --------------------------------------------------------
 
@@ -1286,6 +1379,7 @@ INSERT INTO `habilidad_vac` (`id_vacante`, `id_habilidades`) VALUES
 (7, 1),
 (7, 2),
 (8, 1),
+(8, 2),
 (9, 2),
 (10, 1),
 (10, 2),
@@ -1333,7 +1427,26 @@ INSERT INTO `habilidad_vac` (`id_vacante`, `id_habilidades`) VALUES
 (27, 9),
 (27, 10),
 (27, 11),
-(27, 12);
+(27, 12),
+(28, 1),
+(28, 5),
+(29, 1),
+(29, 5),
+(30, 1),
+(30, 5),
+(31, 1),
+(31, 2),
+(31, 3),
+(31, 4),
+(31, 5),
+(31, 6),
+(31, 7),
+(31, 8),
+(31, 9),
+(31, 10),
+(31, 11),
+(31, 12),
+(32, 10);
 
 -- --------------------------------------------------------
 
@@ -1472,22 +1585,22 @@ CREATE TABLE IF NOT EXISTS `vacante` (
   `ayuda_economica` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id_vacante`),
   KEY `fk_perfil` (`id_perfil`)
-) ENGINE=InnoDB AUTO_INCREMENT=28 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `vacante`
 --
 
 INSERT INTO `vacante` (`id_vacante`, `titulo`, `vacante_desc`, `id_perfil`, `edad_min`, `edad_max`, `salario_min`, `salario_max`, `hora_inicial`, `hora_final`, `experiencia`, `id_empresa`, `status`, `ayuda_economica`) VALUES
-(1, 'Tester Jr contratacion inmediata', 'MAR SYSTEMS, es una empresa Mexicana Lider en Tecnologias de la Informacion, con presencia Internacional, y con mas de 15 años proporcionando servicios de TI.', 4, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 5, '1', 1),
+(1, 'Tester Jr contratacion inmediata', 'MAR SYSTEMS, es una empresa Mexicana Lider en Tecnologias de la Informacion, con presencia Internacional, y con mas de 15 años proporcionando servicios de TI.', 4, NULL, NULL, 850.00, 1100.00, NULL, NULL, 0, 5, '1', 1),
 (2, 'TESTER', 'Funciones: \r\nPruebas funcionales, de regresion, integracion y uat en apps y software a la medida.\r\nEjecucion de plan de pruebas, pruebas de escritorio, preparacion de datos de prueba, preparacion de ambientes para verificar que los requisitos se hayan cumplido.\r\nRegistro de evidencia de las pruebas realizadas.\r\nConocimiento de herramientas para registro y seguimiento de incidencias.\r\nConfiguracion de ambientes para pruebas\r\nSoporte a usuarios.', 4, NULL, NULL, 6000.00, 8000.00, NULL, NULL, NULL, 2, '1', 1),
 (3, 'DESARROLLADOR WEB', 'Contratacion Tiempo completo Permanente', 1, NULL, NULL, 4000.00, 6000.00, NULL, NULL, NULL, 3, '1', 1),
-(4, 'DESARROLLADOR WEB', 'Ofrecemos: Sueldo competitivo, prestaciones superiores a la ley seguro de vida, seguro de gastos medicos mayores, comedor, fondo de ahorro, etc   bonos por desempeño', 1, NULL, NULL, 6000.00, 10000.00, NULL, NULL, NULL, 4, '1', 1),
-(5, 'Desarrollo Web', 'Somos una empresa mexicana proveedora de servicios de tecnologia de informacion de mision critica, busca nuevos integrantes para fortalecer su equipo de trabajo', 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, '1', 0),
+(4, 'DESARROLLADOR WEB', 'Ofrecemos: Sueldo competitivo, prestaciones superiores a la ley seguro de vida, seguro de gastos medicos mayores, comedor, fondo de ahorro, etc   bonos por desempeño', 1, NULL, NULL, 6000.00, 10000.00, NULL, NULL, NULL, 4, '0', 1),
+(5, 'Desarrollo Web', 'Somos una empresa mexicana proveedora de servicios de tecnologia de informacion de mision critica, busca nuevos integrantes para fortalecer su equipo de trabajo', 1, NULL, NULL, NULL, NULL, '8:00 am', '16:00 pm', NULL, 2, '1', 0),
 (6, 'ANALISTA DE SISTEMAS', 'Principales funciones:  Medir utilizacion de herramientas Soporte a Usuarios Plan de Actualizacion Medir efectividad de la informacion', 3, NULL, NULL, 6000.00, 10000.00, NULL, NULL, NULL, 2, '1', 1),
 (7, 'Analista UI Jr.', 'Beneficios: Tarjeta de Descuentos Medicos 8 dias de vacaciones Seguro de Vida Gastos funerarios', 3, NULL, NULL, 3000.00, 6000.00, NULL, NULL, NULL, 3, '1', 1),
-(8, 'DBA  Oracle', 'OFRECEMOS: Sueldo competitivo. Prestaciones de ley y superiores. Horario laboral de lunes a viernes. Lugar de trabajo Periferico Sur.', 5, NULL, NULL, 5000.00, 7000.00, NULL, NULL, NULL, 4, '1', 1),
-(9, 'Administrador base de datos DBA Postgres', 'Actividades: Administracion de la infraestructura de TI', 5, NULL, NULL, 4500.00, 5500.00, NULL, NULL, NULL, 3, '1', 1),
+(8, 'DBA  Oracle', 'OFRECEMOS: Sueldo competitivo. Prestaciones de ley y superiores. Horario laboral de lunes a viernes. Lugar de trabajo Periferico Sur.', 5, NULL, NULL, 5000.00, 7000.00, '07:58 am', '06:00 pm', 0, 4, '1', 1),
+(9, 'Administrador base de datos DBA Postgres', 'Actividades: Administracion de la infraestructura de TI en proyectos individuales', 5, NULL, NULL, 4500.00, 5500.00, NULL, NULL, 0, 3, '1', 1),
 (10, 'CONSULTOR IT , MANAGER, LIDER DE PROYECTO IT', 'OFRECEMOS: SEGURO MEDICO DE GASTOS MAYORES. CRECIMIENTO. ESTABILIDAD. DESARROLLO.', 2, NULL, NULL, 8000.00, 10000.00, NULL, NULL, NULL, 2, '1', 1),
 (11, 'ESPECIALISTA EN RECURSOS HUMANOS', 'IMPORTANTE FINANCIERA\r\nAPOYO ECONOMICO FAMILIAR\r\nSOLICITA\r\nESPECIALISTA EN RECURSOS HUMANOS\r\nPARA LA ZONA EN ALVARO OBREGON \r\nCON DISPONIBILIDAD PARA ACUDIR A TACUBAYA, SAN BERNABE, CUAJIMALPA\r\nManejara a su cargo 10 sucursales aledanias a la zona\r\n', 6, 0, 0, 13000.00, 15000.00, '', '', 2, 6, '1', 1),
 (12, 'Becario ambiental', 'Empresa dedicada a la fabricacion de productos quimicos solicita becario ambiental con experiencia, puntualidad,\r\n', 7, 0, 0, 8000.00, 12000.00, '', '', 0, 7, '1', 1),
@@ -1495,7 +1608,7 @@ INSERT INTO `vacante` (`id_vacante`, `titulo`, `vacante_desc`, `id_perfil`, `eda
 (14, 'CONSULTOR DE PROCESOS RAD', 'Contratacion: Tiempo completo Permanente\r\n', 10, 22, 0, 18000.00, 18000.00, '', '', 2, 8, '1', 1),
 (15, 'COORDINADOR DE MERCADOTECNIA', 'Contratacion Permanente', 9, 20, 0, 7000.00, 7000.00, '8:00 am', '18:00 pm', 1, 9, '1', 1),
 (16, 'Desarrollador movil Android/IOS JR12 a 20 mil y SR20 a 35mil', 'En IMDS instituto mexicano de desarrolladores de software solicitamos Desarrollador movil', 1, 24, 12, 30000.00, 30000.00, NULL, NULL, 1, 10, '1', 1),
-(17, 'Administrador de la Base de Datos MS SqlServer', 'En GINgroup ofrecemos las mejores soluciones integrales de vanguardia en administración de capital humano de esta manera nuestros clientes pueden enfocar su talento y sus recursos en hacer crecer su negocio, mientras nosotros nos encargamos de administrar su capital humano de manera eficiente.\\r\\n', 5, NULL, NULL, 22000.00, 30000.00, '09:00 pm', '07:00 am', 5, 10, '1', 1),
+(17, 'Administrador de la Base de Datos MS SqlServer', 'En GINgroup ofrecemos las mejores soluciones integrales de vanguardia en administración de capital humano de esta manera nuestros clientes pueden enfocar su talento y sus recursos en hacer crecer su negocio, mientras nosotros nos encargamos de administrar su capital humano de manera eficiente.\\\\r\\\\n', 5, 18, 40, 22000.00, 30000.00, '09:00 pm', '07:00 am', 5, 10, '1', 1),
 (20, 'PROGRAMADOR WEB', 'Desarrollar apis en java para consulta de services', 1, 0, 0, 3000.00, 3000.00, NULL, NULL, NULL, 6, '0', 1),
 (21, 'sssss', 'sssssssssssssssssssssssss', 1, 33, 33, 3333.00, 333.00, '11:11 am', '11:11 am', 3, 10, '0', 0),
 (22, 'aaaaaaaaaaa', 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 1, 11, 11, NULL, NULL, NULL, NULL, 1, 10, '0', 0),
@@ -1503,7 +1616,13 @@ INSERT INTO `vacante` (`id_vacante`, `titulo`, `vacante_desc`, `id_perfil`, `eda
 (24, 'aaaax', 'xxxxxxxxxxxxxxxxxxxxxxxxx', 2, NULL, NULL, NULL, NULL, NULL, NULL, 1, 10, '0', 0),
 (25, 'dcccccccc', 'ccvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv', 3, NULL, NULL, NULL, NULL, NULL, NULL, 0, 10, '0', 0),
 (26, 'hhhhhhhh', 'nnnnnnnnnnnnnnnnnnn', 1, NULL, NULL, NULL, NULL, NULL, NULL, 0, 10, '0', 0),
-(27, 'Analista de software', 'Analizar el funcionamiento del software', 3, 23, 60, 50000.00, 7000.00, '09:00 am', '06:00 pm', 1, 10, '1', 0);
+(27, 'Analista de software', 'Analizar el funcionamiento del software', 3, 23, 60, 50000.00, 7000.00, '09:00 am', '06:00 pm', 1, 10, '1', 0),
+(28, 'lider de proyecto de ventas', 'esto es la prueba de update con el buscador activo', 2, NULL, NULL, 1300.00, 3000.00, '07:00 am', '04:00 pm', 0, 19, '1', 1),
+(29, 'lider de proyecto p', 'Solicita puesto para lider de proyecto para desarrollar un proyecto de estadias ', 2, NULL, NULL, 1300.00, 3000.00, '07:00 am', '04:00 pm', 0, 19, '0', 1),
+(30, 'lider de proyecto p', 'kjdfvbkjsbvdj', 2, NULL, NULL, 1300.00, 3000.00, '07:00 am', '04:00 pm', 0, 19, '0', 1),
+(31, 'Programacion POO', 'Necesitamos programadores que se especialicen en programacion orientada a objetos ', 1, NULL, NULL, NULL, NULL, NULL, NULL, 0, 19, '1', 0),
+(32, 'Base de datos POO', 'Rol de base de datos que maneje oracle un 50%', 5, NULL, NULL, 750.00, 1500.00, NULL, NULL, 0, 2, '0', 1),
+(33, 'Programador de App web', 'Desarrollador de aplicaciones web y moviles', 1, NULL, NULL, 500.00, 800.00, NULL, NULL, 0, 19, '1', 1);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
