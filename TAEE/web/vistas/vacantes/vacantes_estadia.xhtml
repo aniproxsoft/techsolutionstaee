@@ -1,22 +1,304 @@
 <?xml version='1.0' encoding='UTF-8' ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
-      xmlns:ui="http://xmlns.jcp.org/jsf/facelets">
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core">
 
     <body>
 
         <ui:composition template="./../TemplateAdminEstadias.xhtml">
 
-            <ui:define name="top">
-                top
-            </ui:define>
-
             <ui:define name="content">
-                content
+                <p:messages id="mensajes"   showDetail="true" closable="true"/>
+                <h:form id="formulario" >
+                    <center>
+                        <p:panel id="form_view"  style="width: 75%" rendered="${beanVacanteEstadia.renderform}">
+                            <h2 style="color: #038C65">Vacante</h2>
+                            <center>
+                                <h:panelGrid id="panelE" columns="1">
+                                    <h:panelGroup>
+                                        <div style="margin-top: 20px ">
+                                            <p:outputLabel value="Empresa" for="buscaEmpresa" /> <br/>
+                                            <p:autoComplete size="40" id="buscaEmpresa" 
+                                                            value="#{beanVacanteEstadia.selectedEmpresa}" 
+                                                            completeMethod="#{beanVacanteEstadia.muestraEmpresas}"
+                                                            var="company" itemLabel="#{company.nombre_empresa}" 
+                                                            itemValue="#{company}" converter="empresaConverterAdminEstadia" 
+                                                            forceSelection="true" >
+
+                                            </p:autoComplete>
+                                        </div>
+                                    </h:panelGroup>
+                                </h:panelGrid>
+                            </center>
+                            <h:panelGrid id="panel" columns="4" width="100%" cellspacing="2"   >
+                                <h:panelGroup>
+                                    <div style="margin-top: 20px">
+                                        <p:outputLabel for="titulo"  style=" font-weight: bold;" value="Titulo:"  /><br/>
+                                        <p:inputText id="titulo" value="${beanVacanteEstadia.vacante.titulo}"  
+                                                     required="true" requiredMessage="Campo Requerido"
+                                                     validatorMessage="Minimo 5 caracteres maximo 500" >
+                                            <f:validateLength minimum="5" maximum="500"  />
+                                        </p:inputText>
+                                        <p:message for="titulo"  />
+                                    </div>
+                                </h:panelGroup>
+
+                                <h:panelGroup >
+                                    <div style="margin-top: 20px">
+                                        <p:outputLabel  for="nivel" value="Nivel academico:" /><br/>
+                                        <p:selectOneMenu id="nivel" style="width:230px"
+                                                         value="${beanVacanteEstadia.cve_nivel}"
+                                                         required="true" 
+                                                         requiredMessage="Debe seleccionar un nivel academico">
+                                            <f:selectItem itemLabel="Selecciona uno" itemValue="${null}"   />
+                                            <f:selectItems  value="${beanVacanteEstadia.niveles}" var="nivel" 
+                                                            itemLabel="${nivel.nombre_nivel}" 
+                                                            itemValue="${nivel.id_nivel}" />
+                                            <p:ajax event="change" update="carrera" 
+                                                    listener="${beanVacanteEstadia.buscaCarreras()}" />
+                                        </p:selectOneMenu>
+                                        <p:message for="nivel"  />
+                                    </div>
+                                </h:panelGroup>
+                                <h:panelGroup  >
+                                    <div style="margin-top: 20px">
+                                        <p:outputLabel  for="carrera" value="Carrera:" /><br/>
+                                        <p:selectOneMenu id="carrera" style="width:250px" 
+                                                         value="${beanVacanteEstadia.cve_carrera}"
+                                                         required="true" 
+                                                         requiredMessage="Debe seleccionar una carrera.">
+                                            <f:selectItem itemLabel="Selecciona uno"  />
+                                            <f:selectItems value="${beanVacanteEstadia.carreras}" var="carrera" 
+                                                           itemLabel="${carrera.carrera_desc}" 
+                                                           itemValue="${carrera.id_carrera}" />
+                                            <p:ajax event="change" update="perfil" 
+                                                    listener="${beanVacanteEstadia.buscaPerfiles()}" />
+
+                                        </p:selectOneMenu>
+                                        <p:message for="carrera" />
+                                    </div>
+                                </h:panelGroup>
+                                <h:panelGroup  >
+                                    <div style="margin-top: 20px">
+                                        <p:outputLabel  for="perfil" value="Perfil:" /><br/>
+                                        <p:selectOneMenu id="perfil" style="width:250px" required="true" 
+                                                         requiredMessage="Debe seleccionar un perfil" value="${beanVacanteEstadia.cve_perfil}">
+                                            <f:selectItem itemLabel="Selecciona uno"   
+                                                          />
+                                            <f:selectItems value="${beanVacanteEstadia.perfiles}" var="perfil" 
+                                                           itemLabel="${perfil.nombre_perfil}" 
+                                                           itemValue="${perfil.id_perfil}" />
+                                            <p:ajax event="change" update="conocimiento" 
+                                                    listener="${beanVacanteEstadia.buscaConocimientos()}" />
+                                        </p:selectOneMenu>
+                                        <p:message for="perfil" />
+                                    </div>
+                                </h:panelGroup>
+
+
+                                <h:panelGroup>
+                                    <div style="margin-top: 20px">
+                                        <p:selectCheckboxMenu id="conocimiento"  label="Conocimientos" 
+                                                              filter="true" filterMatchMode="startsWith"
+                                                              panelStyle="width:250px" required="true" 
+                                                              requiredMessage="Debe seleccionar un conocimiento"
+                                                              value="${beanVacanteEstadia.cves_conocimientos}">
+                                            <f:selectItems value="${beanVacanteEstadia.conocimientos}" var="conocimiento" 
+                                                           itemLabel="${conocimiento.conoc_desc}" 
+                                                           itemValue="${conocimiento.id_conocimiento}" />
+
+                                        </p:selectCheckboxMenu><br/>
+                                        <p:message for="conocimiento"  />
+                                    </div>
+                                </h:panelGroup>
+
+                                <h:panelGroup>
+                                    <div style="margin-top: 20px">
+                                        <p:selectCheckboxMenu id="habilidad" label="Habilidades"
+                                                              filter="true" filterMatchMode="startsWith" 
+                                                              panelStyle="width:250px"  value="${beanVacanteEstadia.cves_habilidades}"
+                                                              >
+                                            <f:selectItems value="${beanSearchEstadias.habilidades}" var="habilidad" 
+                                                           itemLabel="${habilidad.habilidad_desc}" 
+                                                           itemValue="${habilidad.id_habilidad}" />
+                                        </p:selectCheckboxMenu>
+
+                                    </div>
+                                </h:panelGroup>
+                                <h:panelGrid id="panel2" columns="2">
+                                    <h:panelGroup>
+                                        <div style="margin-top: 15px">
+                                            <p:outputLabel style=" font-weight: bold;" value="Hora inicial:"  /><br/>
+                                            <p:inputMask  size="5" id="hora_ini"  mask="99:99" value="${beanVacanteEstadia.vacante.hora_inicial}">
+
+                                            </p:inputMask>
+                                            <br/>
+                                            <p:selectOneMenu id="hora"  style="margin-top: 5px" value="${beanVacanteEstadia.tipoHora1}">
+                                                <f:selectItems value="${beanVacanteEstadia.hora1}" var="hora"
+                                                               itemLabel="${hora}" itemValue="${hora}" />
+
+                                            </p:selectOneMenu> 
+                                            <p:message for="hora_ini" />
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <div style="margin-top: 15px; margin-left: 15px">
+                                            <p:outputLabel style=" font-weight: bold;" value="Hora final:"  /><br/>
+                                            <p:inputMask  size="5" id="hora_fin"  mask="99:99" value="${beanVacanteEstadia.vacante.hora_final}"/>
+                                            <br/>
+                                            <p:selectOneMenu id="hora2"  style="margin-top: 5px" value="${beanVacanteEstadia.tipoHora2}">
+                                                <f:selectItems value="${beanVacanteEstadia.hora2}" var="hora"
+                                                               itemLabel="${hora}" itemValue="${hora}" />
+
+                                            </p:selectOneMenu> 
+                                            <p:message for="hora_fin" />
+                                        </div>
+                                    </h:panelGroup>
+                                </h:panelGrid>
+
+                                <h:panelGroup>
+                                    <div style="margin-top: 20px">
+                                        <center>
+                                            <h:outputLabel value="Ayuda Económica" /><br/>
+                                            <h:selectBooleanCheckbox id="ayuda" value="${beanVacanteEstadia.ayuda}"  >
+                                                <p:ajax listener="${beanVacanteEstadia.mostrarAyudaEco()}" event="change" />
+                                            </h:selectBooleanCheckbox><p:outputLabel value="Si / No" style="margin-left: 10px" />
+                                        </center>
+                                    </div>
+                                </h:panelGroup>
+
+                                <h:panelGroup  id="amin"  style="display: none">
+                                    <div style="margin-top: 15px">
+                                        <p:outputLabel style=" font-weight: bold;" value="Ayuda minimo:"  /><br/>
+
+                                        <p:inputText  size="10" onkeypress="return soloNumeros(event)" id="sal_min" value="${beanVacanteEstadia.vacante.salario_min}"  
+
+                                                      validatorMessage="Minimo 2 digitos maximo 2 "  >
+                                            <f:validateLength minimum="4" maximum="10"  />
+                                        </p:inputText><p:outputLabel value="Mensuales" style="margin-left: 10px" />
+                                        <p:message for="sal_min" />
+                                    </div>
+
+                                </h:panelGroup>
+
+                                <h:panelGroup id="amax" style="display: none">
+                                    <p:outputLabel style=" font-weight: bold;" value="Ayuda máxima:"  /><br/>
+
+                                    <p:inputText  size="10" onkeypress="return soloNumeros(event)" id="sal_max" value="${beanVacanteEstadia.vacante.salario_max}"  
+
+                                                  validatorMessage="Minimo 4 digitos maximo 10 "  >
+                                        <f:validateLength minimum="4" maximum="10"  />
+                                    </p:inputText><p:outputLabel value="Mensuales" style="margin-left: 10px" />
+                                    <p:message for="sal_max" />
+                                </h:panelGroup>
+
+
+                            </h:panelGrid>
+                            <br/>
+                            <h:panelGroup>
+
+                                <div style="margin-top: 20px; width: 30%">
+                                    <p:outputLabel for="desc"  style=" font-weight: bold;" value="Descripción:"  /><br/>
+                                    <p:inputTextarea id="desc" value="${beanVacanteEstadia.vacante.vacante_desc}"  
+                                                     required="true" requiredMessage="Campo Requerido" cols="40" rows="5"
+                                                     validatorMessage="Minimo 5 caracteres maximo 500" >
+                                        <f:validateLength minimum="5" maximum="500"  />
+                                    </p:inputTextarea>
+                                    <p:message for="desc"  />
+                                </div>
+
+                            </h:panelGroup>
+                            <p:commandButton id="botonGuardar"  style="margin-top: 30px;" value="Guardar" 
+                                             actionListener="${beanVacanteEstadia.guardar()}" process="@form" update="formulario"/>
+
+                            <p:commandButton id="botonCancelar"  style="margin-top: 30px;" value="Cancelar"
+                                             process="@this" title="Cancelar" actionListener="${beanVacanteEstadia.cancelar()}"/>
+
+                        </p:panel>
+                        <p:commandButton id="botonAgregar"  style="margin-top: 30px;" value="Agregar" actionListener="${beanVacanteEstadia.addVacante()}" 
+                                         update="formulario"   process="@this" title="Agregar Empresa"  ></p:commandButton>
+
+                        <center>
+
+                            <h2 style=" color: #038C65">Agregar Vacantes</h2><br/>
+                        </center>
+                    
+                        <div style="width: 95%">
+                            <p:dataTable id="data_table" rendered="true" var="vacante"
+                                         value="${beanVacanteEstadia.vacantes}"
+                                         style="margin-top: 10px" paginator="true" rows="10">
+                                <p:column headerText="Titulo de vacante">
+                                    <h:outputText value="${vacante.titulo}" />
+                                </p:column>
+
+                                <p:column headerText="Nivel academico">
+                                    <h:outputText value="${vacante.nombre_nivel}" />
+                                </p:column>
+
+                                <p:column headerText="Carrera">
+                                    <h:outputText value="${vacante.carrera_desc}" />
+                                </p:column>
+
+                                <p:column headerText="Perfil">
+                                    <h:outputText value="${vacante.nombre_perfil}"/>
+                                </p:column>
+
+                                <p:column headerText="Opciones">
+                                    <center>
+                                        <p:commandButton id="botonVer"  style="margin-top: 20px; " value="Editar" 
+                                                         process="@this" actionListener="${beanVacanteEstadia.editar(vacante)}" />
+                                        <p:commandButton id="botonAprobar"  style="margin-top: 20px; " value="Eliminar" 
+                                                         process="@this"  actionListener="${beanVacanteEstadia.eliminar(vacante)}"
+                                                         > 
+                                            <p:confirm header="¡Atención!" 
+                                                       message="¿Está seguro que desea eliminar está vacante?"
+                                                       ></p:confirm>
+                                        </p:commandButton>
+                                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade" >
+                                            <center>
+                                                <p:commandButton value="Aceptar" type="button" styleClass="ui-confirmdialog-yes"/>
+                                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" />
+                                            </center>
+                                        </p:confirmDialog>
+                                    </center>
+
+                                </p:column>
+                            </p:dataTable>
+                        </div>
+                    </center>
+
+                    <script type="text/javascript">
+                        function ocultaMsj(time) {
+                            setTimeout(function () {
+                                $("#mensajes").children("div").slideUp();
+                                return false;
+                            }, time);
+                        }
+
+                        function subir() {
+                            //referimos el elemento ( clase o identificador de acción )
+                            $('html, body').animate({scrollTop: 0}, 'slow'); //seleccionamos etiquetas,clase o identificador destino, creamos animación hacia top de la página.
+                        }
+                        function mostrar() {
+                            $('#formulario\\:amin').css('display', 'block');
+                            $('#formulario\\:amax').css('display', 'block');
+                        }
+                        function ocultar() {
+                            $('#formulario\\:amin').css('display', 'none');
+                            $('#formulario\\:amax').css('display', 'none');
+                        }
+
+
+
+                    </script>
+                </h:form>
             </ui:define>
 
             <ui:define name="bottom">
-                bottom
+
             </ui:define>
 
         </ui:composition>
