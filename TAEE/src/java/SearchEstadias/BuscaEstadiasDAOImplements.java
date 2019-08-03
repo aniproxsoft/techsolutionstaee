@@ -6,15 +6,20 @@
 package SearchEstadias;
 
 import ConnectionDB.ConnectionDB;
+import java.awt.GraphicsEnvironment;
 import java.io.IOException;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import org.primefaces.context.RequestContext;
 import vacantes.CarreraVO;
 import vacantes.ConocimientoVO;
 import vacantes.HabilidadVO;
@@ -63,21 +68,21 @@ public class BuscaEstadiasDAOImplements implements BuscaEstadiasDAO {
                 vacante.setNombre_perfil(respuesta.getString(7));
                 vacante.setEdad_min(respuesta.getInt(8));
                 vacante.setEdad_max(respuesta.getInt(9));
-                if(vacante.getEdad_min()>0||vacante.getEdad_max()>0){
+                if (vacante.getEdad_min() > 0 || vacante.getEdad_max() > 0) {
                     vacante.setRenderEdad(true);
                 }
                 vacante.setSalario_min(respuesta.getDouble(10));
                 vacante.setSalario_max(respuesta.getDouble(11));
-                if(vacante.getSalario_max()>0.0 || vacante.getSalario_min()>0.0){
+                if (vacante.getSalario_max() > 0.0 || vacante.getSalario_min() > 0.0) {
                     vacante.setRenderSalario(true);
                 }
                 vacante.setHora_inicial(respuesta.getString(12));
                 vacante.setHora_final(respuesta.getString(13));
-                if(vacante.getHora_inicial()!=null||vacante.getHora_final()!=null){
+                if (vacante.getHora_inicial() != null || vacante.getHora_final() != null) {
                     vacante.setRenderHora(true);
                 }
                 vacante.setExperiencia(respuesta.getString(14));
-                if(vacante.getExperiencia()!=null ){
+                if (vacante.getExperiencia() != null) {
                     vacante.setRenderExperiencia(true);
                 }
                 vacante.setId_empresa(respuesta.getInt(15));
@@ -86,15 +91,15 @@ public class BuscaEstadiasDAOImplements implements BuscaEstadiasDAO {
                 vacante.setDireccion(respuesta.getString(18));
                 vacante.setConocimientos(getConocimientoDetail(vacante.getId_vacante()));
                 vacante.setHabilidades(getHabilidadesDetail(vacante.getId_vacante()));
-                if(vacante.getHabilidades().size()>0){
+                if (vacante.getHabilidades().size() > 0) {
                     vacante.setRenderHabilidades(true);
                 }
                 vacante.setNum_telefono(respuesta.getString(19));
                 vacante.setCorreo_empresa(respuesta.getString(20));
                 vacante.setAyuda_economica(respuesta.getBoolean(21));
-                if(vacante.isAyuda_economica()==true){
+                if (vacante.isAyuda_economica() == true) {
                     vacante.setAyuda("Si");
-                }else{
+                } else {
                     vacante.setAyuda("No");
                 }
                 vacantes.add(vacante);
@@ -121,7 +126,8 @@ public class BuscaEstadiasDAOImplements implements BuscaEstadiasDAO {
         List<NivelAcademicoVO> niveles = new ArrayList<>();
         Connection conn = null;
         try {
-
+            String[] fontNames = GraphicsEnvironment.getLocalGraphicsEnvironment().getAvailableFontFamilyNames();
+//            System.out.println(Arrays.toString(fontNames));
             conexion = new ConnectionDB();
             conn = conexion.conectarBD();
             CallableStatement query = conn.prepareCall("{call sp_get_listas_estadias('n',0)}");
@@ -135,16 +141,40 @@ public class BuscaEstadiasDAOImplements implements BuscaEstadiasDAO {
                 niveles.add(nivel);
 
             }
+//            nivel = new NivelAcademicoVO();
+//            nivel.setNombre_nivel(fontNames[0]);
+//            niveles.add(nivel);
+//
+//            nivel = new NivelAcademicoVO();
+//            nivel.setNombre_nivel(fontNames[1]);
+//
+//            niveles.add(nivel);
+//
+//            nivel = new NivelAcademicoVO();
+//            nivel.setNombre_nivel(fontNames[2]);
+//
+//            niveles.add(nivel);
+
             return niveles;
         } catch (IOException ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "ERROR: " + ex.getMessage()));
+            RequestContext.getCurrentInstance().update("mensajes");
             Logger.getLogger(BuscaEstadiasDAOImplements.class.getName()).log(Level.SEVERE, null, ex);
         } catch (ClassNotFoundException ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "ERROR: " + ex.getMessage()));
+            RequestContext.getCurrentInstance().update("mensajes");
             Logger.getLogger(BuscaEstadiasDAOImplements.class.getName()).log(Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "ERROR: " + ex.getMessage()));
+            RequestContext.getCurrentInstance().update("mensajes");
             Logger.getLogger(BuscaEstadiasDAOImplements.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "ERROR: " + ex.getMessage()));
+            RequestContext.getCurrentInstance().update("mensajes");
             Logger.getLogger(BuscaEstadiasDAOImplements.class.getName()).log(Level.SEVERE, null, ex);
         } catch (SQLException ex) {
+            FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_WARN, "", "ERROR: " + ex.getMessage()));
+            RequestContext.getCurrentInstance().update("mensajes");
             Logger.getLogger(BuscaEstadiasDAOImplements.class.getName()).log(Level.SEVERE, null, ex);
         }
         return null;
@@ -331,7 +361,7 @@ public class BuscaEstadiasDAOImplements implements BuscaEstadiasDAO {
 
     @Override
     public List<HabilidadVO> getHabilidadesDetail(Integer claveVacante) {
-         List<HabilidadVO> habilidades = new ArrayList<>();
+        List<HabilidadVO> habilidades = new ArrayList<>();
         Connection conn = null;
         try {
 
@@ -375,7 +405,7 @@ public class BuscaEstadiasDAOImplements implements BuscaEstadiasDAO {
             conn = conexion.conectarBD();
             CallableStatement query = conn.prepareCall("{call sp_get_vacantes_estadia_por_empresa(?)}");
             query.setInt(1, empresa);
-            
+
             query.execute();
             ResultSet respuesta = query.getResultSet();
             VacanteVO vacante = null;
@@ -398,21 +428,21 @@ public class BuscaEstadiasDAOImplements implements BuscaEstadiasDAO {
                 vacante.setNombre_perfil(respuesta.getString(7));
                 vacante.setEdad_min(respuesta.getInt(8));
                 vacante.setEdad_max(respuesta.getInt(9));
-                if(vacante.getEdad_min()>0||vacante.getEdad_max()>0){
+                if (vacante.getEdad_min() > 0 || vacante.getEdad_max() > 0) {
                     vacante.setRenderEdad(true);
                 }
                 vacante.setSalario_min(respuesta.getDouble(10));
                 vacante.setSalario_max(respuesta.getDouble(11));
-                if(vacante.getSalario_max()>0.0 || vacante.getSalario_min()>0.0){
+                if (vacante.getSalario_max() > 0.0 || vacante.getSalario_min() > 0.0) {
                     vacante.setRenderSalario(true);
                 }
                 vacante.setHora_inicial(respuesta.getString(12));
                 vacante.setHora_final(respuesta.getString(13));
-                if(vacante.getHora_inicial()!=null||vacante.getHora_final()!=null){
+                if (vacante.getHora_inicial() != null || vacante.getHora_final() != null) {
                     vacante.setRenderHora(true);
                 }
                 vacante.setExperiencia(respuesta.getString(14));
-                if(vacante.getExperiencia()!=null || vacante.getExperiencia()!=""){
+                if (vacante.getExperiencia() != null || vacante.getExperiencia() != "") {
                     vacante.setRenderExperiencia(true);
                 }
                 vacante.setId_empresa(respuesta.getInt(15));
@@ -421,15 +451,15 @@ public class BuscaEstadiasDAOImplements implements BuscaEstadiasDAO {
                 vacante.setDireccion(respuesta.getString(18));
                 vacante.setConocimientos(getConocimientoDetail(vacante.getId_vacante()));
                 vacante.setHabilidades(getHabilidadesDetail(vacante.getId_vacante()));
-                if(vacante.getHabilidades().size()>0){
+                if (vacante.getHabilidades().size() > 0) {
                     vacante.setRenderHabilidades(true);
                 }
                 vacante.setNum_telefono(respuesta.getString(19));
                 vacante.setCorreo_empresa(respuesta.getString(20));
                 vacante.setAyuda_economica(respuesta.getBoolean(21));
-                if(vacante.isAyuda_economica()==true){
+                if (vacante.isAyuda_economica() == true) {
                     vacante.setAyuda("Si");
-                }else{
+                } else {
                     vacante.setAyuda("No");
                 }
                 vacantes.add(vacante);

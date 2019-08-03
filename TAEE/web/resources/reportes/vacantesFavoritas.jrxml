@@ -2,7 +2,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report name" pageWidth="842" pageHeight="595" columnWidth="535" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20">
 	<property name="ireport.zoom" value="1.0000000000000002"/>
 	<property name="ireport.x" value="0"/>
-	<property name="ireport.y" value="9"/>
+	<property name="ireport.y" value="0"/>
 	<field name="nombre" class="java.lang.String"/>
 	<field name="nombre_nivel" class="java.lang.String"/>
 	<field name="carrera_desc" class="java.lang.String"/>
@@ -35,7 +35,7 @@
 			<staticText>
 				<reportElement x="315" y="0" width="165" height="26" forecolor="#038C65"/>
 				<textElement>
-					<font fontName="Arial" size="18"/>
+					<font fontName="Serif" size="18"/>
 				</textElement>
 				<text><![CDATA[Vacantes Favoritas]]></text>
 			</staticText>
@@ -53,7 +53,7 @@
 					<rightPen lineWidth="1.25" lineColor="#038C65"/>
 				</box>
 				<textElement verticalAlignment="Middle" markup="styled">
-					<font fontName="Arial" size="10" isBold="true" isItalic="false"/>
+					<font fontName="Serif" size="10" isBold="true" isItalic="false"/>
 					<paragraph lineSpacing="1_1_2" firstLineIndent="5" leftIndent="5">
 						<tabStop position="0" alignment="Center"/>
 					</paragraph>
@@ -70,7 +70,7 @@
 					<rightPen lineWidth="1.25" lineColor="#038C65"/>
 				</box>
 				<textElement verticalAlignment="Middle" rotation="None" markup="styled">
-					<font fontName="Arial" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font fontName="Serif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[Nivel Academico]]></text>
@@ -85,7 +85,7 @@
 					<rightPen lineWidth="1.25" lineColor="#038C65"/>
 				</box>
 				<textElement verticalAlignment="Middle" rotation="None" markup="styled">
-					<font fontName="Arial" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font fontName="Serif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[Carrera]]></text>
@@ -100,7 +100,7 @@
 					<rightPen lineWidth="1.25" lineColor="#038C65"/>
 				</box>
 				<textElement verticalAlignment="Middle" rotation="None" markup="styled">
-					<font fontName="Arial" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font fontName="Serif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[Perfil]]></text>
@@ -115,7 +115,7 @@
 					<rightPen lineWidth="1.25" lineColor="#038C65"/>
 				</box>
 				<textElement verticalAlignment="Middle" rotation="None" markup="styled">
-					<font fontName="Arial" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font fontName="Serif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[Ayuda Eco.]]></text>
@@ -130,7 +130,7 @@
 					<rightPen lineWidth="1.25" lineColor="#038C65"/>
 				</box>
 				<textElement verticalAlignment="Middle" rotation="None" markup="styled">
-					<font fontName="SansSerif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font fontName="Serif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[Dirección]]></text>
@@ -145,7 +145,7 @@
 					<rightPen lineWidth="1.25" lineColor="#038C65"/>
 				</box>
 				<textElement verticalAlignment="Middle" rotation="None" markup="styled">
-					<font fontName="Arial" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font fontName="Serif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[Correro]]></text>
@@ -160,7 +160,7 @@
 					<rightPen lineWidth="1.25" lineColor="#038C65"/>
 				</box>
 				<textElement verticalAlignment="Middle" rotation="None" markup="styled">
-					<font fontName="Arial" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
+					<font fontName="Serif" size="10" isBold="true" isItalic="false" isUnderline="false" isStrikeThrough="false" pdfEncoding="Cp1252" isPdfEmbedded="false"/>
 					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
 				</textElement>
 				<text><![CDATA[Telefono]]></text>

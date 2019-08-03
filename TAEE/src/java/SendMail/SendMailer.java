@@ -5,6 +5,7 @@
  */
 package SendMail;
 
+import java.io.Serializable;
 import java.util.Properties;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
@@ -19,7 +20,7 @@ import javax.mail.internet.MimeMessage;
  */
 @ManagedBean(name = "beanSendMailer")
 @ViewScoped
-public class SendMailer {
+public class SendMailer implements Serializable{
 
     public SendMailer() {
     }
@@ -89,7 +90,7 @@ public class SendMailer {
         }
 
     }
-
+    
 //    public void sendMail() {
 //        String remitente = "aniproxsoft@gmail.com";
 //        String password = "SoftwarePrueba.01";
