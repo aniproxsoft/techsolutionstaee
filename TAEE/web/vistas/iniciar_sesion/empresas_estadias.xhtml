@@ -20,34 +20,41 @@
                             <h:panelGrid id="panel" columns="4" width="100%">
                                 <h:panelGroup>
                                     <h:outputText value="Nombre Empresa:"  /><br/>
-                                    <p:inputText id="nombre" rendered="true" requiredMessage="Debe ingresar un nombre de Empresa"
+                                    <p:inputText id="nombre"  required="true" requiredMessage="Debe ingresar un nombre de Empresa"
                                                  value="${beanEmpresaEstadia.empresa.nombre_empresa}"
                                                  maxlength="50"/>
+                                    <p:message for="nombre" />
                                 </h:panelGroup>
+
                                 <h:panelGroup>
                                     <h:outputText value="Teléfono:"  /><br/>
-                                    <p:inputMask id="fon" rendered="true" requiredMessage="Debe ingresar un Teléfono"
+                                    <p:inputMask id="fon"  required="true" requiredMessage="Debe ingresar un Teléfono"
                                                  value="${beanEmpresaEstadia.empresa.telefono}" mask="9999999999"  />
+                                    <p:message for="fon" />
                                 </h:panelGroup>
                                 <h:panelGroup>
                                     <h:outputText value="Correo:"   /><br/>
-                                    <p:inputText id="correo" rendered="true" requiredMessage="Debe ingresar un Correo"
+                                    <p:inputText id="correo"  required="true" requiredMessage="Debe ingresar un Correo"
                                                  value="${beanEmpresaEstadia.empresa.correo_empresa}" maxlength="50" />
+                                    <p:message for="correo" />
                                 </h:panelGroup>
                                 <h:panelGroup>
                                     <h:outputText value="Folio Convenio:"  /><br/>
-                                    <p:inputText id="fc" rendered="true" requiredMessage="Debe ingresar un Folio"
+                                    <p:inputText id="fc"  required="true" requiredMessage="Debe ingresar un Folio"
                                                  value="${beanEmpresaEstadia.empresa.convenio}" maxlength="20" />
+                                    <p:message for="fc" />
                                 </h:panelGroup>
                                 <h:panelGroup>
                                     <h:outputText value="RFC (Moral/Fisico):"  /><br/>
-                                    <p:inputText id="rfc" rendered="true" requiredMessage="Debe ingresar un RFC" 
+                                    <p:inputText id="rfc"  required="true" requiredMessage="Debe ingresar un RFC" 
                                                  value="${beanEmpresaEstadia.empresa.rfc}" maxlength="20" />
+                                    <p:message for="rfc" />
                                 </h:panelGroup>
                                 <h:panelGroup>
                                     <h:outputText value="Dirección:" /><br/>
                                     <p:inputText id="direccion" required="true" requiredMessage="Debe ingresar una Dirección"
                                                  value="${beanEmpresaEstadia.empresa.direccion}" maxlength="200" />
+                                    <p:message for="direccion" />
                                 </h:panelGroup>
                                 <h:panelGroup>
                                     <h:outputText value="Estado:" /><br/>
@@ -60,6 +67,7 @@
                                         <p:ajax event="change" update="ciudad" 
                                                 listener="${beanEmpresaEstadia.mostrarMunicipio()}" />
                                     </p:selectOneMenu>
+                                    <p:message for="estado" />
                                 </h:panelGroup>
                                 <h:panelGroup>
                                     <h:outputText value="Municipio:" /><br/>
@@ -70,11 +78,13 @@
                                                        itemLabel="${mun.nombre_ciudad}"
                                                        itemValue="${mun.id_ciudad}"/>
                                     </p:selectOneMenu>
+                                    <p:message for="ciudad" />
                                 </h:panelGroup>
                                 <h:panelGroup>
                                     <h:outputText value="Codigo Postal:"  /><br/>
                                     <p:inputText id="cp" required="true" requiredMessage="Debe ingresar un CP"
                                                  value="${beanEmpresaEstadia.empresa.codigo_postal}" maxlength="15" />
+                                    <p:message for="cp" />
                                 </h:panelGroup>
                             </h:panelGrid>
                             <p:commandButton id="botonGuardar"  style="margin-top: 30px;" value="Guardar" 
@@ -107,62 +117,62 @@
                     </div>
                     <br/>
                     <center>
-                    <div style="width: 95%">
-                        <p:dataTable id="tabla1" rendered="true" var="emp" value="#{beanEmpresaEstadia.empresaList}"
-                                     paginator="true" rows="10">
-                            <p:column headerText="Nombre">
-                                <h:outputText value="${emp.nombre_empresa}" />
-                            </p:column>
+                        <div style="width: 95%">
+                            <p:dataTable id="tabla1" rendered="true" var="emp" value="#{beanEmpresaEstadia.empresaList}"
+                                         paginator="true" rows="10">
+                                <p:column headerText="Nombre">
+                                    <h:outputText value="${emp.nombre_empresa}" />
+                                </p:column>
 
-                            <p:column headerText="Dirección">
-                                <h:outputText value="${emp.direccion}" />
-                            </p:column>
+                                <p:column headerText="Dirección">
+                                    <h:outputText value="${emp.direccion}" />
+                                </p:column>
 
-                            <p:column headerText="Teléfono">
-                                <h:outputText value="${emp.telefono}"/>
-                            </p:column>
+                                <p:column headerText="Teléfono">
+                                    <h:outputText value="${emp.telefono}"/>
+                                </p:column>
 
-                            <p:column headerText="Correo">
-                                <h:outputText value="${emp.correo_empresa}"/>
-                            </p:column>
+                                <p:column headerText="Correo">
+                                    <h:outputText value="${emp.correo_empresa}"/>
+                                </p:column>
 
-                            <p:column headerText="Opciones">
-                                <center>
-                                    <p:commandButton id="botonEditar" onclick="subir()"  style="margin-top: 20px; " value="Editar" actionListener="${beanEmpresaEstadia.datosEmpres(emp)}" process="@this" />
-                                    <p:commandButton id="botonEliminar"  style="margin-top: 20px; " value="Eliminar" 
-                                                     actionListener="${beanEmpresaEstadia.EliminarEmpresaEstadia(emp)}"  > 
-                                        <p:confirm header="!Atención¡" message="¿Estás seguro que deseas eliminar el registro?" />
-                                    </p:commandButton>
-                                    <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
-                                        <center>
-                                            <p:commandButton value="Aceptar" type="button"  styleClass="ui-confirmdialog-yes" />
-                                            <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" />
-                                        </center>
-                                    </p:confirmDialog>
-                                </center>
-                            </p:column>
+                                <p:column headerText="Opciones">
+                                    <center>
+                                        <p:commandButton id="botonEditar" onclick="subir()"  style="margin-top: 20px; " value="Editar" actionListener="${beanEmpresaEstadia.datosEmpres(emp)}" process="@this" />
+                                        <p:commandButton id="botonEliminar"  style="margin-top: 20px; " value="Eliminar" 
+                                                         actionListener="${beanEmpresaEstadia.EliminarEmpresaEstadia(emp)}"  > 
+                                            <p:confirm header="!Atención¡" message="¿Estás seguro que deseas eliminar el registro?" />
+                                        </p:commandButton>
+                                        <p:confirmDialog global="true" showEffect="fade" hideEffect="fade">
+                                            <center>
+                                                <p:commandButton value="Aceptar" type="button"  styleClass="ui-confirmdialog-yes" />
+                                                <p:commandButton value="Cancelar" type="button" styleClass="ui-confirmdialog-no" />
+                                            </center>
+                                        </p:confirmDialog>
+                                    </center>
+                                </p:column>
 
-                        </p:dataTable>
-                    </div>
+                            </p:dataTable>
+                        </div>
                     </center>
 
 
 
-                        <script type="text/javascript">
-                            function ocultaMsj(time) {
-                                setTimeout(function () {
-                                    $("#mensajes").children("div").slideUp();
-                                    return false;
-                                }, time);
-                            }
+                    <script type="text/javascript">
+                        function ocultaMsj(time) {
+                            setTimeout(function () {
+                                $("#mensajes").children("div").slideUp();
+                                return false;
+                            }, time);
+                        }
 
-                            function subir() {
-                                //referimos el elemento ( clase o identificador de acción )
-                                $('html, body').animate({scrollTop: 0}, 'slow'); //seleccionamos etiquetas,clase o identificador destino, creamos animación hacia top de la página.
-                            }
+                        function subir() {
+                            //referimos el elemento ( clase o identificador de acción )
+                            $('html, body').animate({scrollTop: 0}, 'slow'); //seleccionamos etiquetas,clase o identificador destino, creamos animación hacia top de la página.
+                        }
 
 
-                        </script>
+                    </script>
                 </h:form>
             </ui:define>
             <ui:define name="bottom">
