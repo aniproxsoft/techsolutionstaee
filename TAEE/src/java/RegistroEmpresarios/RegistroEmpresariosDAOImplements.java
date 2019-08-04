@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.faces.application.FacesMessage;
+import javax.faces.context.FacesContext;
+import org.primefaces.context.RequestContext;
 
 /**
  *
@@ -51,10 +54,14 @@ public class RegistroEmpresariosDAOImplements implements RegistroEmpresariosDAO 
             ResultSet respuesta = query.getResultSet();
 
             while (respuesta.next()) {
-                if(respuesta.getBoolean("flag")==true){
-                    flag=true;
-                }else{
-                    flag=false;
+                if (respuesta.getBoolean("flag") == true) {
+                    flag = true;
+                } else {
+                    flag = false;
+                    RequestContext.getCurrentInstance().execute("subir()");
+                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", respuesta.getString("msj")));
+                    RequestContext.getCurrentInstance().update("mensajes");
+                    RequestContext.getCurrentInstance().execute("ocultaMsj(4000)");
                 }
             }
             return flag;

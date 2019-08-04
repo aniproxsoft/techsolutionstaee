@@ -15,6 +15,7 @@ import java.io.Serializable;
 import java.util.List;
 import javax.annotation.PostConstruct;
 import javax.faces.application.FacesMessage;
+import javax.faces.application.NavigationHandler;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import javax.faces.context.FacesContext;
@@ -57,12 +58,11 @@ public class RegistroEmresariosBean implements Serializable {
                     FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "Se ha registrado correctamente ya puede iniciar sesión"));
                     RequestContext.getCurrentInstance().update("mensajes");
                     RequestContext.getCurrentInstance().execute("ocultaMsj(4000)");
-                } else {
-                    RequestContext.getCurrentInstance().execute("subir()");
-                    FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Ocurrió un error al registrarse"));
-                    RequestContext.getCurrentInstance().update("mensajes");
-                    RequestContext.getCurrentInstance().execute("ocultaMsj(4000)");
-                }
+                    FacesContext fc = FacesContext.getCurrentInstance();
+                    NavigationHandler navigationHandler = fc.getApplication().getNavigationHandler();
+                    navigationHandler.handleNavigation(fc, null, "/vistas/iniciar_sesion/iniciar_sesion.xhtml");
+                    fc.renderResponse();
+                } 
             } else {
                 RequestContext.getCurrentInstance().execute("subir()");
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Las contraseñas no coinsiden"));

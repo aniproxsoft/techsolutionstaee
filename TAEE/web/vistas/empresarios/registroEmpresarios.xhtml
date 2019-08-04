@@ -39,7 +39,7 @@
         <p:messages id="mensajes" showDetail="true" closable="true"/>
         <h:form id="formulario" >
             <center>
-                <h1 style="color: #038C65; margin-top: 10 px">Registro de Usuario</h1>
+                <h1 style="color: #038C65; margin-top: 10px">Registro de Usuario</h1>
                 <br/>
                 <p:panel id="form_view" style="width: 75%">
                     <h3 style="color: #038C65">Datos de Usuario</h3>
@@ -150,18 +150,7 @@
                             </p:inputText>
                             <p:message for="correo" />
                         </h:panelGroup>
-                        <h:panelGroup>
-                            <h:outputText value="Folio Convenio:"  /><br/>
-                            <p:inputText id="fc" required="true" requiredMessage="Debe ingresar un Folio"
-                                         value="${beanRegistroEmresarios.user.convenio}" 
-                                         validatorMessage="Debe ingresar minimo 3 digitos naximo 20">
 
-                                <f:validateLength minimum="3" maximum="20" />
-
-                            </p:inputText>
-                            <p:message for="fc" />
-
-                        </h:panelGroup>
                         <h:panelGroup>
                             <h:outputText value="RFC (Moral/Fisico):"  /><br/>
                             <p:inputText id="rfc" required="true" requiredMessage="Debe ingresar un RFC" 

@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.8.4
+-- version 4.9.0.1
 -- https://www.phpmyadmin.net/
 --
--- Servidor: 127.0.0.1:3306
--- Tiempo de generación: 01-08-2019 a las 01:38:42
+-- Servidor: localhost
+-- Tiempo de generación: 04-08-2019 a las 01:18:27
 -- Versión del servidor: 5.7.24
--- Versión de PHP: 7.2.14
+-- Versión de PHP: 7.0.33
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET AUTOCOMMIT = 0;
@@ -26,7 +26,6 @@ DELIMITER $$
 --
 -- Procedimientos
 --
-DROP PROCEDURE IF EXISTS `aprobar_empresa`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `aprobar_empresa` (IN `empresa_id` INT)  begin
 	DECLARE flag boolean;
 	DECLARE	msj VARCHAR(500);
@@ -54,7 +53,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `aprobar_empresa` (IN `empresa_id` I
 	SELECT flag,msj;
 END$$
 
-DROP PROCEDURE IF EXISTS `desaprobar_empresa`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `desaprobar_empresa` (`empresa_id` INT)  begin
 	DECLARE flag boolean;
 	DECLARE	msj VARCHAR(500);
@@ -82,7 +80,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `desaprobar_empresa` (`empresa_id` I
 	SELECT flag,msj;
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_autentification`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_autentification` (IN `user` VARCHAR(100), IN `pass` VARCHAR(100))  BEGIN
 	 DECLARE flag boolean;
     DECLARE count int;
@@ -127,7 +124,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_autentification` (IN `user` VARC
     
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_bulkload`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_bulkload` (IN `empresas` VARCHAR(65000), IN `bulkloads` VARCHAR(65000))  BEGIN
 	DECLARE flag boolean;
 	DECLARE count int  UNSIGNED DEFAULT 0;
@@ -245,7 +241,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_bulkload` (IN `empresas` VARCHAR
 			from bulkload_empresa where lote =lote_id;
 End$$
 
-DROP PROCEDURE IF EXISTS `sp_delete_empresa_estadia`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_delete_empresa_estadia` (IN `tipo` INT)  BEGIN
 	DECLARE var_mensaje varchar(50);
 	DECLARE var_success boolean;
@@ -264,7 +259,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_delete_empresa_estadia` (IN `tip
     SELECT var_mensaje,var_success;
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_delete_vacante_egresados`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_delete_vacante_egresados` (IN `vacante_id` INT)  BEGIN
 	DECLARE status_empresa varchar(1);
 	DECLARE flag boolean;
@@ -303,7 +297,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_delete_vacante_egresados` (IN `v
 	SELECT flag,msj;
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_delete_vacante_estadia`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_delete_vacante_estadia` (IN `vacante_id` INT)  BEGIN
 	DECLARE status_empresa varchar(1);
 	DECLARE flag boolean;
@@ -342,12 +335,10 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_delete_vacante_estadia` (IN `vac
 	SELECT flag,msj;
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_get_ciudades`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_ciudades` ()  BEGIN
 	SELECT id_ciudad,id_estado,nombre_ciudad from ciudad;
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_get_conco_habil`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_conco_habil` (`clave` INT, `tipo` INT)  BEGIN
 	IF(tipo=1)then
 		select c.id_vacante,c.id_conocimiento, co.conoc_desc
@@ -362,7 +353,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_conco_habil` (`clave` INT, `
 	END IF;
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_get_empresas`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_empresas` (`tipo` INT)  BEGIN
 	SELECT id_empresa,direccion,nombre,id_estado,id_ciudad,
 	codigo_postal,id_usuario,num_telefono,folio_convenio,rfc,
@@ -371,7 +361,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_empresas` (`tipo` INT)  BEGI
 	where status=tipo;
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_get_empresas_egresados`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_empresas_egresados` (IN `tipo` INT)  BEGIN
 	SELECT id_empresa,direccion,em.nombre as nombre_empresa,
 	em.id_estado,em.id_ciudad,codigo_postal,
@@ -386,12 +375,10 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_empresas_egresados` (IN `tip
 	where em.status=tipo;
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_get_estados`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_estados` ()  BEGIN
 	SELECT id_estado,nombre_estado from estado;
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_get_listas_estadias`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_listas_estadias` (`tabla` VARCHAR(2), `clave` INT)  BEGIN
 	CASE tabla
  	WHEN 'n' THEN
@@ -414,13 +401,11 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_listas_estadias` (`tabla` VA
 	END CASE;
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_get_municipios`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_municipios` (`tipo` INT)  BEGIN
 	SELECT id_ciudad,id_estado,nombre_ciudad from ciudad
 	where id_estado= tipo;
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_get_search_adminEstadia`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_search_adminEstadia` (`empresa_id` INT)  BEGIN
 	SELECT id_vacante,titulo,vacante_desc,v.id_perfil, p.nombre_perfil,c.carrera_desc,
 	edad_min,edad_max,salario_min,salario_max,n.nombre_nivel,
@@ -436,7 +421,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_search_adminEstadia` (`empre
 	and v.status='1';
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_get_vacantes_adminEstadia`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_adminEstadia` ()  BEGIN
 	SELECT id_vacante,titulo,vacante_desc,v.id_perfil, p.nombre_perfil,c.carrera_desc,
 	edad_min,edad_max,salario_min,salario_max,n.nombre_nivel,
@@ -451,7 +435,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_adminEstadia` ()  B
 	and v.status='1';
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_get_vacantes_egresados`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_egresados` (IN `perfil` INT, IN `json_conocimiento` VARCHAR(65000), IN `json_habilidades` VARCHAR(65000))  BEGIN
 	DECLARE json_items int ;   
 	DECLARE json_items2 int ;  
@@ -532,7 +515,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_egresados` (IN `per
 
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_get_vacantes_egresados_por_empresa`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_egresados_por_empresa` (`empresa` INT)  BEGIN
     	SELECT DISTINCT v.id_vacante,titulo,vacante_desc,
 		na.nombre_nivel,ca.carrera_desc, 
@@ -555,7 +537,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_egresados_por_empre
  
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_get_vacantes_estadia`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_estadia` (IN `perfil` INT, IN `json_conocimiento` VARCHAR(65000), IN `json_habilidades` VARCHAR(65000))  BEGIN
 	DECLARE json_items int ;   
 	DECLARE json_items2 int ;  
@@ -636,7 +617,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_estadia` (IN `perfi
 
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_get_vacantes_estadia_por_empresa`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_estadia_por_empresa` (`empresa` INT)  BEGIN
     	SELECT DISTINCT v.id_vacante,titulo,vacante_desc,
 		na.nombre_nivel,ca.carrera_desc, 
@@ -659,7 +639,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_estadia_por_empresa
  
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_get_vacantes_usuario`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_usuario` (IN `empresa_id` INT)  BEGIN
 	SELECT id_vacante,titulo,vacante_desc,v.id_perfil, p.nombre_perfil,c.carrera_desc,
 	edad_min,edad_max,salario_min,salario_max,n.nombre_nivel,
@@ -675,7 +654,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_get_vacantes_usuario` (IN `empre
 	and v.status='1';
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_insert_update_empresaEst`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_insert_update_empresaEst` (IN `editar` INT, IN `ln_id_empresa` INT, IN `ls_direccion` VARCHAR(200), IN `ls_nombre` VARCHAR(200), IN `ln_id_estado` INT, IN `ln_id_ciudad` INT, IN `ls_codigo_postal` VARCHAR(50), IN `ln_id_usuario` INT, IN `ls_num_telefono` VARCHAR(50), IN `ls_folio_convenio` VARCHAR(50), IN `ls_rfc` VARCHAR(50), IN `ls_status` VARCHAR(1), IN `ls_correo_empresa` VARCHAR(50))  BEGIN
 	DECLARE var_id integer;
 	DECLARE var_mensaje varchar(50);
@@ -752,7 +730,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_insert_update_empresaEst` (IN `e
 	SELECT var_mensaje,var_success;
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_insert_update_vacante_egresados`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_insert_update_vacante_egresados` (IN `json_vacante` VARCHAR(65000), IN `json_conocimiento` VARCHAR(65000), IN `json_habilidades` VARCHAR(65000), IN `opcion` INT)  begin
 	DECLARE flag boolean;
 	DECLARE	msj VARCHAR(500);
@@ -902,7 +879,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_insert_update_vacante_egresados`
 	SELECT flag,msj,id_new;
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_registrar_user`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_registrar_user` (IN `nombre_u` VARCHAR(50), IN `apellido_u` VARCHAR(50), IN `email_u` VARCHAR(50), IN `pass` VARCHAR(50), IN `direccion_em` VARCHAR(50), IN `nombre_em` VARCHAR(50), IN `estado` INT, IN `ciudad` INT, IN `cp` INT, IN `telefono` VARCHAR(13), IN `rfc_em` VARCHAR(15), IN `email_em` VARCHAR(50))  BEGIN
     DECLARE flag boolean;
     DECLARE count int;
@@ -952,7 +928,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_registrar_user` (IN `nombre_u` V
     SELECT flag, msj, id_user;
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_search_empresas_egresados`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_search_empresas_egresados` (`empresa_id` INT)  BEGIN
 	SELECT id_empresa,direccion,em.nombre as nombre_empresa,
 	em.id_estado,em.id_ciudad,codigo_postal,
@@ -966,7 +941,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_search_empresas_egresados` (`emp
 	where em.id_empresa=empresa_id;
 END$$
 
-DROP PROCEDURE IF EXISTS `sp_search_empresas_estadias`$$
 CREATE DEFINER=`root`@`localhost` PROCEDURE `sp_search_empresas_estadias` (`tipo` INT, `empresa_id` INT)  BEGIN
 	SELECT id_empresa,direccion,nombre,id_estado,id_ciudad,
 	codigo_postal,id_usuario,num_telefono,folio_convenio,rfc,
@@ -983,8 +957,7 @@ DELIMITER ;
 -- Estructura de tabla para la tabla `bulkload_empresa`
 --
 
-DROP TABLE IF EXISTS `bulkload_empresa`;
-CREATE TABLE IF NOT EXISTS `bulkload_empresa` (
+CREATE TABLE `bulkload_empresa` (
   `lote` int(11) NOT NULL,
   `id_bulkload` int(11) NOT NULL,
   `direccion` varchar(200) DEFAULT NULL,
@@ -997,8 +970,7 @@ CREATE TABLE IF NOT EXISTS `bulkload_empresa` (
   `folio_convenio` varchar(200) DEFAULT NULL,
   `rfc` varchar(200) DEFAULT NULL,
   `observaciones` varchar(5000) DEFAULT NULL,
-  `correo_empresa` varchar(500) NOT NULL,
-  PRIMARY KEY (`lote`,`id_bulkload`)
+  `correo_empresa` varchar(500) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -1047,7 +1019,15 @@ INSERT INTO `bulkload_empresa` (`lote`, `id_bulkload`, `direccion`, `nombre`, `e
 (7, 3, 'Calle 5 el pericles', 'JOBFIT', 'CDMX', 'Gustavo A. Madero', '67888', NULL, '45366789', 'CONV5152367', 'JO626536', NULL, 'jobfit@yahoo.com'),
 (7, 4, 'Almoyta num 91', 'MAR SYSTEMS', 'Estado de mexico', 'Almoloya de Juarez', '5466577', NULL, '5566442233', 'CONV526373', 'MS9173636', NULL, 'mar@hotmail.com'),
 (7, 5, 'Calle pequeña', 'Royal Software', 'Guanajuato', 'Jerecuaro', '5454646', NULL, '67577383', 'CONV192183', 'RSFA554556', 'El estado no existe en la base de datos.La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.', 'rsf@gmail.com'),
-(7, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. El campo Correo de Empresa esta en blanco', '');
+(7, 6, 'Calle 102', '', 'Estado de mexico', 'Alvaro Obregon', '558879', NULL, '', '', '', 'El campo Nombre esta en blanco. La ciudad no existe en la base de datos o esa ciudad no pertenece a el estado elegido.El campo Telefono esta en blanco. El campo Folio de convenio esta en blanco. El campo RFC de la Empresa esta en blanco. El campo Correo de Empresa esta en blanco', ''),
+(8, 1, 'BLVD. GRAN SUR 100, PEDREGAL DE CARRASCO', 'Grupo Salinas', 'CDMX', 'coyoacan', '23211', NULL, '5517201313', 'CO1934765', 'GS193489U3', NULL, 'gruposalinas@gmail.com'),
+(8, 2, 'Cafetal 240, Granjas México', 'Grupo Tecnovidrio, S.A. de C.V.', 'CDMX', 'Gustavo A. Madero', '8400', NULL, '55 3000 2000', 'CO1934464', 'GT34212T3', NULL, 'grupotec@gmail.com'),
+(8, 3, ' Av. Insurgentes Sur 670', 'Bacher Zoppi, S.A. de C.V.', 'CDMX', 'Gustavo A. Madero', '3100', NULL, '55 3640 2000', 'CO1633469', 'BAZO23212', NULL, 'zoppi@gmail.com'),
+(8, 4, 'Av Nuevo León 202, Hipódromo', 'Operadora de Personal Incoraxis', 'CDMX', 'coyoacan', '6100', NULL, '55 5584 2918', 'CO2623479', 'OPI1423452', NULL, 'incoraxis@hotmail.com'),
+(9, 1, 'BLVD. GRAN SUR 100, PEDREGAL DE CARRASCO', 'Grupo Luxis', 'CDMX', 'coyoacan', '23211', NULL, '5517201313', 'CO1934765', 'GS193489U3', NULL, 'grupoluxis@gmail.com'),
+(9, 2, 'Cafetal 240, Granjas México', 'Grupo Tecnovidrio, S.A. de C.V.', 'CDMX', 'Gustavo A. Madero', '8400', NULL, '55 3000 2000', 'CO1934464', 'GT34212T3', NULL, 'grupotec@gmail.com'),
+(9, 3, ' Av. Insurgentes Sur 670', 'Bacher Zoppi, S.A. de C.V.', 'CDMX', 'Gustavo A. Madero', '3100', NULL, '55 3640 2000', 'CO1633469', 'BAZO23212', NULL, 'zoppi@gmail.com'),
+(9, 4, 'Av Nuevo León 202, Hipódromo', 'Operadora de Personal Incoraxis', 'CDMX', 'coyoacan', '6100', NULL, '55 5584 2918', 'CO2623479', 'OPI1423452', NULL, 'incoraxis@hotmail.com');
 
 -- --------------------------------------------------------
 
@@ -1055,14 +1035,11 @@ INSERT INTO `bulkload_empresa` (`lote`, `id_bulkload`, `direccion`, `nombre`, `e
 -- Estructura de tabla para la tabla `carreras`
 --
 
-DROP TABLE IF EXISTS `carreras`;
-CREATE TABLE IF NOT EXISTS `carreras` (
-  `id_carrera` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `carreras` (
+  `id_carrera` int(11) NOT NULL,
   `id_nivel` int(11) DEFAULT NULL,
-  `carrera_desc` varchar(100) NOT NULL,
-  PRIMARY KEY (`id_carrera`),
-  KEY `fk_id_nivel_carrera` (`id_nivel`)
-) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+  `carrera_desc` varchar(100) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `carreras`
@@ -1085,14 +1062,11 @@ INSERT INTO `carreras` (`id_carrera`, `id_nivel`, `carrera_desc`) VALUES
 -- Estructura de tabla para la tabla `ciudad`
 --
 
-DROP TABLE IF EXISTS `ciudad`;
-CREATE TABLE IF NOT EXISTS `ciudad` (
-  `id_ciudad` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `ciudad` (
+  `id_ciudad` int(11) NOT NULL,
   `nombre_ciudad` varchar(50) DEFAULT NULL,
-  `id_estado` int(11) NOT NULL,
-  PRIMARY KEY (`id_ciudad`,`id_estado`),
-  KEY `fk_estado_ciudad` (`id_estado`)
-) ENGINE=MyISAM AUTO_INCREMENT=41 DEFAULT CHARSET=latin1;
+  `id_estado` int(11) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `ciudad`
@@ -1156,14 +1130,10 @@ INSERT INTO `ciudad` (`id_ciudad`, `nombre_ciudad`, `id_estado`) VALUES
 -- Estructura de tabla para la tabla `conocimiento`
 --
 
-DROP TABLE IF EXISTS `conocimiento`;
-CREATE TABLE IF NOT EXISTS `conocimiento` (
+CREATE TABLE `conocimiento` (
   `id_conocimiento` int(11) NOT NULL,
   `conoc_desc` varchar(100) DEFAULT NULL,
-  `id_perfil` int(11) NOT NULL,
-  PRIMARY KEY (`id_conocimiento`),
-  KEY `not null` (`conoc_desc`),
-  KEY `fk_conoc_perfil` (`id_perfil`)
+  `id_perfil` int(11) NOT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -1171,21 +1141,29 @@ CREATE TABLE IF NOT EXISTS `conocimiento` (
 --
 
 INSERT INTO `conocimiento` (`id_conocimiento`, `conoc_desc`, `id_perfil`) VALUES
-(1, 'JAVA', 1),
-(2, '.NET', 1),
-(3, 'Metodología SCRUM', 3),
-(4, 'Oracle', 5),
-(5, 'PostgresSQL', 5),
-(6, 'PMBok', 2),
-(7, 'Scripts de Prueba JAVA', 4),
+(1, 'Aplicar tecnicas de programacion para apps web ', 1),
+(2, 'Saber organizar para automatizar procesos ', 1),
+(3, 'Implementar tecnicas avanzadas de desarrollo de SW para automatizar procesos organizacionales', 3),
+(4, 'Implementar y administrar sistemas manejadores de la BD', 5),
+(5, 'Administrar servidores de Base de Datos\r\n', 5),
+(6, 'Saber liderar un equipo con metodos del Pmbok', 2),
+(7, 'implementar y realizar soporte tecnico', 4),
 (8, 'Administración Financiera ', 6),
 (9, 'Administración Gerencial', 6),
 (10, 'Metodos ad hoc', 7),
 (11, ' Google analytics', 9),
 (12, 'Hubspot', 9),
-(13, 'Android', 1),
-(14, 'IOS', 1),
-(15, 'SQL SERVER', 5);
+(13, 'Saber implementar logica de programación ', 1),
+(14, 'Manejo de al menos un lenguaje de programación', 1),
+(15, 'Administrar estructuras de Base de Datos', 5),
+(16, 'Implementar equipo de computo de acuerdo con las necesidades de una organizacion', 4),
+(17, 'implementar sistemas operativos de acuerdo con las necesidades de una organizacion', 4),
+(18, 'implementar redes locales de acuerdo con las necesidades de una organizacion', 4),
+(19, 'Implementar sistemas de calidad ', 3),
+(20, 'Saber liderar un equipo con metodos del Pmbok', 11),
+(21, 'implementar equipo de cómputo de acuerdo con las necesidades de una organización\r\n', 12),
+(22, 'implementar sistemas operativos de acuerdo con las necesidades de una organización\r\n', 12),
+(23, 'implementar redes locales de acuerdo con las necesidades de una organización\r\n', 12);
 
 -- --------------------------------------------------------
 
@@ -1193,12 +1171,9 @@ INSERT INTO `conocimiento` (`id_conocimiento`, `conoc_desc`, `id_perfil`) VALUES
 -- Estructura de tabla para la tabla `conocimiento_vac`
 --
 
-DROP TABLE IF EXISTS `conocimiento_vac`;
-CREATE TABLE IF NOT EXISTS `conocimiento_vac` (
+CREATE TABLE `conocimiento_vac` (
   `id_vacante` int(11) NOT NULL,
-  `id_conocimiento` int(11) NOT NULL,
-  PRIMARY KEY (`id_vacante`,`id_conocimiento`),
-  KEY `fk_conoc_vac` (`id_conocimiento`)
+  `id_conocimiento` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -1218,22 +1193,31 @@ INSERT INTO `conocimiento_vac` (`id_vacante`, `id_conocimiento`) VALUES
 (26, 1),
 (31, 1),
 (33, 1),
+(34, 1),
+(40, 1),
 (4, 2),
 (31, 2),
+(40, 2),
 (6, 3),
 (7, 3),
 (25, 3),
 (27, 3),
 (8, 4),
 (32, 4),
+(37, 4),
 (8, 5),
 (9, 5),
+(37, 5),
 (10, 6),
 (28, 6),
 (29, 6),
 (30, 6),
+(36, 6),
+(41, 6),
 (1, 7),
 (2, 7),
+(38, 7),
+(42, 7),
 (11, 8),
 (11, 9),
 (12, 10),
@@ -1243,9 +1227,22 @@ INSERT INTO `conocimiento_vac` (`id_vacante`, `id_conocimiento`) VALUES
 (16, 13),
 (31, 13),
 (33, 13),
+(40, 13),
 (16, 14),
 (31, 14),
-(17, 15);
+(40, 14),
+(17, 15),
+(37, 15),
+(38, 16),
+(42, 16),
+(38, 17),
+(42, 17),
+(38, 18),
+(42, 18),
+(35, 20),
+(39, 21),
+(39, 22),
+(39, 23);
 
 -- --------------------------------------------------------
 
@@ -1253,9 +1250,8 @@ INSERT INTO `conocimiento_vac` (`id_vacante`, `id_conocimiento`) VALUES
 -- Estructura de tabla para la tabla `empresa`
 --
 
-DROP TABLE IF EXISTS `empresa`;
-CREATE TABLE IF NOT EXISTS `empresa` (
-  `id_empresa` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `empresa` (
+  `id_empresa` int(11) NOT NULL,
   `direccion` varchar(200) NOT NULL,
   `nombre` varchar(50) NOT NULL,
   `id_estado` int(11) NOT NULL,
@@ -1266,12 +1262,8 @@ CREATE TABLE IF NOT EXISTS `empresa` (
   `folio_convenio` varchar(20) DEFAULT NULL,
   `rfc` varchar(20) NOT NULL,
   `status` varchar(1) NOT NULL,
-  `correo_empresa` varchar(50) NOT NULL,
-  PRIMARY KEY (`id_empresa`),
-  KEY `fk_usuario` (`id_usuario`),
-  KEY `fk_emp_ciudad` (`id_ciudad`),
-  KEY `fk_emp_estado` (`id_estado`)
-) ENGINE=MyISAM AUTO_INCREMENT=22 DEFAULT CHARSET=latin1;
+  `correo_empresa` varchar(50) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `empresa`
@@ -1297,7 +1289,11 @@ INSERT INTO `empresa` (`id_empresa`, `direccion`, `nombre`, `id_estado`, `id_ciu
 (18, 'El caiman 34', 'King Soft', 1, 6, '5566447', 11, '5546438394', NULL, 'RFC83847HDH', '1', 'king@yahoo.com'),
 (19, 'Loma bonita 582', 'Luteam', 1, 2, '572021', NULL, '5915141531', 'co524125156546655645', '15szc5s1xc5ds51c51d6', '3', 'lu@hotmaul.com'),
 (20, 'LAS FLORES 678', 'Prosystem', 2, 6, '896665', NULL, '8662525652', 'X5Z75ZXXXXXXXXXXXXF5', 'RFC88848484448428888', '3', 'pro@gmail.com'),
-(21, 'seneca 123', 'quick', 2, 9, '96559', NULL, '8454548498', 'FOL454548', 'rfc4445877', '3', 'quick@gmail.com');
+(21, 'seneca 123', 'QUICK', 2, 9, '96559', NULL, '8454548498', 'FOL454548', 'rfc4445877', '3', 'quick@gmail.com'),
+(22, 'BLVD. GRAN SUR 100, PEDREGAL DE CARRASCO', 'Grupo Luxis', 2, 2, '23211', NULL, '5517201313', 'CO1934765', 'GS193489U3', '3', 'grupoluxis@gmail.com'),
+(23, 'Cafetal 240, Granjas México', 'Grupo Tecnovidrio, S.A. de C.V.', 2, 2, '8400', NULL, '55 3000 2000', 'CO1934464', 'GT34212T3', '3', 'grupotec@gmail.com'),
+(24, ' Av. Insurgentes Sur 670', 'Bacher Zoppi, S.A. de C.V.', 2, 2, '3100', NULL, '55 3640 2000', 'CO1633469', 'BAZO23212', '3', 'zoppi@gmail.com'),
+(25, 'Av Nuevo León 202, Hipódromo', 'Operadora de Personal Incoraxis', 2, 2, '6100', NULL, '55 5584 2918', 'CO2623479', 'OPI1423452', '3', 'incoraxis@hotmail.com');
 
 -- --------------------------------------------------------
 
@@ -1305,12 +1301,10 @@ INSERT INTO `empresa` (`id_empresa`, `direccion`, `nombre`, `id_estado`, `id_ciu
 -- Estructura de tabla para la tabla `estado`
 --
 
-DROP TABLE IF EXISTS `estado`;
-CREATE TABLE IF NOT EXISTS `estado` (
-  `id_estado` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre_estado` varchar(50) NOT NULL,
-  PRIMARY KEY (`id_estado`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+CREATE TABLE `estado` (
+  `id_estado` int(11) NOT NULL,
+  `nombre_estado` varchar(50) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `estado`
@@ -1326,12 +1320,9 @@ INSERT INTO `estado` (`id_estado`, `nombre_estado`) VALUES
 -- Estructura de tabla para la tabla `habilidad`
 --
 
-DROP TABLE IF EXISTS `habilidad`;
-CREATE TABLE IF NOT EXISTS `habilidad` (
+CREATE TABLE `habilidad` (
   `id_habilidad` int(11) NOT NULL,
-  `habilidad_desc` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`id_habilidad`),
-  KEY `not null` (`habilidad_desc`)
+  `habilidad_desc` varchar(50) DEFAULT NULL
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
@@ -1358,11 +1349,9 @@ INSERT INTO `habilidad` (`id_habilidad`, `habilidad_desc`) VALUES
 -- Estructura de tabla para la tabla `habilidad_vac`
 --
 
-DROP TABLE IF EXISTS `habilidad_vac`;
-CREATE TABLE IF NOT EXISTS `habilidad_vac` (
+CREATE TABLE `habilidad_vac` (
   `id_vacante` int(11) NOT NULL,
-  `id_habilidades` int(11) NOT NULL,
-  PRIMARY KEY (`id_vacante`,`id_habilidades`)
+  `id_habilidades` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
@@ -1446,7 +1435,84 @@ INSERT INTO `habilidad_vac` (`id_vacante`, `id_habilidades`) VALUES
 (31, 10),
 (31, 11),
 (31, 12),
-(32, 10);
+(32, 10),
+(34, 1),
+(35, 2),
+(35, 3),
+(35, 4),
+(35, 5),
+(35, 6),
+(35, 7),
+(35, 8),
+(35, 9),
+(35, 10),
+(35, 11),
+(35, 12),
+(36, 1),
+(36, 2),
+(36, 3),
+(36, 4),
+(36, 5),
+(36, 6),
+(36, 7),
+(36, 8),
+(36, 9),
+(36, 10),
+(36, 11),
+(36, 12),
+(37, 2),
+(37, 11),
+(38, 1),
+(38, 2),
+(38, 4),
+(39, 1),
+(39, 2),
+(39, 3),
+(39, 4),
+(39, 5),
+(39, 6),
+(39, 7),
+(39, 8),
+(39, 9),
+(39, 10),
+(39, 11),
+(39, 12),
+(40, 1),
+(40, 2),
+(40, 3),
+(40, 4),
+(40, 5),
+(40, 6),
+(40, 7),
+(40, 8),
+(40, 9),
+(40, 10),
+(40, 11),
+(40, 12),
+(41, 1),
+(41, 2),
+(41, 3),
+(41, 4),
+(41, 5),
+(41, 6),
+(41, 7),
+(41, 8),
+(41, 9),
+(41, 10),
+(41, 11),
+(41, 12),
+(42, 1),
+(42, 2),
+(42, 3),
+(42, 4),
+(42, 5),
+(42, 6),
+(42, 7),
+(42, 8),
+(42, 9),
+(42, 10),
+(42, 11),
+(42, 12);
 
 -- --------------------------------------------------------
 
@@ -1454,12 +1520,10 @@ INSERT INTO `habilidad_vac` (`id_vacante`, `id_habilidades`) VALUES
 -- Estructura de tabla para la tabla `nivel_academico`
 --
 
-DROP TABLE IF EXISTS `nivel_academico`;
-CREATE TABLE IF NOT EXISTS `nivel_academico` (
-  `id_nivel` int(11) NOT NULL AUTO_INCREMENT,
-  `nombre_nivel` varchar(50) NOT NULL,
-  PRIMARY KEY (`id_nivel`)
-) ENGINE=MyISAM AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
+CREATE TABLE `nivel_academico` (
+  `id_nivel` int(11) NOT NULL,
+  `nombre_nivel` varchar(50) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `nivel_academico`
@@ -1475,14 +1539,11 @@ INSERT INTO `nivel_academico` (`id_nivel`, `nombre_nivel`) VALUES
 -- Estructura de tabla para la tabla `perfil`
 --
 
-DROP TABLE IF EXISTS `perfil`;
-CREATE TABLE IF NOT EXISTS `perfil` (
-  `id_perfil` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `perfil` (
+  `id_perfil` int(11) NOT NULL,
   `nombre_perfil` varchar(50) NOT NULL,
-  `id_carrera` int(11) NOT NULL,
-  PRIMARY KEY (`id_perfil`),
-  KEY `fk_carrera_vacante_perfil` (`id_carrera`)
-) ENGINE=MyISAM AUTO_INCREMENT=14 DEFAULT CHARSET=latin1;
+  `id_carrera` int(11) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `perfil`
@@ -1492,15 +1553,15 @@ INSERT INTO `perfil` (`id_perfil`, `nombre_perfil`, `id_carrera`) VALUES
 (1, 'Programador', 1),
 (2, 'Líder de proyecto', 4),
 (3, 'Analista de software', 1),
-(4, 'Tester', 4),
+(4, 'Soporte Tecnico', 4),
 (5, 'Administrador de Base de datos', 1),
 (6, 'Especialista en Recursos Humanos', 3),
 (7, 'Consultor ambiental', 8),
 (8, 'Analista de soporte a la produccion', 9),
 (9, 'Cordinador de mercadotecnia', 7),
 (10, 'Consultor de procesos', 7),
-(11, 'Administrador de Redes', 1),
-(12, 'Tester', 1),
+(11, 'Líder de Proyecto', 1),
+(12, 'Soporte Tecnico', 1),
 (13, 'Diseñador Front-End', 1);
 
 -- --------------------------------------------------------
@@ -1509,18 +1570,15 @@ INSERT INTO `perfil` (`id_perfil`, `nombre_perfil`, `id_carrera`) VALUES
 -- Estructura de tabla para la tabla `usuario`
 --
 
-DROP TABLE IF EXISTS `usuario`;
-CREATE TABLE IF NOT EXISTS `usuario` (
-  `id_usuario` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `usuario` (
+  `id_usuario` int(11) NOT NULL,
   `nombre` varchar(50) NOT NULL,
   `apellidos` varchar(50) NOT NULL,
   `email` varchar(50) NOT NULL,
   `password` varchar(50) NOT NULL,
   `id_rol` int(11) NOT NULL,
-  `status` varchar(1) NOT NULL,
-  PRIMARY KEY (`id_usuario`),
-  KEY `fk_usuario_rol` (`id_rol`)
-) ENGINE=MyISAM AUTO_INCREMENT=12 DEFAULT CHARSET=latin1;
+  `status` varchar(1) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `usuario`
@@ -1545,12 +1603,10 @@ INSERT INTO `usuario` (`id_usuario`, `nombre`, `apellidos`, `email`, `password`,
 -- Estructura de tabla para la tabla `usuario_rol`
 --
 
-DROP TABLE IF EXISTS `usuario_rol`;
-CREATE TABLE IF NOT EXISTS `usuario_rol` (
-  `id_rol` int(11) NOT NULL AUTO_INCREMENT,
-  `rol_nombre` varchar(50) NOT NULL,
-  PRIMARY KEY (`id_rol`)
-) ENGINE=MyISAM AUTO_INCREMENT=4 DEFAULT CHARSET=latin1;
+CREATE TABLE `usuario_rol` (
+  `id_rol` int(11) NOT NULL,
+  `rol_nombre` varchar(50) NOT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `usuario_rol`
@@ -1567,9 +1623,8 @@ INSERT INTO `usuario_rol` (`id_rol`, `rol_nombre`) VALUES
 -- Estructura de tabla para la tabla `vacante`
 --
 
-DROP TABLE IF EXISTS `vacante`;
-CREATE TABLE IF NOT EXISTS `vacante` (
-  `id_vacante` int(11) NOT NULL AUTO_INCREMENT,
+CREATE TABLE `vacante` (
+  `id_vacante` int(11) NOT NULL,
   `titulo` varchar(500) NOT NULL,
   `vacante_desc` varchar(500) NOT NULL,
   `id_perfil` int(11) DEFAULT NULL,
@@ -1582,10 +1637,8 @@ CREATE TABLE IF NOT EXISTS `vacante` (
   `experiencia` int(11) DEFAULT NULL,
   `id_empresa` int(11) DEFAULT NULL,
   `status` varchar(1) NOT NULL,
-  `ayuda_economica` tinyint(1) DEFAULT NULL,
-  PRIMARY KEY (`id_vacante`),
-  KEY `fk_perfil` (`id_perfil`)
-) ENGINE=InnoDB AUTO_INCREMENT=34 DEFAULT CHARSET=latin1;
+  `ayuda_economica` tinyint(1) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Volcado de datos para la tabla `vacante`
@@ -1593,7 +1646,7 @@ CREATE TABLE IF NOT EXISTS `vacante` (
 
 INSERT INTO `vacante` (`id_vacante`, `titulo`, `vacante_desc`, `id_perfil`, `edad_min`, `edad_max`, `salario_min`, `salario_max`, `hora_inicial`, `hora_final`, `experiencia`, `id_empresa`, `status`, `ayuda_economica`) VALUES
 (1, 'Tester Jr contratacion inmediata', 'MAR SYSTEMS, es una empresa Mexicana Lider en Tecnologias de la Informacion, con presencia Internacional, y con mas de 15 años proporcionando servicios de TI.', 4, NULL, NULL, 850.00, 1100.00, NULL, NULL, 0, 5, '1', 1),
-(2, 'TESTER', 'Funciones: \r\nPruebas funcionales, de regresion, integracion y uat en apps y software a la medida.\r\nEjecucion de plan de pruebas, pruebas de escritorio, preparacion de datos de prueba, preparacion de ambientes para verificar que los requisitos se hayan cumplido.\r\nRegistro de evidencia de las pruebas realizadas.\r\nConocimiento de herramientas para registro y seguimiento de incidencias.\r\nConfiguracion de ambientes para pruebas\r\nSoporte a usuarios.', 4, NULL, NULL, 6000.00, 8000.00, NULL, NULL, NULL, 2, '1', 1),
+(2, 'TESTER', 'Funciones: \\r\\nPruebas funcionales, de regresion, integracion y uat en apps y software a la medida.\\r\\nEjecucion de plan de pruebas, pruebas de escritorio, preparacion de datos de prueba, preparacion de ambientes para verificar que los requisitos se hayan cumplido.\\r\\nRegistro de evidencia de las pruebas realizadas.\\r\\nConocimiento de herramientas para registro y seguimiento de incidencias.\\r\\nConfiguracion de ambientes para pruebas\\r\\nSoporte a usuarios.', 4, NULL, NULL, 6000.00, 8000.00, NULL, NULL, 0, 2, '1', 1),
 (3, 'DESARROLLADOR WEB', 'Contratacion Tiempo completo Permanente', 1, NULL, NULL, 4000.00, 6000.00, NULL, NULL, NULL, 3, '1', 1),
 (4, 'DESARROLLADOR WEB', 'Ofrecemos: Sueldo competitivo, prestaciones superiores a la ley seguro de vida, seguro de gastos medicos mayores, comedor, fondo de ahorro, etc   bonos por desempeño', 1, NULL, NULL, 6000.00, 10000.00, NULL, NULL, NULL, 4, '0', 1),
 (5, 'Desarrollo Web', 'Somos una empresa mexicana proveedora de servicios de tecnologia de informacion de mision critica, busca nuevos integrantes para fortalecer su equipo de trabajo', 1, NULL, NULL, NULL, NULL, '8:00 am', '16:00 pm', NULL, 2, '1', 0),
@@ -1607,7 +1660,7 @@ INSERT INTO `vacante` (`id_vacante`, `titulo`, `vacante_desc`, `id_perfil`, `eda
 (13, 'ANALISTA DE SOPORTE A LA PRODUCCION', 'Contratacion Tiempo completo o Permanente\r\n', 8, 0, 0, 0.00, 0.00, '', '', 2, 8, '1', 1),
 (14, 'CONSULTOR DE PROCESOS RAD', 'Contratacion: Tiempo completo Permanente\r\n', 10, 22, 0, 18000.00, 18000.00, '', '', 2, 8, '1', 1),
 (15, 'COORDINADOR DE MERCADOTECNIA', 'Contratacion Permanente', 9, 20, 0, 7000.00, 7000.00, '8:00 am', '18:00 pm', 1, 9, '1', 1),
-(16, 'Desarrollador movil Android/IOS JR12 a 20 mil y SR20 a 35mil', 'En IMDS instituto mexicano de desarrolladores de software solicitamos Desarrollador movil', 1, 24, 12, 30000.00, 30000.00, NULL, NULL, 1, 10, '1', 1),
+(16, 'Desarrollador movil Android/IOS JR12 a 20 mil y SR20 a 35mil', 'En IMDS instituto mexicano de desarrolladores de software solicitamos Desarrollador movil', 1, 24, 12, 20000.00, 30000.00, NULL, NULL, 1, 10, '1', 1),
 (17, 'Administrador de la Base de Datos MS SqlServer', 'En GINgroup ofrecemos las mejores soluciones integrales de vanguardia en administración de capital humano de esta manera nuestros clientes pueden enfocar su talento y sus recursos en hacer crecer su negocio, mientras nosotros nos encargamos de administrar su capital humano de manera eficiente.\\\\r\\\\n', 5, 18, 40, 22000.00, 30000.00, '09:00 pm', '07:00 am', 5, 10, '1', 1),
 (20, 'PROGRAMADOR WEB', 'Desarrollar apis en java para consulta de services', 1, 0, 0, 3000.00, 3000.00, NULL, NULL, NULL, 6, '0', 1),
 (21, 'sssss', 'sssssssssssssssssssssssss', 1, 33, 33, 3333.00, 333.00, '11:11 am', '11:11 am', 3, 10, '0', 0),
@@ -1622,7 +1675,174 @@ INSERT INTO `vacante` (`id_vacante`, `titulo`, `vacante_desc`, `id_perfil`, `eda
 (30, 'lider de proyecto p', 'kjdfvbkjsbvdj', 2, NULL, NULL, 1300.00, 3000.00, '07:00 am', '04:00 pm', 0, 19, '0', 1),
 (31, 'Programacion POO', 'Necesitamos programadores que se especialicen en programacion orientada a objetos ', 1, NULL, NULL, NULL, NULL, NULL, NULL, 0, 19, '1', 0),
 (32, 'Base de datos POO', 'Rol de base de datos que maneje oracle un 50%', 5, NULL, NULL, 750.00, 1500.00, NULL, NULL, 0, 2, '0', 1),
-(33, 'Programador de App web', 'Desarrollador de aplicaciones web y moviles', 1, NULL, NULL, 500.00, 800.00, NULL, NULL, 0, 19, '1', 1);
+(33, 'Programador de App web', 'Desarrollador de aplicaciones web y moviles', 1, NULL, NULL, 500.00, 800.00, NULL, NULL, 0, 19, '1', 1),
+(34, 'Implementacion de software', 'Es para implementar aplicaciones', 1, NULL, NULL, NULL, NULL, NULL, NULL, 0, 21, '0', 0),
+(35, 'lider de proyecto', 'Asegurar la implementación de iniciativas y estrategia comercial. Gestión y seguimiento a proyectos apegado al plan comercial y forecast de ventas. Análisis de bases de datos para presentar propuestas de mejora. Elaboración de reportes ejecutivos, presentación de resultados para la Dirección Comercial. Evaluación de la importancia y efectos de los riesgos asociados con la toma de decisiones. Reunir, analizar e interpretar todos los datos que le sean encomendados por la empresa.\\\\\\\\r\\\\\\\\n', 11, NULL, NULL, 800.00, 1500.00, NULL, NULL, 0, 22, '1', 1),
+(36, 'lider de proyecto', 'Desarrollo del plan del proyecto\\\\r\\\\n\\\\r\\\\nIdentificación de los requerimientos y el alcance del proyecto, comunicación, administración de los recursos humanos y materiales\\\\r\\\\n\\\\r\\\\nAdministración de los costos, presupuesto y aseguramiento de la calidad\\\\r\\\\n\\\\r\\\\nReportes de avance de proyecto\\\\r\\\\n\\\\r\\\\nControl de incidentes', 2, NULL, NULL, NULL, NULL, '08:00 am', '07:00 pm', 0, 23, '1', 0),
+(37, 'Administrador Base de Datos DB2', 'Mantener en óptimo rendimiento las Bases de Datos mediante procesos de mantenimiento.\\r\\nValidar y actualizar configuraciones.\\r\\nMonitorear 24/7 las condiciones y/o potenciales problemáticas\\r\\nDiagnósticar problemas y aportar una solución efectiva.\\r\\nAdministrar temas de almacenamiento, respaldos, seguridad.\\r\\nManipular objetos de Base de Datos.\\r\\nApoyar en requerimientos diarios sobre ambientes de Desarrollo, Pruebas y Producción.\\r\\nCreación, replicación y mantenimiento de Base de Datos', 5, NULL, NULL, NULL, NULL, NULL, NULL, 0, 25, '1', 0),
+(38, 'AUXILIAR DE SISTEMAS', 'Conocimientos en software y hardware de computadora y servidores', 4, NULL, NULL, NULL, NULL, '07:00 am', '05:09 pm', 0, 22, '1', 0),
+(39, 'AUXILIAR DE SISTEMAS', ' Mantenimiento correctivo y preventivo a equipos de computo\\r\\nInstalación de redes\\r\\n\\r\\nConfiguración de software y hardware\\r\\n\\r\\nSoporte técnico\\r\\n\\r\\n', 12, 23, 35, 9000.00, 9500.00, '07:00 am', '04:00 pm', 1, 7, '1', 0),
+(40, 'DESARROLLADOR .NET', 'desarrolladores con perfil Sr\\r\\n\\r\\nCon conocimientos en Base de datos SQL Server y/o Oracle 11 Y 12', 1, 22, 40, 9000.00, 15000.00, '09:00 am', '07:00 pm', 0, 6, '1', 0),
+(41, ' Lider de Proyecto', 'Cumplir con los requisitos de licitaciones de proyectos\\r\\nAnálisis de base de licitaciones\\r\\nEntregar documentación correspondiente\\r\\nJuntas de aclaración\\r\\nSi cubres con el perfil postúlate por este medio \\r\\n\\r\\n', 2, 28, 45, 15000.00, 20000.00, '09:00 am', '07:00 pm', 1, 9, '1', 0),
+(42, ' Soporte Técnico', 'Mantenimiento preventivo y correctivo de equipos de cómputo, soporte técnico, software, hardware, mantenimiento a red de datos.', 4, 25, 35, 8000.00, 8000.00, '08:00 am', '05:30 pm', 0, 7, '1', 0);
+
+--
+-- Índices para tablas volcadas
+--
+
+--
+-- Indices de la tabla `bulkload_empresa`
+--
+ALTER TABLE `bulkload_empresa`
+  ADD PRIMARY KEY (`lote`,`id_bulkload`);
+
+--
+-- Indices de la tabla `carreras`
+--
+ALTER TABLE `carreras`
+  ADD PRIMARY KEY (`id_carrera`),
+  ADD KEY `fk_id_nivel_carrera` (`id_nivel`);
+
+--
+-- Indices de la tabla `ciudad`
+--
+ALTER TABLE `ciudad`
+  ADD PRIMARY KEY (`id_ciudad`,`id_estado`),
+  ADD KEY `fk_estado_ciudad` (`id_estado`);
+
+--
+-- Indices de la tabla `conocimiento`
+--
+ALTER TABLE `conocimiento`
+  ADD PRIMARY KEY (`id_conocimiento`),
+  ADD KEY `not null` (`conoc_desc`),
+  ADD KEY `fk_conoc_perfil` (`id_perfil`);
+
+--
+-- Indices de la tabla `conocimiento_vac`
+--
+ALTER TABLE `conocimiento_vac`
+  ADD PRIMARY KEY (`id_vacante`,`id_conocimiento`),
+  ADD KEY `fk_conoc_vac` (`id_conocimiento`);
+
+--
+-- Indices de la tabla `empresa`
+--
+ALTER TABLE `empresa`
+  ADD PRIMARY KEY (`id_empresa`),
+  ADD KEY `fk_usuario` (`id_usuario`),
+  ADD KEY `fk_emp_ciudad` (`id_ciudad`),
+  ADD KEY `fk_emp_estado` (`id_estado`);
+
+--
+-- Indices de la tabla `estado`
+--
+ALTER TABLE `estado`
+  ADD PRIMARY KEY (`id_estado`);
+
+--
+-- Indices de la tabla `habilidad`
+--
+ALTER TABLE `habilidad`
+  ADD PRIMARY KEY (`id_habilidad`),
+  ADD KEY `not null` (`habilidad_desc`);
+
+--
+-- Indices de la tabla `habilidad_vac`
+--
+ALTER TABLE `habilidad_vac`
+  ADD PRIMARY KEY (`id_vacante`,`id_habilidades`);
+
+--
+-- Indices de la tabla `nivel_academico`
+--
+ALTER TABLE `nivel_academico`
+  ADD PRIMARY KEY (`id_nivel`);
+
+--
+-- Indices de la tabla `perfil`
+--
+ALTER TABLE `perfil`
+  ADD PRIMARY KEY (`id_perfil`),
+  ADD KEY `fk_carrera_vacante_perfil` (`id_carrera`);
+
+--
+-- Indices de la tabla `usuario`
+--
+ALTER TABLE `usuario`
+  ADD PRIMARY KEY (`id_usuario`),
+  ADD KEY `fk_usuario_rol` (`id_rol`);
+
+--
+-- Indices de la tabla `usuario_rol`
+--
+ALTER TABLE `usuario_rol`
+  ADD PRIMARY KEY (`id_rol`);
+
+--
+-- Indices de la tabla `vacante`
+--
+ALTER TABLE `vacante`
+  ADD PRIMARY KEY (`id_vacante`),
+  ADD KEY `fk_perfil` (`id_perfil`);
+
+--
+-- AUTO_INCREMENT de las tablas volcadas
+--
+
+--
+-- AUTO_INCREMENT de la tabla `carreras`
+--
+ALTER TABLE `carreras`
+  MODIFY `id_carrera` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+
+--
+-- AUTO_INCREMENT de la tabla `ciudad`
+--
+ALTER TABLE `ciudad`
+  MODIFY `id_ciudad` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+
+--
+-- AUTO_INCREMENT de la tabla `empresa`
+--
+ALTER TABLE `empresa`
+  MODIFY `id_empresa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+
+--
+-- AUTO_INCREMENT de la tabla `estado`
+--
+ALTER TABLE `estado`
+  MODIFY `id_estado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `nivel_academico`
+--
+ALTER TABLE `nivel_academico`
+  MODIFY `id_nivel` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
+-- AUTO_INCREMENT de la tabla `perfil`
+--
+ALTER TABLE `perfil`
+  MODIFY `id_perfil` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
+
+--
+-- AUTO_INCREMENT de la tabla `usuario`
+--
+ALTER TABLE `usuario`
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+
+--
+-- AUTO_INCREMENT de la tabla `usuario_rol`
+--
+ALTER TABLE `usuario_rol`
+  MODIFY `id_rol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `vacante`
+--
+ALTER TABLE `vacante`
+  MODIFY `id_vacante` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=43;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
