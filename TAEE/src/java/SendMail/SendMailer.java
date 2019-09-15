@@ -29,7 +29,7 @@ public class SendMailer implements Serializable {
         String remitente = "aniproxsoft@gmail.com";
         String password = "SoftwarePrueba.01";
         String msj = "<center><h1 style='color: #038C65'>¡ENHORABUENA! " + user + " </h1>";
-        msj += "<div style='width:60%'><h2 >Su empresa: " + empresa + "</h2>" + "<h2> Ha sido abrobada por nuestro administrador, usted ahora puede publicar vacantes.</h2> </div>"
+        msj += "<div style='width:60%'><h2 >Su empresa: " + empresa + "</h2>" + "<h2> Ha sido aprobada por nuestro administrador, usted ahora puede publicar vacantes.</h2> </div>"
                 + "</center>";
         Properties properties = new Properties();
 
