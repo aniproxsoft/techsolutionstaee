@@ -84,6 +84,118 @@
 
                                 <h:panelGroup>
                                     <div style="margin-top: 20px">
+                                        <p:outputLabel style=" font-weight: bold;" value="Edad minima:"  /><br/>
+
+                                        <p:inputText  size="2" onkeypress="return soloNumeros(event)" id="edad_min" value="${beanVacantesEmpresario.vacante.edad_min}"  
+                                                      required="true" requiredMessage="Ingrese edad minima"
+                                                      validatorMessage="Minimo 2 digitos maximo 2 "  >
+                                            <f:validateLength minimum="2" maximum="2"  />
+                                        </p:inputText><p:outputLabel value="Años" style="margin-left: 10px" />
+                                        <p:message for="edad_min" />
+                                    </div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <div style="margin-top: 20px">
+                                        <p:outputLabel style=" font-weight: bold;" value="Edad maxima:"  /><br/>
+                                        
+                                        <p:inputText  size="2" onkeypress="return soloNumeros(event)" id="edad_max" value="${beanVacantesEmpresario.vacante.edad_max}"  
+                                                      required="true" requiredMessage="Ingrese edad maxima"
+                                                      validatorMessage="Minimo 2 digitos maximo 2 "  >
+                                            <f:validateLength minimum="2" maximum="2"  />
+                                        </p:inputText><p:outputLabel value="Años" style="margin-left: 10px" />
+                                        <p:message for="edad_max" />
+                                    </div>
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <div style="margin-top: 15px">
+                                        <p:outputLabel style=" font-weight: bold;" value="Experiencia:"  /><br/>
+                                        <p:inputText  size="2" onkeypress="return soloNumeros(event)" id="experiencia" value="${beanVacantesEmpresario.vacante.experiencia}"  
+                                                      required="true" requiredMessage="Campo Requerido"
+                                                      validatorMessage="Minimo 1 digitos maximo 2 "  >
+                                            <f:validateLength minimum="1" maximum="2"  />
+                                        </p:inputText><p:outputLabel value="Años" style="margin-left: 10px" />
+                                        <p:message for="experiencia" />
+                                    </div>
+                                </h:panelGroup>
+                                
+                                <h:panelGroup>
+                                    <div style="margin-top: 15px">
+                                        <p:outputLabel style=" font-weight: bold;" value="Numero de Vacantes:"  /><br/>
+                                        <p:inputText  size="2" onkeypress="return soloNumeros(event)" id="num_vacantes" value="${beanVacantesEmpresario.vacante.num_vacantes}"  
+                                                      required="true" requiredMessage="Campo Requerido"
+                                                      validatorMessage="Maximo 2 digitos " >
+                                            <f:validateLength maximum="2"  />
+                                        </p:inputText><p:outputLabel value="Vacantes" style="margin-left: 10px" />
+                                        <p:message for="num_vacantes" />
+                                    </div>
+                                </h:panelGroup>
+                                
+                                <h:panelGroup >
+                                    <div style="margin-top: 15px">
+                                        <p:outputLabel style=" font-weight: bold;" value="Salario minimo:"  /><br/>
+
+                                        <p:inputText  size="10" onkeypress="return soloNumeros(event)" id="sal_min" value="${beanVacantesEmpresario.vacante.salario_min}"  
+                                                      required="true" requiredMessage="Ingrese salario minimo"
+                                                      validatorMessage="Minimo 2 digitos maximo 2 "  >
+                                            <f:validateLength minimum="4" maximum="10"  />
+                                        </p:inputText><p:outputLabel value="Mensuales" style="margin-left: 10px" />
+                                        <p:message for="sal_min" />
+                                    </div>
+
+                                </h:panelGroup>
+                                <h:panelGroup>
+                                    <p:outputLabel style=" font-weight: bold;" value="Salario maximo:"  /><br/>
+
+                                    <p:inputText  size="10" onkeypress="return soloNumeros(event)" id="sal_max" value="${beanVacantesEmpresario.vacante.salario_max}"  
+                                                  required="true" requiredMessage="Ingrese salario maximo"
+                                                  validatorMessage="Minimo 4 digitos maximo 10 "  >
+                                        <f:validateLength minimum="4" maximum="10"  />
+                                    </p:inputText><p:outputLabel value="Mensuales" style="margin-left: 10px" />
+                                    <p:message for="sal_max" />
+                                </h:panelGroup>
+                                
+                                <h:panelGrid columns="2">
+                                    <h:panelGroup>
+                                        <div style="margin-top: 15px">
+                                            <p:outputLabel style=" font-weight: bold;" value="Hora inicial:"  /><br/>
+                                            <p:inputMask  size="5" id="hora_ini"  mask="99:99" value="${beanVacantesEmpresario.vacante.hora_inicial}"
+                                                          required="true" requiredMessage="Ingrese hora inicial">
+                                                
+                                            </p:inputMask>
+                                            <br/>
+                                            <p:selectOneMenu id="hora"  style="margin-top: 5px" value="${beanVacantesEmpresario.tipoHora1}">
+                                                <f:selectItems value="${beanVacantesEmpresario.hora1}" var="hora"
+                                                               itemLabel="${hora}" itemValue="${hora}" />
+
+                                            </p:selectOneMenu> 
+                                            <p:message for="hora_ini" />
+                                        </div>
+                                    </h:panelGroup>
+                                    <h:panelGroup>
+                                        <div style="margin-top: 15px; margin-left: 15px">
+                                            <p:outputLabel style=" font-weight: bold;" value="Hora final:"  /><br/>
+                                            <p:inputMask  size="5" id="hora_fin"  mask="99:99" value="${beanVacantesEmpresario.vacante.hora_final}"
+                                                          required="true" requiredMessage="Ingrese hora final"/>
+                                            <br/>
+                                            <p:selectOneMenu id="hora2"  style="margin-top: 5px" value="${beanVacantesEmpresario.tipoHora2}">
+                                                <f:selectItems value="${beanVacantesEmpresario.hora2}" var="hora"
+                                                               itemLabel="${hora}" itemValue="${hora}" />
+
+                                            </p:selectOneMenu> 
+                                            <p:message for="hora_fin" />
+                                        </div>
+                                    </h:panelGroup>                             
+                                    
+                                    
+                                    
+                                </h:panelGrid>
+                               
+
+                            </h:panelGrid>
+                            <br/>
+                            <h:panelGrid  columns="3" width="100%" cellspacing="2">
+                                <h:panelGroup>
+                                    <div style="margin-top: 20px">
                                         <p:selectCheckboxMenu id="conocimiento"  label="Conocimientos" 
                                                               filter="true" filterMatchMode="startsWith"
                                                               panelStyle="width:250px" required="true" 
@@ -111,109 +223,24 @@
 
                                     </div>
                                 </h:panelGroup>
+                                                             
                                 <h:panelGroup>
-                                    <div style="margin-top: 20px">
-                                        <p:outputLabel style=" font-weight: bold;" value="Edad minima:"  /><br/>
 
-                                        <p:inputText  size="2" onkeypress="return soloNumeros(event)" id="edad_min" value="${beanVacantesEmpresario.vacante.edad_min}"  
-
-                                                      validatorMessage="Minimo 2 digitos maximo 2 "  >
-                                            <f:validateLength minimum="2" maximum="2"  />
-                                        </p:inputText><p:outputLabel value="Años" style="margin-left: 10px" />
-                                        <p:message for="edad_min" />
-                                    </div>
-                                </h:panelGroup>
-                                <h:panelGroup>
-                                    <div style="margin-top: 20px">
-                                        <p:outputLabel style=" font-weight: bold;" value="Edad maxima:"  /><br/>
-
-                                        <p:inputText  size="2" onkeypress="return soloNumeros(event)" id="edad_max" value="${beanVacantesEmpresario.vacante.edad_max}"  
-
-                                                      validatorMessage="Minimo 2 digitos maximo 2 "  >
-                                            <f:validateLength minimum="2" maximum="2"  />
-                                        </p:inputText><p:outputLabel value="Años" style="margin-left: 10px" />
-                                        <p:message for="edad_max" />
-                                    </div>
-                                </h:panelGroup>
-                                <h:panelGroup>
-                                    <div style="margin-top: 15px">
-                                        <p:outputLabel style=" font-weight: bold;" value="Experiencia:"  /><br/>
-                                        <p:inputText  size="2" onkeypress="return soloNumeros(event)" id="experiencia" value="${beanVacantesEmpresario.vacante.experiencia}"  
-                                                      validatorMessage="Minimo 1 digitos maximo 2 "  >
-                                            <f:validateLength minimum="1" maximum="2"  />
-                                        </p:inputText><p:outputLabel value="Años" style="margin-left: 10px" />
-                                        <p:message for="experiencia" />
-                                    </div>
-                                </h:panelGroup>
-                                <h:panelGroup >
-                                    <div style="margin-top: 15px">
-                                        <p:outputLabel style=" font-weight: bold;" value="Salario minimo:"  /><br/>
-
-                                        <p:inputText  size="10" onkeypress="return soloNumeros(event)" id="sal_min" value="${beanVacantesEmpresario.vacante.salario_min}"  
-
-                                                      validatorMessage="Minimo 2 digitos maximo 2 "  >
-                                            <f:validateLength minimum="4" maximum="10"  />
-                                        </p:inputText><p:outputLabel value="Mensuales" style="margin-left: 10px" />
-                                        <p:message for="sal_min" />
+                                    <div style="margin-top: 20px; width: 30%">
+                                        <p:outputLabel for="desc"  style=" font-weight: bold;" value="Descripción:"  /><br/>
+                                        <p:inputTextarea id="desc" value="${beanVacantesEmpresario.vacante.vacante_desc}"  
+                                                         required="true" requiredMessage="Campo Requerido" cols="40" rows="5"
+                                                         validatorMessage="Minimo 5 caracteres maximo 500" >
+                                            <f:validateLength minimum="5" maximum="500"  />
+                                        </p:inputTextarea>
+                                        <p:message for="desc"  />
                                     </div>
 
                                 </h:panelGroup>
-                                <h:panelGroup>
-                                    <p:outputLabel style=" font-weight: bold;" value="Salario maximo:"  /><br/>
-
-                                    <p:inputText  size="10" onkeypress="return soloNumeros(event)" id="sal_max" value="${beanVacantesEmpresario.vacante.salario_max}"  
-
-                                                  validatorMessage="Minimo 4 digitos maximo 10 "  >
-                                        <f:validateLength minimum="4" maximum="10"  />
-                                    </p:inputText><p:outputLabel value="Mensuales" style="margin-left: 10px" />
-                                    <p:message for="sal_max" />
-                                </h:panelGroup>
-                                <h:panelGrid columns="2">
-                                    <h:panelGroup>
-                                        <div style="margin-top: 15px">
-                                            <p:outputLabel style=" font-weight: bold;" value="Hora inicial:"  /><br/>
-                                            <p:inputMask  size="5" id="hora_ini"  mask="99:99" value="${beanVacantesEmpresario.vacante.hora_inicial}">
-                                                
-                                            </p:inputMask>
-                                            <br/>
-                                            <p:selectOneMenu id="hora"  style="margin-top: 5px" value="${beanVacantesEmpresario.tipoHora1}">
-                                                <f:selectItems value="${beanVacantesEmpresario.hora1}" var="hora"
-                                                               itemLabel="${hora}" itemValue="${hora}" />
-
-                                            </p:selectOneMenu> 
-                                            <p:message for="hora_ini" />
-                                        </div>
-                                    </h:panelGroup>
-                                    <h:panelGroup>
-                                        <div style="margin-top: 15px; margin-left: 15px">
-                                            <p:outputLabel style=" font-weight: bold;" value="Hora final:"  /><br/>
-                                            <p:inputMask  size="5" id="hora_fin"  mask="99:99" value="${beanVacantesEmpresario.vacante.hora_final}"/>
-                                            <br/>
-                                            <p:selectOneMenu id="hora2"  style="margin-top: 5px" value="${beanVacantesEmpresario.tipoHora2}">
-                                                <f:selectItems value="${beanVacantesEmpresario.hora2}" var="hora"
-                                                               itemLabel="${hora}" itemValue="${hora}" />
-
-                                            </p:selectOneMenu> 
-                                            <p:message for="hora_fin" />
-                                        </div>
-                                    </h:panelGroup>
-                                </h:panelGrid>
-
+                                
+                                                              
                             </h:panelGrid>
-                            <br/>
-                            <h:panelGroup>
-
-                                <div style="margin-top: 20px; width: 30%">
-                                    <p:outputLabel for="desc"  style=" font-weight: bold;" value="Descripción:"  /><br/>
-                                    <p:inputTextarea id="desc" value="${beanVacantesEmpresario.vacante.vacante_desc}"  
-                                                     required="true" requiredMessage="Campo Requerido" cols="40" rows="5"
-                                                     validatorMessage="Minimo 5 caracteres maximo 500" >
-                                        <f:validateLength minimum="5" maximum="500"  />
-                                    </p:inputTextarea>
-                                    <p:message for="desc"  />
-                                </div>
-
-                            </h:panelGroup>
+                            
                             <p:commandButton id="botonGuardar"  style="margin-top: 30px;" value="Guardar" 
                                              actionListener="${beanVacantesEmpresario.guardar()}" process="@form" update="formulario"/>
 
