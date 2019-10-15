@@ -50,6 +50,8 @@ public class VacanteVO {
     private boolean check;
     private int id_nivel;
     private int id_carrera;
+    private int num_vacantes;
+    private int num_postulaciones;
     
     private String imagen_utn=FacesContext.getCurrentInstance().getExternalContext().getRealPath("/resources/reportes/utn.jpg");
 
@@ -62,7 +64,7 @@ public class VacanteVO {
     }
 
     public String getTitulo() {
-        return titulo;
+        return titulo; 
     }
 
     public void setTitulo(String titulo) {
@@ -331,5 +333,21 @@ public class VacanteVO {
 
     public void setId_carrera(int id_carrera) {
         this.id_carrera = id_carrera;
+    }
+    
+    public int getNum_vacantes(){
+        return num_vacantes;
+    }
+    
+    public void setNum_vacantes(int num_vacantes) {
+        this.num_vacantes = num_vacantes;
+    }
+    
+    public int getNum_postulaciones() {
+        return num_postulaciones;
+    }
+
+    public void setNum_postulaciones(int num_postulaciones) {
+        this.num_postulaciones = num_postulaciones = (this.num_vacantes * 2) ;
     }
 }
