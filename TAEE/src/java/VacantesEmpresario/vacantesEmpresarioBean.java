@@ -112,7 +112,7 @@ public class vacantesEmpresarioBean implements Serializable {
             } else if (status.equals("2")) {
                 renderNovacantes = false;
                 renderVacantes = true;
-                renderAdd=true;
+                renderAdd = true;
 //                System.out.println("oid: "+user.getId_empresa());
                 vacantes = dao.getVacantesEmpresario(id_empresa);
                 this.id_empresa = id_empresa;
@@ -127,12 +127,13 @@ public class vacantesEmpresarioBean implements Serializable {
     public void guardar() {
         FacesContext context = FacesContext.getCurrentInstance();
         UsuarioVO user = (UsuarioVO) context.getExternalContext().getSessionMap().get("user");
-        this.id_empresa=user.getId_empresa();
+        this.id_empresa = user.getId_empresa();
         vacante.setId_empresa(id_empresa);
         vacante.setId_perfil(cve_perfil);
-        if(vacante.getExperiencia()==null){
+               
+        if (vacante.getExperiencia() == null) {
             vacante.setExperiencia("0");
-        }else if(vacante.getExperiencia().equals("")){
+        } else if (vacante.getExperiencia().equals("")) {
             vacante.setExperiencia("0");
         }
         String aux = "";
@@ -172,15 +173,27 @@ public class vacantesEmpresarioBean implements Serializable {
             RequestContext.getCurrentInstance().update("mensajes");
             RequestContext.getCurrentInstance().execute("ocultaMsj(3000)");
         } else {
-            System.out.println("cc: " + vacante.getHora_inicial());
-            JsonArray jarray_conoc = new JsonArray();
-            JsonArray jarray_habil = new JsonArray();
-            String jsonHabilidades = "";
-            String jsonConocimientos = "";
-            String jsonVacante = "";
-            JsonObject jobject = null;
-
-//        System.out.println("h1: "+hora1);
+            
+            if(vacante.getNum_vacantes() <= 0){
+                RequestContext.getCurrentInstance().execute("subir()");
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Ingrese el numero de vacantes"));
+                RequestContext.getCurrentInstance().update("mensajes");
+                RequestContext.getCurrentInstance().execute("ocultaMsj(8000)");
+            }else if(vacante.getNum_vacantes() > 10){
+                RequestContext.getCurrentInstance().execute("subir()");
+                FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Excede el numero de vacantes"));
+                RequestContext.getCurrentInstance().update("mensajes");
+                RequestContext.getCurrentInstance().execute("ocultaMsj(8000)");
+            }else {
+                System.out.println("cc: " + vacante.getHora_inicial());
+                JsonArray jarray_conoc = new JsonArray();
+                JsonArray jarray_habil = new JsonArray();
+                String jsonHabilidades = "";
+                String jsonConocimientos = "";
+                String jsonVacante = "";
+                JsonObject jobject = null;
+                
+                System.out.println("h1: "+hora1);
             if (vacante.getHora_inicial() != null) {
                 if (vacante.getHora_inicial() != "") {
                     aux = vacante.getHora_inicial() + " " + tipoHora1;
@@ -206,7 +219,7 @@ public class vacantesEmpresarioBean implements Serializable {
                 jobject.addProperty("id_conocimiento", cves_conocimientos[i]);
                 jarray_conoc.add(jobject);
                 jsonConocimientos = jarray_conoc.getAsJsonArray().toString();
-                
+
             }
             System.out.println(jarray_conoc.getAsJsonArray().toString());
             if (cves_habilidades.length == 0) {
@@ -224,10 +237,13 @@ public class vacantesEmpresarioBean implements Serializable {
             }
             Gson gson = new Gson();
             jsonVacante = gson.toJson(vacante);
-//            System.out.println("json: "+gson.toJson(vacante));
+//          System.out.println("json: "+gson.toJson(vacante));
+//          System.out.println("jasonVacante: " + jsonVacante);
+//          System.out.println("jsonConocimientos: " + jsonConocimientos);
+//          System.out.println("jsonHabilidades: " + jsonHabilidades);
             if (dao.insertUpdateVcanteEmpresario(jsonVacante, jsonConocimientos, jsonHabilidades, opcion)) {
                 if (opcion == 1) {
-                    renderAdd=true;
+                    renderAdd = true;
                     vacantes = dao.getVacantesEmpresario(id_empresa);
                     renderAddEdit = false;
                     RequestContext.getCurrentInstance().execute("subir()");
@@ -236,7 +252,7 @@ public class vacantesEmpresarioBean implements Serializable {
                     RequestContext.getCurrentInstance().execute("ocultaMsj(3000)");
                     RequestContext.getCurrentInstance().update("formulario");
                 } else if (opcion == 2) {
-                    renderAdd=true;
+                    renderAdd = true;
                     vacantes = dao.getVacantesEmpresario(id_empresa);
                     renderAddEdit = false;
                     FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_INFO, "", "La vacante ha sido modificada correcatamente"));
@@ -245,21 +261,22 @@ public class vacantesEmpresarioBean implements Serializable {
                     RequestContext.getCurrentInstance().execute("ocultaMsj(3000)");
                     RequestContext.getCurrentInstance().update("formulario");
                 }
-                
-            } else {
+
+                } else {
                 RequestContext.getCurrentInstance().execute("subir()");
                 FacesContext.getCurrentInstance().addMessage(null, new FacesMessage(FacesMessage.SEVERITY_ERROR, "", "Ocurrio un error al tratar de guardarla"));
                 RequestContext.getCurrentInstance().update("mensajes");
                 RequestContext.getCurrentInstance().execute("ocultaMsj(3000)");
 
-            }
+                }
+            }    
+//       
         }
-
 //       
     }
 
     public void editar(VacanteVO vacante) {
-        renderAdd=false;
+        renderAdd = false;
 //        System.out.println("id editar: " + vacante.getId_vacante());
         opcion = 2;
         if (vacante != null) {
@@ -308,7 +325,7 @@ public class vacantesEmpresarioBean implements Serializable {
     }
 
     public void cancelar() {
-        renderAdd=true;
+        renderAdd = true;
         renderAddEdit = false;
         init();
         RequestContext.getCurrentInstance().update("formulario");
@@ -333,17 +350,17 @@ public class vacantesEmpresarioBean implements Serializable {
 
     public void addVacante() {
         opcion = 1;
-        renderAdd=false;
+        renderAdd = false;
         niveles = serviceDao.getNiveles();
-        carreras=new ArrayList<>();
-        perfiles=new ArrayList<>();
-        conocimientos=new ArrayList<>();
-        habilidades=new ArrayList<>();
-        vacante=new VacanteVO();
-        cve_carrera=null;
-        cve_nivel=null;
-        cve_perfil=null;
-        cves_habilidades= null;
+        carreras = new ArrayList<>();
+        perfiles = new ArrayList<>();
+        conocimientos = new ArrayList<>();
+        habilidades = new ArrayList<>();
+        vacante = new VacanteVO();
+        cve_carrera = null;
+        cve_nivel = null;
+        cve_perfil = null;
+        cves_habilidades = null;
         renderAddEdit = true;
         RequestContext.getCurrentInstance().update("formulario");
         RequestContext.getCurrentInstance().execute("subir()");
