@@ -66,7 +66,6 @@ public class VacantesEmpresarioDAOImplements implements VacantesEmpresarioDAO {
                     vacante.setSalario_min(null);
                 }
                 
-
                 vacante.setHora_inicial(respuesta.getString("hora_inicial"));
                 vacante.setHora_final(respuesta.getString("hora_final"));
                 vacante.setExperiencia(respuesta.getString("experiencia"));
@@ -79,6 +78,8 @@ public class VacantesEmpresarioDAOImplements implements VacantesEmpresarioDAO {
                 vacante.setCarrera_desc(respuesta.getString("carrera_desc"));
                 vacante.setId_nivel(respuesta.getInt("id_nivel"));
                 vacante.setId_carrera(respuesta.getInt("id_carrera"));
+                vacante.setNum_vacantes(respuesta.getInt("num_vacantes"));
+                vacante.setNum_postulaciones(respuesta.getInt("num_postulaciones"));
                 vacantes.add(vacante);
 
             }
